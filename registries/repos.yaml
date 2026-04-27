@@ -26,11 +26,11 @@ repos:
     status: active
 
   - name: div_legal
-    path: null  # not cloned locally
+    path: ~/GitHub/div_legal
     github: git@github.com:jthorvaldur/div_legal.git
     category: legal
     priority: critical
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: legal
     secret_profile: legal_local
@@ -38,11 +38,11 @@ repos:
     status: active
 
   - name: legal-tax-ops
-    path: null
+    path: ~/GitHub/legal-tax-ops
     github: https://github.com/jthorvaldur/legal-tax-ops
     category: legal
     priority: active
-    language: unknown
+    language: python
     visibility: public
     vector_namespace: legal
     secret_profile: base_llm
@@ -50,11 +50,11 @@ repos:
     status: active
 
   - name: morpheme-page
-    path: null
+    path: ~/GitHub/morpheme-page
     github: https://github.com/jthorvaldur/morpheme-page
     category: legal
     priority: active
-    language: unknown
+    language: javascript
     visibility: public
     vector_namespace: null
     secret_profile: null
@@ -199,11 +199,11 @@ repos:
 
   # --- Infrastructure ---
   - name: contacts
-    path: null
+    path: ~/GitHub/contacts
     github: git@github.com:jthorvaldur/contacts.git
     category: infrastructure
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: null
@@ -211,11 +211,11 @@ repos:
     status: active
 
   - name: d72
-    path: null
+    path: ~/GitHub/d72
     github: git@github.com:jthorvaldur/d72.git
     category: infrastructure
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: null
@@ -223,11 +223,11 @@ repos:
     status: active
 
   - name: bulldogs
-    path: null
+    path: ~/GitHub/bulldogs
     github: https://github.com/jthorvaldur/bulldogs
     category: web-portfolio
     priority: active
-    language: unknown
+    language: html/javascript
     visibility: public
     vector_namespace: null
     secret_profile: null
