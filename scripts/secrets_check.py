@@ -85,8 +85,11 @@ def check_repo_secrets(repo: dict) -> list[dict]:
         timeout=10,
     )
 
+    # Files that contain secret patterns as detection rules, not actual secrets
+    scanner_files = {"scripts/secrets_check.py", "scripts/policy_lint.py"}
+
     for tracked_file in tracked.stdout.strip().split("\n"):
-        if not tracked_file:
+        if not tracked_file or tracked_file in scanner_files:
             continue
 
         file_path = repo_path / tracked_file
