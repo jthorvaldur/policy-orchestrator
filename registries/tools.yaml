@@ -1,0 +1,35 @@
+tools:
+  # Secret scanning
+  gitleaks:
+    purpose: Detect secrets in git repos
+    install: brew install gitleaks
+    usage: gitleaks detect --source .
+    required: true
+
+  # Linting
+  ruff:
+    purpose: Python linting and formatting
+    install: uv tool install ruff
+    usage: ruff check . && ruff format --check .
+    required_for: python
+
+  # Package management
+  uv:
+    purpose: Python package management
+    install: curl -LsSf https://astral.sh/uv/install.sh | sh
+    usage: uv sync
+    required_for: python
+
+  # Environment management
+  direnv:
+    purpose: Per-directory environment variables
+    install: brew install direnv
+    usage: direnv allow
+    recommended: true
+
+  # Git hooks
+  pre-commit:
+    purpose: Git hook framework
+    install: uv tool install pre-commit
+    usage: pre-commit run --all-files
+    recommended: true

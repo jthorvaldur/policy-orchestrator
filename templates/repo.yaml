@@ -1,0 +1,38 @@
+# .control/repo.yaml — repo contract for control plane
+name: {{REPO_NAME}}
+language:
+  primary: {{PRIMARY_LANGUAGE}}
+  secondary: []
+
+category: {{CATEGORY}}
+owner: joel
+visibility: {{VISIBILITY}}
+
+uses:
+  vector_db: false
+  llm_agents: false
+  web_publish: false
+  github_actions: false
+
+allowed_llm_providers:
+  - anthropic
+  - local_ollama
+
+required_files:
+  - INTENT.md
+  - README.md
+  - CLAUDE.md
+  - .env.example
+  - .gitignore
+  - scripts/dev.sh
+  - scripts/test.sh
+
+forbidden_files:
+  - .env
+  - secrets.json
+  - id_rsa
+  - service_account.json
+
+update_hooks:
+  docs: scripts/docs.sh
+  build: scripts/build.sh

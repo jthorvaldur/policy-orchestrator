@@ -1,0 +1,259 @@
+repos:
+  # --- Control Plane ---
+  - name: policy-orchestrator
+    path: ~/GitHub/policy-orchestrator
+    github: https://github.com/jthorvaldur/policy-orchestrator
+    category: infrastructure
+    priority: critical
+    language: python
+    visibility: public
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  # --- Legal ---
+  - name: words_quantum_legal
+    path: ~/GitHub/words_quantum_legal
+    github: git@github.com:jthorvaldur/words_quantum_legal.git
+    category: legal
+    priority: active
+    language: python
+    visibility: public
+    vector_namespace: legal
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  - name: div_legal
+    path: null  # not cloned locally
+    github: git@github.com:jthorvaldur/div_legal.git
+    category: legal
+    priority: critical
+    language: unknown
+    visibility: private
+    vector_namespace: legal
+    secret_profile: legal_local
+    update_policy: manual-review
+    status: active
+
+  - name: legal-tax-ops
+    path: null
+    github: https://github.com/jthorvaldur/legal-tax-ops
+    category: legal
+    priority: active
+    language: unknown
+    visibility: public
+    vector_namespace: legal
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  - name: morpheme-page
+    path: null
+    github: https://github.com/jthorvaldur/morpheme-page
+    category: legal
+    priority: active
+    language: unknown
+    visibility: public
+    vector_namespace: null
+    secret_profile: null
+    update_policy: auto-docs-safe
+    status: active
+
+  # --- Quant / Finance ---
+  - name: vpin
+    path: ~/GitHub/vpin
+    github: git@github.com:jthorvaldur/vpin.git
+    category: quant-finance
+    priority: active
+    language: python
+    visibility: public
+    vector_namespace: null
+    secret_profile: null
+    update_policy: auto-docs-safe
+    status: active
+
+  - name: alpha_research
+    path: null
+    github: git@github.com:jthorvaldur/alpha_research.git
+    category: quant-finance
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  - name: ts_embed
+    path: null
+    github: git@github.com:jthorvaldur/ts_embed.git
+    category: quant-finance
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  # --- AI / Agents ---
+  - name: cortex
+    path: null
+    github: git@github.com:jthorvaldur/cortex.git
+    category: ai-agents
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  - name: puffin
+    path: null
+    github: https://github.com/jthorvaldur/puffin
+    category: ai-agents
+    priority: active
+    language: unknown
+    visibility: public
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  - name: open-multi-agent-fork
+    path: null
+    github: https://github.com/jthorvaldur/open-multi-agent-fork
+    category: ai-agents
+    priority: active
+    language: unknown
+    visibility: public
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  - name: vector-lab
+    path: null
+    github: git@github.com:jthorvaldur/vector-lab.git
+    category: ai-agents
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: repo_docs
+    secret_profile: local_vector
+    update_policy: manual-review
+    status: active
+
+  - name: joel-knowledge
+    path: null
+    github: git@github.com:jthorvaldur/joel-knowledge.git
+    category: ai-agents
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: null
+    update_policy: auto-docs-safe
+    status: active
+
+  - name: llm-router
+    path: null
+    github: git@github.com:jthorvaldur/llm-router.git
+    category: ai-agents
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
+  # --- Creative / Math ---
+  - name: Escher
+    path: ~/GitHub/Escher
+    github: git@github.com:jthorvaldur/Escher.git
+    category: creative-math
+    priority: active
+    language: python
+    visibility: public
+    vector_namespace: null
+    secret_profile: null
+    update_policy: auto-docs-safe
+    status: active
+
+  # --- Web / Portfolio ---
+  - name: jthorvaldur.github.io
+    path: ~/GitHub/jthorvaldur.github.io
+    github: https://github.com/jthorvaldur/jthorvaldur.github.io.git
+    category: web-portfolio
+    priority: active
+    language: html/javascript
+    visibility: public
+    vector_namespace: null
+    secret_profile: null
+    update_policy: auto-docs-safe
+    status: active
+
+  # --- Infrastructure ---
+  - name: contacts
+    path: null
+    github: git@github.com:jthorvaldur/contacts.git
+    category: infrastructure
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: null
+    update_policy: manual-review
+    status: active
+
+  - name: d72
+    path: null
+    github: git@github.com:jthorvaldur/d72.git
+    category: infrastructure
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: null
+    update_policy: manual-review
+    status: active
+
+  - name: bulldogs
+    path: null
+    github: https://github.com/jthorvaldur/bulldogs
+    category: web-portfolio
+    priority: active
+    language: unknown
+    visibility: public
+    vector_namespace: null
+    secret_profile: null
+    update_policy: auto-docs-safe
+    status: active
+
+  - name: cyfopt
+    path: null
+    github: git@github.com:jthorvaldur/cyfopt.git
+    category: quant-finance
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: null
+    update_policy: manual-review
+    status: active
+
+  - name: darkgallery
+    path: null
+    github: git@github.com:jthorvaldur/darkgallery.git
+    category: creative-math
+    priority: active
+    language: unknown
+    visibility: private
+    vector_namespace: null
+    secret_profile: null
+    update_policy: manual-review
+    status: active

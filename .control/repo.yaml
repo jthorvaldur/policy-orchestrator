@@ -1,0 +1,36 @@
+name: policy-orchestrator
+language:
+  primary: python
+  secondary: []
+
+category: infrastructure
+owner: joel
+visibility: public
+
+uses:
+  vector_db: false
+  llm_agents: true
+  web_publish: false
+  github_actions: true
+
+allowed_llm_providers:
+  - anthropic
+  - local_ollama
+
+required_files:
+  - INTENT.md
+  - README.md
+  - CLAUDE.md
+  - .env.example
+  - .gitignore
+
+forbidden_files:
+  - .env
+  - secrets.json
+  - id_rsa
+  - service_account.json
+
+update_hooks:
+  audit: scripts/repo_audit.py
+  secrets: scripts/secrets_check.py
+  policy: scripts/policy_lint.py

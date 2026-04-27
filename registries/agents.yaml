@@ -1,0 +1,67 @@
+agents:
+  claude:
+    role: code_architect
+    provider: anthropic
+    instruction_file: CLAUDE.md
+    allowed_actions:
+      - read
+      - edit
+      - test
+      - refactor
+      - generate_docs
+      - create_pr
+    forbidden_actions:
+      - delete_secrets
+      - rewrite_history
+      - modify_legal_filing_without_review
+      - force_push
+      - deploy_production
+      - commit_env_files
+
+  codex:
+    role: implementation_assistant
+    provider: openai
+    instruction_file: CODEX.md
+    allowed_actions:
+      - edit
+      - refactor
+      - generate_tests
+      - explain
+    forbidden_actions:
+      - change_architecture_without_adr
+      - delete_secrets
+      - rewrite_history
+
+  cursor:
+    role: inline_pair_programmer
+    provider: cursor
+    instruction_file: .cursor/rules
+    allowed_actions:
+      - local_edits
+      - explanations
+      - refactor
+    forbidden_actions:
+      - secret_access
+      - deploy_production
+
+  gemini:
+    role: research_assistant
+    provider: google
+    instruction_file: GEMINI.md
+    allowed_actions:
+      - read
+      - explain
+      - search
+      - generate_docs
+    forbidden_actions:
+      - delete_secrets
+      - modify_legal_data
+      - rewrite_history
+
+# Global forbidden actions (apply to all agents)
+global_forbidden:
+  - commit .env or secrets files
+  - access secrets directly (must use environment variables)
+  - push to main without PR on shared repos
+  - process legal filings without human review flag
+  - overwrite human-authored documentation sections

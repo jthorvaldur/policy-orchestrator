@@ -24,32 +24,38 @@ token.json
 
 # python
 __pycache__/
-*.py[oc]
+*.pyc
 .venv/
 .ruff_cache/
 .mypy_cache/
 .pytest_cache/
 dist/
 build/
-wheels/
 *.egg-info/
 
 # node
 node_modules/
 .next/
+.nuxt/
 coverage/
+
+# rust
+target/
+
+# go
+bin/
+*.test
 
 # editors
 .DS_Store
 .idea/
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.example.json
 
 # control plane local state
 .control/local/
-local/*
-!local/README.md
-!local/.gitkeep
+local/
 *.db
 *.sqlite
 *.sqlite3

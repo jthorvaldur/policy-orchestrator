@@ -1,0 +1,43 @@
+providers:
+  anthropic:
+    models:
+      - claude-opus-4-6
+      - claude-sonnet-4-6
+      - claude-haiku-4-5
+    use_for:
+      - code architecture
+      - complex reasoning
+      - legal document analysis (cloud-approved repos only)
+    env_key: ANTHROPIC_API_KEY
+
+  openai:
+    models:
+      - gpt-4.1
+      - o3
+      - codex
+    use_for:
+      - implementation tasks
+      - code generation
+    env_key: OPENAI_API_KEY
+
+  google:
+    models:
+      - gemini-2.5-pro
+      - gemini-2.5-flash
+    use_for:
+      - research
+      - documentation
+      - large context analysis
+    env_key: GOOGLE_API_KEY
+
+  local_ollama:
+    models:
+      - llama3
+      - mistral
+      - codellama
+    use_for:
+      - sensitive data processing
+      - legal document analysis (private)
+      - offline development
+    env_key: OLLAMA_BASE_URL
+    preference: preferred for legal and private repos

@@ -1,0 +1,42 @@
+collections:
+  legal:
+    description: Legal documents, case files, contractual analysis
+    sensitivity: high
+    embedding_model: BAAI/bge-large-en-v1.5
+    dimension: 1024
+    chunker: markdown_v2
+    owner_repo: words_quantum_legal
+    allowed_readers:
+      - words_quantum_legal
+      - div_legal
+      - legal-tax-ops
+    allowed_writers:
+      - words_quantum_legal
+      - div_legal
+
+  repo_docs:
+    description: Cross-repo documentation and README content
+    sensitivity: medium
+    embedding_model: text-embedding-3-large
+    dimension: 3072
+    chunker: markdown_v2
+    owner_repo: policy-orchestrator
+    allowed_readers:
+      - all
+    allowed_writers:
+      - policy-orchestrator
+
+  quant_research:
+    description: Quantitative finance research and analysis
+    sensitivity: high
+    embedding_model: BAAI/bge-large-en-v1.5
+    dimension: 1024
+    chunker: markdown_v2
+    owner_repo: alpha_research
+    allowed_readers:
+      - alpha_research
+      - vpin
+      - ts_embed
+      - cyfopt
+    allowed_writers:
+      - alpha_research
