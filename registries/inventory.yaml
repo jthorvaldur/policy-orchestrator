@@ -1,0 +1,3299 @@
+generated: '2026-04-27T07:13:44.657717'
+scanner_version: 1.0.0
+total: 141
+repos:
+- name: legal
+  path: /Users/jthor/legal
+  location_group: home-root
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 11
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: '2026-03-13T11:55:53-04:00'
+    last_commit_message: Comment out unused function calls in keyword_classifier.py
+  risk:
+    level: critical
+    reasons:
+    - no remote with 11 commits
+    - legal data with no backup strategy
+- name: cv_jthor
+  path: /Users/jthor/projects/cv_jthor
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: '2026-02-04T13:26:40-05:00'
+    last_commit_message: 'Initial commit: claude-flow + ruvector integration'
+  risk:
+    level: medium
+    reasons:
+    - no remote (1 commits)
+- name: d72
+  path: /Users/jthor/projects/websites/d72
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: true
+    last_commit_date: '2026-04-26T17:30:52-04:00'
+    last_commit_message: 'Initial commit: investor docs, CLAUDE.md, WhatsApp export reference'
+  risk:
+    level: medium
+    reasons:
+    - no remote (1 commits)
+- name: delta72
+  path: /Users/jthor/projects/delta72
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: '2026-03-11T21:04:25-04:00'
+    last_commit_message: d72 commit 2
+  risk:
+    level: medium
+    reasons:
+    - no remote (2 commits)
+- name: fi_futures
+  path: /Users/jthor/projects/fi_futures
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: '2026-03-06T03:00:34-05:00'
+    last_commit_message: Add testing and development dependencies configuration
+  risk:
+    level: medium
+    reasons:
+    - no remote (2 commits)
+- name: ganetic
+  path: /Users/jthor/projects/research/ganetic
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: '2026-03-13T17:59:27-04:00'
+    last_commit_message: settings.json
+  risk:
+    level: medium
+    reasons:
+    - no remote (4 commits)
+- name: organize
+  path: /Users/jthor/projects/organize
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: '2026-03-05T23:52:01-05:00'
+    last_commit_message: organize downloads
+  risk:
+    level: medium
+    reasons:
+    - no remote (1 commits)
+- name: twoform
+  path: /Users/jthor/projects/twoform
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: orphan
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2
+    branch: master
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: true
+    last_commit_date: '2026-03-27T20:06:52-06:00'
+    last_commit_message: after haiku
+  risk:
+    level: medium
+    reasons:
+    - no remote (2 commits)
+- name: Escher
+  path: /Users/jthor/GitHub/Escher
+  location_group: github
+  remote_url: git@github.com:jthorvaldur/Escher.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 9
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-27T06:16:29-04:00'
+    last_commit_message: 'feat: add control plane contract, INTENT.md, and .gitignore'
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: bulldogs
+  path: /Users/jthor/projects/websites/bulldogs
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/bulldogs.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 6
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-21T23:28:18-04:00'
+    last_commit_message: 'Add product strategy: revenue model, SEO plan, and 90-day roadmap'
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: contacts
+  path: /Users/jthor/contacts
+  location_group: home-root
+  remote_url: git@github.com:jthorvaldur/contacts.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 32
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-27T04:44:41-04:00'
+    last_commit_message: Phone E.164 dedup with region metadata, chunking overhaul, iOS Messages extracti
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: div_legal
+  path: /Users/jthor/div_legal
+  location_group: home-root
+  remote_url: git@github.com:jthorvaldur/div_legal.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 21
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-26T16:25:43-04:00'
+    last_commit_message: comparitive legal
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: jthorvaldur.github.io
+  path: /Users/jthor/projects/jthorvaldur.github.io
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/jthorvaldur.github.io
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 101
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 4
+    clean: false
+    last_commit_date: '2026-04-27T02:11:41-04:00'
+    last_commit_message: 'Add Allison coherence portrait: 8591 messages mapped across 7 dimensions'
+  risk:
+    level: medium
+    reasons:
+    - behind remote by 4 commits
+    - dirty working tree
+- name: legal-tax-ops
+  path: /Users/jthor/projects/legal-tax-ops
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/legal-tax-ops.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 8
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-19T21:08:21-04:00'
+    last_commit_message: Reboot script, data source labeling, CLAUDE.md
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: morpheme-page
+  path: /Users/jthor/projects/websites/morpheme-page
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/morpheme-page.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 20
+    branch: master
+    has_remote: true
+    ahead: 9
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-27T02:15:12-04:00'
+    last_commit_message: 'Add single source of truth: morphemes.json export + build integration'
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: policy-orchestrator
+  path: /Users/jthor/GitHub/policy-orchestrator
+  location_group: github
+  remote_url: https://github.com/jthorvaldur/policy-orchestrator
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-27T06:17:00-04:00'
+    last_commit_message: 'fix: exclude scanner files from secret pattern detection'
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: ts_embed
+  path: /Users/jthor/projects/ts_embed
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/ts_embed.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-02T15:04:31-06:00'
+    last_commit_message: ts_embed
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: vector-lab
+  path: /Users/jthor/projects/phantom/vector-lab
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/vector-lab
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 9
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-02T14:55:52Z'
+    last_commit_message: Add precipitation fetch and weekly pivot scripts
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: vpin
+  path: /Users/jthor/GitHub/vpin
+  location_group: github
+  remote_url: git@github.com:jthorvaldur/vpin.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 6
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2026-04-27T06:16:27-04:00'
+    last_commit_message: 'feat: add control plane contract, INTENT.md, and .gitignore'
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: words_quantum_legal
+  path: /Users/jthor/projects/words_quantum_legal
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/words_quantum_legal.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 10
+    branch: main
+    has_remote: true
+    ahead: 1
+    behind: 2
+    clean: true
+    last_commit_date: '2026-04-21T16:58:49-04:00'
+    last_commit_message: "Update README \u2014 point to morpheme.page, add findings and analysis"
+  risk:
+    level: medium
+    reasons:
+    - behind remote by 2 commits
+- name: development-environment
+  path: /Users/jthor/projects/development-environment
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/development-environment.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 58
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2025-04-14T21:02:48+01:00'
+    last_commit_message: Add Cursor rules
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: genutil
+  path: /Users/jthor/projects/genutil
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/genutil.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 23
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2025-02-24T23:39:26Z'
+    last_commit_message: Automatic commit
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: nova
+  path: /Users/jthor/projects/nova
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/nova.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 25
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2025-04-02T17:38:15+01:00'
+    last_commit_message: pyproject fix
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: sv_bin
+  path: /Users/jthor/projects/sv_bin
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/sv_bin.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 59
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2025-04-15T12:50:13-04:00'
+    last_commit_message: Update starter
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svconfig
+  path: /Users/jthor/projects/svconfig
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/svconfig.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 12
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:01-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svrisk
+  path: /Users/jthor/projects/svrisk
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/svrisk.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 270
+    branch: main
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svstrat
+  path: /Users/jthor/projects/svstrat
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/svstrat.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 662
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svweb
+  path: /Users/jthor/projects/svweb
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/svweb.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 366
+    branch: main
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:05-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: tsprojection
+  path: /Users/jthor/projects/tsprojection
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/tsprojection.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 63
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2025-02-24T23:39:58Z'
+    last_commit_message: Automatic commit
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: cmeordergw
+  path: /Users/jthor/projects/cmeordergw
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/cmeordergw
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 399
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-07-10T19:03:15+01:00'
+    last_commit_message: last edit
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: edelta
+  path: /Users/jthor/projects/edelta
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/edelta.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-09-29T16:09:05+01:00'
+    last_commit_message: script mods
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: environ
+  path: /Users/jthor/projects/environ
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/environ
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-05-28T07:00:54-04:00'
+    last_commit_message: init 2
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: environx
+  path: /Users/jthor/projects/environx
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/environx.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-07-23T07:56:17-04:00'
+    last_commit_message: Merge branch 'main' into tmp
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: imclean
+  path: /Users/jthor/projects/imclean
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/imclean
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-05-28T06:52:49-04:00'
+    last_commit_message: first commit
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: imdb
+  path: /Users/jthor/projects/imdb
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/imdb
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2023-08-11T19:20:19-04:00'
+    last_commit_message: added files
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: ns-setup
+  path: /Users/jthor/projects/ns-setup
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/ns-setup
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 380
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-09-29T16:11:02+01:00'
+    last_commit_message: script mods
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svjavafix
+  path: /Users/jthor/projects/phantom/jthorvaldur/svjavafix
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/svjavafix.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 8
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-08-27T17:44:27+08:00'
+    last_commit_message: rye fmt
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svjs
+  path: /Users/jthor/projects/phantom/jthorvaldur/svjs
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svjs.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-08-27T17:44:39+08:00'
+    last_commit_message: rye fmt
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: vsconfig
+  path: /Users/jthor/projects/vsconfig
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/vsconfig.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 13
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2024-07-15T14:59:40+01:00'
+    last_commit_message: Update ts_transformers.txt
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svdocs
+  path: /Users/jthor/projects/svdocs
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svdocs
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: '2026-03-10T17:56:01-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svjavafix
+  path: /Users/jthor/projects/svjavafix
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svjavafix
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 9
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:02-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svjs
+  path: /Users/jthor/projects/svjs
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svjs
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svprod
+  path: /Users/jthor/projects/svprod
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svprod
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 8
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svtex
+  path: /Users/jthor/projects/svtex
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svtex
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:05-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: svvaluation
+  path: /Users/jthor/projects/svvaluation
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svvaluation
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: false
+    last_commit_date: '2026-03-10T17:56:05-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: Scroll-Protocol-Invocation
+  path: /Users/jthor/projects/old_glis/Scroll-Protocol-Invocation
+  location_group: projects
+  remote_url: https://codeberg.org/RyanFromMontana/Scroll-Protocol-Invocation.git
+  remote_org: null
+  lifecycle: backup
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 405
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: false
+    last_commit_date: '2025-06-23T22:06:47+02:00'
+    last_commit_message: Upload files to "/"
+  risk:
+    level: medium
+    reasons:
+    - dirty working tree
+- name: alpha_research
+  path: /Users/jthor/projects/phantom/jthorvaldur/alpha_research
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/alpha_research.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 11
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-08T10:46:02-06:00'
+    last_commit_message: hmm eval
+  risk:
+    level: low
+    reasons: []
+- name: alpha_research
+  path: /Users/jthor/projects/research/agent_dev_test/alpha_research
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/alpha_research.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 11
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-08T10:46:02-06:00'
+    last_commit_message: hmm eval
+  risk:
+    level: low
+    reasons: []
+- name: cortex
+  path: /Users/jthor/projects/phantom/cortex
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/cortex.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 2
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-01T01:55:59Z'
+    last_commit_message: Add README with architecture, commands, and infrastructure docs
+  risk:
+    level: low
+    reasons: []
+- name: cortex
+  path: /Users/jthor/projects/phantom/jthorvaldur/cortex
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/cortex.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 2
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-01T01:55:59Z'
+    last_commit_message: Add README with architecture, commands, and infrastructure docs
+  risk:
+    level: low
+    reasons: []
+- name: cyfopt
+  path: /Users/jthor/projects/cyfopt
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/cyfopt.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 28
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-30T21:55:12-06:00'
+    last_commit_message: hysteresis
+  risk:
+    level: low
+    reasons: []
+- name: cyfopt
+  path: /Users/jthor/projects/phantom/jthorvaldur/cyfopt
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/cyfopt.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 28
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-30T21:55:12-06:00'
+    last_commit_message: hysteresis
+  risk:
+    level: low
+    reasons: []
+- name: d72
+  path: /Users/jthor/d72
+  location_group: home-root
+  remote_url: https://github.com/jthorvaldur/d72.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 7
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-27T03:21:54-04:00'
+    last_commit_message: Remove large binaries from tracking and add to gitignore
+  risk:
+    level: low
+    reasons: []
+- name: darkgallery
+  path: /Users/jthor/projects/darkgallery
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/darkgallery.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 28
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-31T15:17:41-06:00'
+    last_commit_message: src/visualization
+  risk:
+    level: low
+    reasons: []
+- name: darkgallery
+  path: /Users/jthor/projects/phantom/jthorvaldur/darkgallery
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/darkgallery.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 28
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-31T15:17:41-06:00'
+    last_commit_message: src/visualization
+  risk:
+    level: low
+    reasons: []
+- name: joel-knowledge
+  path: /Users/jthor/projects/phantom/joel-knowledge
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/joel-knowledge.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 6
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-02T14:55:44Z'
+    last_commit_message: 'Dream cycle 2026-04-02: TurboQuant, BitPolar, and QuitoBench findings'
+  risk:
+    level: low
+    reasons: []
+- name: joel-knowledge
+  path: /Users/jthor/projects/phantom/jthorvaldur/joel-knowledge
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/joel-knowledge.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 6
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-02T14:55:44Z'
+    last_commit_message: 'Dream cycle 2026-04-02: TurboQuant, BitPolar, and QuitoBench findings'
+  risk:
+    level: low
+    reasons: []
+- name: jthorvaldur.github.io
+  path: /Users/jthor/GitHub/jthorvaldur.github.io
+  location_group: github
+  remote_url: https://github.com/jthorvaldur/jthorvaldur.github.io.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 105
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-27T06:16:33-04:00'
+    last_commit_message: 'feat: add control plane contract, INTENT.md, and secrets hygiene'
+  risk:
+    level: low
+    reasons: []
+- name: llm-router
+  path: /Users/jthor/projects/phantom/jthorvaldur/llm-router
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/llm-router.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-31T03:34:07Z'
+    last_commit_message: 'Initial: LLM router with OpenRouter + Anthropic, plan-with-critique pattern'
+  risk:
+    level: low
+    reasons: []
+- name: llm-router
+  path: /Users/jthor/projects/phantom/llm-router
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/llm-router
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-31T03:34:07Z'
+    last_commit_message: 'Initial: LLM router with OpenRouter + Anthropic, plan-with-critique pattern'
+  risk:
+    level: low
+    reasons: []
+- name: morpheme-page
+  path: /Users/jthor/projects/morpheme-page
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/morpheme-page.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 13
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-27T02:20:52-04:00'
+    last_commit_message: 'Full pipeline rebuild: export_all.py, remove personal content, clean deploy'
+  risk:
+    level: low
+    reasons: []
+- name: open-multi-agent-fork
+  path: /Users/jthor/projects/phantom/jthorvaldur/open-multi-agent-fork
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/open-multi-agent-fork.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 26
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-03T03:02:56+08:00'
+    last_commit_message: 'docs: add DECISIONS.md recording deliberate "won''t do" choices'
+  risk:
+    level: low
+    reasons: []
+- name: puffin
+  path: /Users/jthor/projects/phantom/jthorvaldur/puffin
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/puffin.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 296
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-03T04:08:18-07:00'
+    last_commit_message: "chore(release): v3.11.1 changelog \u2014 Quick Q button + test suite fixes"
+  risk:
+    level: low
+    reasons: []
+- name: vector-lab
+  path: /Users/jthor/projects/phantom/jthorvaldur/vector-lab
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/vector-lab.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 9
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-02T14:55:52Z'
+    last_commit_message: Add precipitation fetch and weekly pivot scripts
+  risk:
+    level: low
+    reasons: []
+- name: words_quantum_legal
+  path: /Users/jthor/GitHub/words_quantum_legal
+  location_group: github
+  remote_url: git@github.com:jthorvaldur/words_quantum_legal.git
+  remote_org: jthorvaldur
+  lifecycle: active
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 11
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-04-27T06:16:31-04:00'
+    last_commit_message: 'feat: add control plane contract, INTENT.md, and secrets hygiene'
+  risk:
+    level: low
+    reasons: []
+- name: svpnl
+  path: /Users/jthor/projects/svpnl
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/svpnl.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 111
+    branch: main
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: low
+    reasons: []
+- name: svpy
+  path: /Users/jthor/projects/svpy
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/svpy.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2076
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: low
+    reasons: []
+- name: svpyfix
+  path: /Users/jthor/projects/svpyfix
+  location_group: projects
+  remote_url: git@github.com:EislerSysJT/svpyfix.git
+  remote_org: EislerSysJT
+  lifecycle: work-org
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 37
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: low
+    reasons: []
+- name: Escher
+  path: /Users/jthor/projects/phantom/jthorvaldur/Escher
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/Escher.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 6
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2014-08-05T10:57:09-05:00'
+    last_commit_message: Update escher.py
+  risk:
+    level: low
+    reasons: []
+- name: cmeordergw
+  path: /Users/jthor/projects/phantom/jthorvaldur/cmeordergw
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/cmeordergw.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 399
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-10T19:03:15+01:00'
+    last_commit_message: last edit
+  risk:
+    level: low
+    reasons: []
+- name: edelta
+  path: /Users/jthor/projects/phantom/jthorvaldur/edelta
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/edelta.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-09-29T16:09:05+01:00'
+    last_commit_message: script mods
+  risk:
+    level: low
+    reasons: []
+- name: environ
+  path: /Users/jthor/projects/phantom/jthorvaldur/environ
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/environ.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-05-28T07:00:54-04:00'
+    last_commit_message: init 2
+  risk:
+    level: low
+    reasons: []
+- name: environx
+  path: /Users/jthor/projects/phantom/jthorvaldur/environx
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/environx.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-23T07:56:17-04:00'
+    last_commit_message: Merge branch 'main' into tmp
+  risk:
+    level: low
+    reasons: []
+- name: imclean
+  path: /Users/jthor/projects/phantom/jthorvaldur/imclean
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/imclean.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-05-28T06:52:49-04:00'
+    last_commit_message: first commit
+  risk:
+    level: low
+    reasons: []
+- name: imdb
+  path: /Users/jthor/projects/phantom/jthorvaldur/imdb
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/imdb.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2023-08-11T19:20:19-04:00'
+    last_commit_message: added files
+  risk:
+    level: low
+    reasons: []
+- name: ns-setup
+  path: /Users/jthor/projects/phantom/jthorvaldur/ns-setup
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/ns-setup.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 380
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-09-29T16:11:02+01:00'
+    last_commit_message: script mods
+  risk:
+    level: low
+    reasons: []
+- name: pylearn
+  path: /Users/jthor/projects/phantom/jthorvaldur/pylearn
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/pylearn.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 57
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2023-01-04T19:40:19-05:00'
+    last_commit_message: reqs
+  risk:
+    level: low
+    reasons: []
+- name: pylearn
+  path: /Users/jthor/projects/pylearn
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/pylearn
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 57
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2023-01-04T19:40:19-05:00'
+    last_commit_message: reqs
+  risk:
+    level: low
+    reasons: []
+- name: svconfig
+  path: /Users/jthor/projects/phantom/jthorvaldur/svconfig
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svconfig.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-10T20:07:30+01:00'
+    last_commit_message: lc
+  risk:
+    level: low
+    reasons: []
+- name: svgo
+  path: /Users/jthor/projects/phantom/jthorvaldur/svgo
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/svgo.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2196
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-10T18:38:01+01:00'
+    last_commit_message: maybe final
+  risk:
+    level: low
+    reasons: []
+- name: svprod
+  path: /Users/jthor/projects/phantom/jthorvaldur/svprod
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svprod.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 7
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-10T20:08:30+01:00'
+    last_commit_message: lc
+  risk:
+    level: low
+    reasons: []
+- name: svprod-config
+  path: /Users/jthor/projects/phantom/jthorvaldur/svprod-config
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svprod-config.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2023-01-09T10:52:56-05:00'
+    last_commit_message: x
+  risk:
+    level: low
+    reasons: []
+- name: svpy
+  path: /Users/jthor/projects/phantom/jthorvaldur/svpy
+  location_group: projects
+  remote_url: git@github.com:jthorvaldur/svpy.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1708
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-07T22:14:34-04:00'
+    last_commit_message: Removed fishlikeplace and more changes for clearing
+  risk:
+    level: low
+    reasons: []
+- name: svpyfix
+  path: /Users/jthor/projects/phantom/jthorvaldur/svpyfix
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svpyfix.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 16
+    branch: LME_Remove_Extra_FIX_Tag
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-10T20:08:56+01:00'
+    last_commit_message: lc
+  risk:
+    level: low
+    reasons: []
+- name: svstrat
+  path: /Users/jthor/projects/phantom/jthorvaldur/svstrat
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svstrat.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 540
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-10T19:50:57+01:00'
+    last_commit_message: lc
+  risk:
+    level: low
+    reasons: []
+- name: svtex
+  path: /Users/jthor/projects/phantom/jthorvaldur/svtex
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svtex.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2021-09-29T12:47:57-04:00'
+    last_commit_message: rename.
+  risk:
+    level: low
+    reasons: []
+- name: svvaluation
+  path: /Users/jthor/projects/phantom/jthorvaldur/svvaluation
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svvaluation.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2021-09-29T12:39:23-04:00'
+    last_commit_message: Init svvaluation
+  risk:
+    level: low
+    reasons: []
+- name: tsprojection
+  path: /Users/jthor/projects/phantom/jthorvaldur/tsprojection
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/tsprojection.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-08-02T08:19:44-04:00'
+    last_commit_message: c2
+  risk:
+    level: low
+    reasons: []
+- name: vpin
+  path: /Users/jthor/projects/phantom/jthorvaldur/vpin
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/vpin.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: true
+  git:
+    has_commits: true
+    commit_count: 3
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2013-10-13T16:46:11+01:00'
+    last_commit_message: April mtgox data
+  risk:
+    level: low
+    reasons: []
+- name: vsconfig
+  path: /Users/jthor/projects/phantom/jthorvaldur/vsconfig
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/vsconfig.git
+  remote_org: jthorvaldur
+  lifecycle: stale
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 13
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-15T14:59:40+01:00'
+    last_commit_message: Update ts_transformers.txt
+  risk:
+    level: low
+    reasons: []
+- name: jthorvaldurhub.io
+  path: /Users/jthor/projects/phantom/jthorvaldur/jthorvaldurhub.io
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/jthorvaldur.github.io.git
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-31T02:40:55Z'
+    last_commit_message: 'Redesign: dark theme with Three.js conformal particle field'
+  risk:
+    level: low
+    reasons: []
+- name: svgo
+  path: /Users/jthor/projects/svgo
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svgo
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 2197
+    branch: master
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-10T17:56:02-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: low
+    reasons: []
+- name: svprod-config
+  path: /Users/jthor/projects/svprod-config
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svprod-config
+  remote_org: jthorvaldur
+  lifecycle: duplicate
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 4
+    branch: main
+    has_remote: true
+    ahead: 1
+    behind: 0
+    clean: true
+    last_commit_date: '2026-03-10T17:56:04-04:00'
+    last_commit_message: build and py 3.12
+  risk:
+    level: low
+    reasons: []
+- name: svpy
+  path: /Users/jthor/projects/old_sv/svpy
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svpy
+  remote_org: jthorvaldur
+  lifecycle: backup
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1708
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-07T22:14:34-04:00'
+    last_commit_message: Removed fishlikeplace and more changes for clearing
+  risk:
+    level: low
+    reasons: []
+- name: svstrat
+  path: /Users/jthor/projects/old_sv/svstrat
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svstrat
+  remote_org: jthorvaldur
+  lifecycle: backup
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 540
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2024-07-10T19:50:57+01:00'
+    last_commit_message: lc
+  risk:
+    level: low
+    reasons: []
+- name: ale
+  path: /Users/jthor/.vim/plugged/ale
+  location_group: vim-plugins
+  remote_url: https://github.com/dense-analysis/ale.git
+  remote_org: dense-analysis
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-11-22T13:16:50+01:00'
+    last_commit_message: add markdownlint fixer for markdown (#5066)
+  risk:
+    level: low
+    reasons: []
+- name: catppuccin
+  path: /Users/jthor/.vim/plugged/catppuccin
+  location_group: vim-plugins
+  remote_url: https://github.com/catppuccin/nvim.git
+  remote_org: catppuccin
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-12-05T16:09:33+01:00'
+    last_commit_message: 'feat(blink-pairs): add blink.pairs integration (#958)'
+  risk:
+    level: low
+    reasons: []
+- name: coc.nvim
+  path: /Users/jthor/.vim/plugged/coc.nvim
+  location_group: vim-plugins
+  remote_url: https://github.com/neoclide/coc.nvim.git
+  remote_org: neoclide
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: release
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-12-09T16:05:21Z'
+    last_commit_message: 'b1d9dbf test(basic): increase timeout for helper.waitPopup (#5496)'
+  risk:
+    level: low
+    reasons: []
+- name: fzf
+  path: /Users/jthor/.vim/plugged/fzf
+  location_group: vim-plugins
+  remote_url: https://github.com/junegunn/fzf.git
+  remote_org: junegunn
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-12-08T03:15:44+01:00'
+    last_commit_message: zsh foreign test (#4622)
+  risk:
+    level: low
+    reasons: []
+- name: fzf.vim
+  path: /Users/jthor/.vim/plugged/fzf.vim
+  location_group: vim-plugins
+  remote_url: https://github.com/junegunn/fzf.vim.git
+  remote_org: junegunn
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-12-09T00:49:13+01:00'
+    last_commit_message: Avoid cooked terminal mode (#1604)
+  risk:
+    level: low
+    reasons: []
+- name: gruvbox
+  path: /Users/jthor/.vim/plugged/gruvbox
+  location_group: vim-plugins
+  remote_url: https://github.com/gruvbox-community/gruvbox.git
+  remote_org: gruvbox-community
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-05-10T17:13:29-04:00'
+    last_commit_message: Revert "Fix statusline breakage with nvim 0.11."
+  risk:
+    level: low
+    reasons: []
+- name: nerdcommenter
+  path: /Users/jthor/.vim/plugged/nerdcommenter
+  location_group: vim-plugins
+  remote_url: https://github.com/preservim/nerdcommenter.git
+  remote_org: preservim
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-11-19T09:24:44+01:00'
+    last_commit_message: Add openscad comments (#545)
+  risk:
+    level: low
+    reasons: []
+- name: nerdtree
+  path: /Users/jthor/.vim/plugged/nerdtree
+  location_group: vim-plugins
+  remote_url: https://github.com/preservim/nerdtree.git
+  remote_org: preservim
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-09-26T09:07:39-07:00'
+    last_commit_message: 'chore: fix typo in README (#1439)'
+  risk:
+    level: low
+    reasons: []
+- name: onedark.nvim
+  path: /Users/jthor/.vim/plugged/onedark.nvim
+  location_group: vim-plugins
+  remote_url: https://github.com/navarasu/onedark.nvim.git
+  remote_org: navarasu
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-11-24T22:47:02+05:30'
+    last_commit_message: 'fix: restore missing @tag highlights for JSX/TSX/HTML (#254)'
+  risk:
+    level: low
+    reasons: []
+- name: rust.vim
+  path: /Users/jthor/.vim/plugged/rust.vim
+  location_group: vim-plugins
+  remote_url: https://github.com/rust-lang/rust.vim.git
+  remote_org: rust-lang
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2022-11-27T16:26:22+02:00'
+    last_commit_message: Revert "Migrate from highfive to triagebot"
+  risk:
+    level: low
+    reasons: []
+- name: tokyonight.nvim
+  path: /Users/jthor/.vim/plugged/tokyonight.nvim
+  location_group: vim-plugins
+  remote_url: https://github.com/folke/tokyonight.nvim.git
+  remote_org: folke
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-11-05T09:48:50+01:00'
+    last_commit_message: 'fix(extras.opencode): made opencode gen idempotent'
+  risk:
+    level: low
+    reasons: []
+- name: vim-airline
+  path: /Users/jthor/.vim/plugged/vim-airline
+  location_group: vim-plugins
+  remote_url: https://github.com/vim-airline/vim-airline.git
+  remote_org: vim-airline
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-12-02T14:56:51+01:00'
+    last_commit_message: 'fern: only change directory if we are in a fern window'
+  risk:
+    level: low
+    reasons: []
+- name: vim-airline-themes
+  path: /Users/jthor/.vim/plugged/vim-airline-themes
+  location_group: vim-plugins
+  remote_url: https://github.com/vim-airline/vim-airline-themes.git
+  remote_org: vim-airline
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-09-22T19:28:55Z'
+    last_commit_message: 'molokai: add airline_term highlight group'
+  risk:
+    level: low
+    reasons: []
+- name: vim-fugitive
+  path: /Users/jthor/.vim/plugged/vim-fugitive
+  location_group: vim-plugins
+  remote_url: https://github.com/tpope/vim-fugitive.git
+  remote_org: tpope
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-07-15T17:21:35-04:00'
+    last_commit_message: Fix race conditions generating sequencer sections
+  risk:
+    level: low
+    reasons: []
+- name: vim-gitgutter
+  path: /Users/jthor/.vim/plugged/vim-gitgutter
+  location_group: vim-plugins
+  remote_url: https://github.com/airblade/vim-gitgutter.git
+  remote_org: airblade
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: main
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-12-05T15:11:27Z'
+    last_commit_message: Drop grep
+  risk:
+    level: low
+    reasons: []
+- name: vim-github-dark
+  path: /Users/jthor/.vim/plugged/vim-github-dark
+  location_group: vim-plugins
+  remote_url: https://github.com/wojciechkepka/vim-github-dark.git
+  remote_org: wojciechkepka
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2022-09-28T10:06:08+02:00'
+    last_commit_message: Update ghdark.vim (#12)
+  risk:
+    level: low
+    reasons: []
+- name: vim-go
+  path: /Users/jthor/.vim/plugged/vim-go
+  location_group: vim-plugins
+  remote_url: https://github.com/fatih/vim-go.git
+  remote_org: fatih
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-11-11T13:04:19-08:00'
+    last_commit_message: 'Merge pull request #3733 from ehershey/patch-2'
+  risk:
+    level: low
+    reasons: []
+- name: vim-habanight
+  path: /Users/jthor/.vim/plugged/vim-habanight
+  location_group: vim-plugins
+  remote_url: https://github.com/habamax/vim-habanight.git
+  remote_org: habamax
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2021-03-28T21:07:24+03:00'
+    last_commit_message: 'fix: cterm blue color do not match gui'
+  risk:
+    level: low
+    reasons: []
+- name: vim-polyglot
+  path: /Users/jthor/.vim/plugged/vim-polyglot
+  location_group: vim-plugins
+  remote_url: https://github.com/sheerun/vim-polyglot.git
+  remote_org: sheerun
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-08-27T19:10:22+02:00'
+    last_commit_message: Update README.md
+  risk:
+    level: low
+    reasons: []
+- name: vim-surround
+  path: /Users/jthor/.vim/plugged/vim-surround
+  location_group: vim-plugins
+  remote_url: https://github.com/tpope/vim-surround.git
+  remote_org: tpope
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2022-10-25T16:34:39-04:00'
+    last_commit_message: Call out opening bracket behavior in FAQ
+  risk:
+    level: low
+    reasons: []
+- name: vimtex
+  path: /Users/jthor/.vim/plugged/vimtex
+  location_group: vim-plugins
+  remote_url: https://github.com/lervag/vimtex.git
+  remote_org: lervag
+  lifecycle: dependency
+  registered: false
+  git:
+    has_commits: true
+    commit_count: 1
+    branch: master
+    has_remote: true
+    ahead: 0
+    behind: 0
+    clean: true
+    last_commit_date: '2025-12-07T23:01:40+01:00'
+    last_commit_message: 'doc: mention version requirement for fzf-lua'
+  risk:
+    level: low
+    reasons: []
+- name: GLIS_OneClick_Demo
+  path: /Users/jthor/projects/old_glis/smoke/GLIS_OneClick_Demo
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: _tensory72
+  path: /Users/jthor/projects/_tensory72
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: agent_test_db
+  path: /Users/jthor/projects/agent_test_db
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: agentic
+  path: /Users/jthor/rprojects/agentic
+  location_group: rprojects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: backup
+  path: /Users/jthor/projects/research/agent_dev_test/backup
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: ccprojects
+  path: /Users/jthor/ccprojects
+  location_group: home-root
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: digital_twin
+  path: /Users/jthor/projects/old_glis/digital_twin
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: downloads_clean
+  path: /Users/jthor/projects/downloads_clean
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: etfdata
+  path: /Users/jthor/projects/etfdata
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: friday
+  path: /Users/jthor/projects/friday
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: glis_codec
+  path: /Users/jthor/projects/old_glis/glis_t2/glis_codec
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: glisdev
+  path: /Users/jthor/projects/old_glis/glisdev
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: global_python
+  path: /Users/jthor/global_python
+  location_group: home-root
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: legal_good
+  path: /Users/jthor/legal_good
+  location_group: home-root
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: one_click
+  path: /Users/jthor/projects/one_click
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: pi.ruv
+  path: /Users/jthor/projects/research/pi.ruv
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: pytest
+  path: /Users/jthor/projects/pytest
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: rfclean
+  path: /Users/jthor/rprojects/rfclean
+  location_group: rprojects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: rtensor72
+  path: /Users/jthor/projects/rtensor72
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: sentence
+  path: /Users/jthor/projects/sentence
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: svdocs
+  path: /Users/jthor/projects/phantom/jthorvaldur/svdocs
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/svdocs.git
+  remote_org: jthorvaldur
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: true
+    ahead: null
+    behind: null
+    clean: true
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: tensor72
+  path: /Users/jthor/projects/tensor72
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: ts_embed
+  path: /Users/jthor/projects/phantom/jthorvaldur/ts_embed
+  location_group: projects
+  remote_url: https://github.com/jthorvaldur/ts_embed.git
+  remote_org: jthorvaldur
+  lifecycle: empty
+  registered: true
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: true
+    ahead: null
+    behind: null
+    clean: true
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: twin
+  path: /Users/jthor/projects/old_glis/gsl/WBIE/twin
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+- name: vibe
+  path: /Users/jthor/projects/vibe
+  location_group: projects
+  remote_url: null
+  remote_org: null
+  lifecycle: empty
+  registered: false
+  git:
+    has_commits: false
+    commit_count: 0
+    branch: null
+    has_remote: false
+    ahead: null
+    behind: null
+    clean: false
+    last_commit_date: null
+    last_commit_message: null
+  risk:
+    level: none
+    reasons: []
+duplicate_groups:
+  https://github.com/jthorvaldur/escher:
+  - /Users/jthor/GitHub/Escher
+  - /Users/jthor/projects/phantom/jthorvaldur/Escher
+  https://github.com/jthorvaldur/jthorvaldur.github.io:
+  - /Users/jthor/GitHub/jthorvaldur.github.io
+  - /Users/jthor/projects/jthorvaldur.github.io
+  - /Users/jthor/projects/phantom/jthorvaldur/jthorvaldurhub.io
+  https://github.com/jthorvaldur/vpin:
+  - /Users/jthor/GitHub/vpin
+  - /Users/jthor/projects/phantom/jthorvaldur/vpin
+  https://github.com/jthorvaldur/words_quantum_legal:
+  - /Users/jthor/GitHub/words_quantum_legal
+  - /Users/jthor/projects/words_quantum_legal
+  https://github.com/jthorvaldur/cmeordergw:
+  - /Users/jthor/projects/cmeordergw
+  - /Users/jthor/projects/phantom/jthorvaldur/cmeordergw
+  https://github.com/jthorvaldur/darkgallery:
+  - /Users/jthor/projects/darkgallery
+  - /Users/jthor/projects/phantom/jthorvaldur/darkgallery
+  https://github.com/jthorvaldur/cyfopt:
+  - /Users/jthor/projects/cyfopt
+  - /Users/jthor/projects/phantom/jthorvaldur/cyfopt
+  https://github.com/jthorvaldur/edelta:
+  - /Users/jthor/projects/edelta
+  - /Users/jthor/projects/phantom/jthorvaldur/edelta
+  https://github.com/jthorvaldur/environx:
+  - /Users/jthor/projects/environx
+  - /Users/jthor/projects/phantom/jthorvaldur/environx
+  https://github.com/jthorvaldur/environ:
+  - /Users/jthor/projects/environ
+  - /Users/jthor/projects/phantom/jthorvaldur/environ
+  https://github.com/jthorvaldur/imclean:
+  - /Users/jthor/projects/imclean
+  - /Users/jthor/projects/phantom/jthorvaldur/imclean
+  https://github.com/jthorvaldur/imdb:
+  - /Users/jthor/projects/imdb
+  - /Users/jthor/projects/phantom/jthorvaldur/imdb
+  https://github.com/jthorvaldur/morpheme-page:
+  - /Users/jthor/projects/morpheme-page
+  - /Users/jthor/projects/websites/morpheme-page
+  https://github.com/jthorvaldur/ns-setup:
+  - /Users/jthor/projects/ns-setup
+  - /Users/jthor/projects/phantom/jthorvaldur/ns-setup
+  https://github.com/jthorvaldur/joel-knowledge:
+  - /Users/jthor/projects/phantom/joel-knowledge
+  - /Users/jthor/projects/phantom/jthorvaldur/joel-knowledge
+  https://github.com/jthorvaldur/cortex:
+  - /Users/jthor/projects/phantom/cortex
+  - /Users/jthor/projects/phantom/jthorvaldur/cortex
+  https://github.com/jthorvaldur/svstrat:
+  - /Users/jthor/projects/old_sv/svstrat
+  - /Users/jthor/projects/phantom/jthorvaldur/svstrat
+  https://github.com/jthorvaldur/svpy:
+  - /Users/jthor/projects/old_sv/svpy
+  - /Users/jthor/projects/phantom/jthorvaldur/svpy
+  https://github.com/jthorvaldur/alpha_research:
+  - /Users/jthor/projects/phantom/jthorvaldur/alpha_research
+  - /Users/jthor/projects/research/agent_dev_test/alpha_research
+  https://github.com/jthorvaldur/llm-router:
+  - /Users/jthor/projects/phantom/jthorvaldur/llm-router
+  - /Users/jthor/projects/phantom/llm-router
+  https://github.com/jthorvaldur/svdocs:
+  - /Users/jthor/projects/phantom/jthorvaldur/svdocs
+  - /Users/jthor/projects/svdocs
+  https://github.com/jthorvaldur/pylearn:
+  - /Users/jthor/projects/phantom/jthorvaldur/pylearn
+  - /Users/jthor/projects/pylearn
+  https://github.com/jthorvaldur/svprod:
+  - /Users/jthor/projects/phantom/jthorvaldur/svprod
+  - /Users/jthor/projects/svprod
+  https://github.com/jthorvaldur/svprod-config:
+  - /Users/jthor/projects/phantom/jthorvaldur/svprod-config
+  - /Users/jthor/projects/svprod-config
+  https://github.com/jthorvaldur/svjavafix:
+  - /Users/jthor/projects/phantom/jthorvaldur/svjavafix
+  - /Users/jthor/projects/svjavafix
+  https://github.com/jthorvaldur/svgo:
+  - /Users/jthor/projects/phantom/jthorvaldur/svgo
+  - /Users/jthor/projects/svgo
+  https://github.com/jthorvaldur/svjs:
+  - /Users/jthor/projects/phantom/jthorvaldur/svjs
+  - /Users/jthor/projects/svjs
+  https://github.com/jthorvaldur/svtex:
+  - /Users/jthor/projects/phantom/jthorvaldur/svtex
+  - /Users/jthor/projects/svtex
+  https://github.com/jthorvaldur/svvaluation:
+  - /Users/jthor/projects/phantom/jthorvaldur/svvaluation
+  - /Users/jthor/projects/svvaluation
+  https://github.com/jthorvaldur/ts_embed:
+  - /Users/jthor/projects/phantom/jthorvaldur/ts_embed
+  - /Users/jthor/projects/ts_embed
+  https://github.com/jthorvaldur/vector-lab:
+  - /Users/jthor/projects/phantom/jthorvaldur/vector-lab
+  - /Users/jthor/projects/phantom/vector-lab
+  https://github.com/jthorvaldur/vsconfig:
+  - /Users/jthor/projects/phantom/jthorvaldur/vsconfig
+  - /Users/jthor/projects/vsconfig
+  https://github.com/ruvnet/ruview:
+  - /Users/jthor/projects/research/RuView
+  - /Users/jthor/ruv_repos/github_repos/RuView
+  https://github.com/ruvnet/ruvector:
+  - /Users/jthor/rprojects/ruvector
+  - /Users/jthor/ruv_repos/github_repos/ruvector
+cross_reference:
+  path_corrections:
+  - name: contacts
+    registry_path: 'null'
+    actual_path: /Users/jthor/contacts
+  - name: d72
+    registry_path: 'null'
+    actual_path: /Users/jthor/d72
+  - name: div_legal
+    registry_path: 'null'
+    actual_path: /Users/jthor/div_legal
+  - name: darkgallery
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/darkgallery
+  - name: cyfopt
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/cyfopt
+  - name: legal-tax-ops
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/legal-tax-ops
+  - name: morpheme-page
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/morpheme-page
+  - name: joel-knowledge
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/joel-knowledge
+  - name: cortex
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/cortex
+  - name: alpha_research
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/alpha_research
+  - name: cortex
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/cortex
+  - name: cyfopt
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/cyfopt
+  - name: darkgallery
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/darkgallery
+  - name: joel-knowledge
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/joel-knowledge
+  - name: llm-router
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/llm-router
+  - name: open-multi-agent-fork
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/open-multi-agent-fork
+  - name: puffin
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/puffin
+  - name: vector-lab
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/jthorvaldur/vector-lab
+  - name: llm-router
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/llm-router
+  - name: vector-lab
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/phantom/vector-lab
+  - name: alpha_research
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/research/agent_dev_test/alpha_research
+  - name: ts_embed
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/ts_embed
+  - name: d72
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/websites/d72
+  - name: bulldogs
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/websites/bulldogs
+  - name: morpheme-page
+    registry_path: 'null'
+    actual_path: /Users/jthor/projects/websites/morpheme-page
+  not_registered:
+  - name: cmeordergw
+    path: /Users/jthor/projects/cmeordergw
+    lifecycle: stale
+    risk: medium
+  - name: cv_jthor
+    path: /Users/jthor/projects/cv_jthor
+    lifecycle: orphan
+    risk: medium
+  - name: development-environment
+    path: /Users/jthor/projects/development-environment
+    lifecycle: work-org
+    risk: medium
+  - name: delta72
+    path: /Users/jthor/projects/delta72
+    lifecycle: orphan
+    risk: medium
+  - name: edelta
+    path: /Users/jthor/projects/edelta
+    lifecycle: stale
+    risk: medium
+  - name: fi_futures
+    path: /Users/jthor/projects/fi_futures
+    lifecycle: orphan
+    risk: medium
+  - name: environx
+    path: /Users/jthor/projects/environx
+    lifecycle: stale
+    risk: medium
+  - name: environ
+    path: /Users/jthor/projects/environ
+    lifecycle: stale
+    risk: medium
+  - name: genutil
+    path: /Users/jthor/projects/genutil
+    lifecycle: work-org
+    risk: medium
+  - name: imclean
+    path: /Users/jthor/projects/imclean
+    lifecycle: stale
+    risk: medium
+  - name: imdb
+    path: /Users/jthor/projects/imdb
+    lifecycle: stale
+    risk: medium
+  - name: legal
+    path: /Users/jthor/legal
+    lifecycle: orphan
+    risk: critical
+  - name: nova
+    path: /Users/jthor/projects/nova
+    lifecycle: work-org
+    risk: medium
+  - name: ns-setup
+    path: /Users/jthor/projects/ns-setup
+    lifecycle: stale
+    risk: medium
+  - name: Scroll-Protocol-Invocation
+    path: /Users/jthor/projects/old_glis/Scroll-Protocol-Invocation
+    lifecycle: backup
+    risk: medium
+  - name: organize
+    path: /Users/jthor/projects/organize
+    lifecycle: orphan
+    risk: medium
+  - name: svstrat
+    path: /Users/jthor/projects/old_sv/svstrat
+    lifecycle: backup
+    risk: low
+  - name: svpy
+    path: /Users/jthor/projects/old_sv/svpy
+    lifecycle: backup
+    risk: low
+  - name: cmeordergw
+    path: /Users/jthor/projects/phantom/jthorvaldur/cmeordergw
+    lifecycle: stale
+    risk: low
+  - name: edelta
+    path: /Users/jthor/projects/phantom/jthorvaldur/edelta
+    lifecycle: stale
+    risk: low
+  - name: imclean
+    path: /Users/jthor/projects/phantom/jthorvaldur/imclean
+    lifecycle: stale
+    risk: low
+  - name: imdb
+    path: /Users/jthor/projects/phantom/jthorvaldur/imdb
+    lifecycle: stale
+    risk: low
+  - name: environx
+    path: /Users/jthor/projects/phantom/jthorvaldur/environx
+    lifecycle: stale
+    risk: low
+  - name: environ
+    path: /Users/jthor/projects/phantom/jthorvaldur/environ
+    lifecycle: stale
+    risk: low
+  - name: jthorvaldurhub.io
+    path: /Users/jthor/projects/phantom/jthorvaldur/jthorvaldurhub.io
+    lifecycle: duplicate
+    risk: low
+  - name: ns-setup
+    path: /Users/jthor/projects/phantom/jthorvaldur/ns-setup
+    lifecycle: stale
+    risk: low
+  - name: pylearn
+    path: /Users/jthor/projects/phantom/jthorvaldur/pylearn
+    lifecycle: stale
+    risk: low
+  - name: svconfig
+    path: /Users/jthor/projects/phantom/jthorvaldur/svconfig
+    lifecycle: stale
+    risk: low
+  - name: svprod
+    path: /Users/jthor/projects/phantom/jthorvaldur/svprod
+    lifecycle: stale
+    risk: low
+  - name: svprod-config
+    path: /Users/jthor/projects/phantom/jthorvaldur/svprod-config
+    lifecycle: stale
+    risk: low
+  - name: svjavafix
+    path: /Users/jthor/projects/phantom/jthorvaldur/svjavafix
+    lifecycle: stale
+    risk: medium
+  - name: svgo
+    path: /Users/jthor/projects/phantom/jthorvaldur/svgo
+    lifecycle: stale
+    risk: low
+  - name: svpyfix
+    path: /Users/jthor/projects/phantom/jthorvaldur/svpyfix
+    lifecycle: stale
+    risk: low
+  - name: svpy
+    path: /Users/jthor/projects/phantom/jthorvaldur/svpy
+    lifecycle: stale
+    risk: low
+  - name: svjs
+    path: /Users/jthor/projects/phantom/jthorvaldur/svjs
+    lifecycle: stale
+    risk: medium
+  - name: svtex
+    path: /Users/jthor/projects/phantom/jthorvaldur/svtex
+    lifecycle: stale
+    risk: low
+  - name: svvaluation
+    path: /Users/jthor/projects/phantom/jthorvaldur/svvaluation
+    lifecycle: stale
+    risk: low
+  - name: svstrat
+    path: /Users/jthor/projects/phantom/jthorvaldur/svstrat
+    lifecycle: stale
+    risk: low
+  - name: tsprojection
+    path: /Users/jthor/projects/phantom/jthorvaldur/tsprojection
+    lifecycle: stale
+    risk: low
+  - name: vsconfig
+    path: /Users/jthor/projects/phantom/jthorvaldur/vsconfig
+    lifecycle: stale
+    risk: low
+  - name: pylearn
+    path: /Users/jthor/projects/pylearn
+    lifecycle: stale
+    risk: low
+  - name: sv_bin
+    path: /Users/jthor/projects/sv_bin
+    lifecycle: work-org
+    risk: medium
+  - name: svdocs
+    path: /Users/jthor/projects/svdocs
+    lifecycle: duplicate
+    risk: medium
+  - name: ganetic
+    path: /Users/jthor/projects/research/ganetic
+    lifecycle: orphan
+    risk: medium
+  - name: svconfig
+    path: /Users/jthor/projects/svconfig
+    lifecycle: work-org
+    risk: medium
+  - name: svpnl
+    path: /Users/jthor/projects/svpnl
+    lifecycle: work-org
+    risk: low
+  - name: svprod
+    path: /Users/jthor/projects/svprod
+    lifecycle: duplicate
+    risk: medium
+  - name: svjavafix
+    path: /Users/jthor/projects/svjavafix
+    lifecycle: duplicate
+    risk: medium
+  - name: svprod-config
+    path: /Users/jthor/projects/svprod-config
+    lifecycle: duplicate
+    risk: low
+  - name: svgo
+    path: /Users/jthor/projects/svgo
+    lifecycle: duplicate
+    risk: low
+  - name: svpyfix
+    path: /Users/jthor/projects/svpyfix
+    lifecycle: work-org
+    risk: low
+  - name: svjs
+    path: /Users/jthor/projects/svjs
+    lifecycle: duplicate
+    risk: medium
+  - name: svrisk
+    path: /Users/jthor/projects/svrisk
+    lifecycle: work-org
+    risk: medium
+  - name: svtex
+    path: /Users/jthor/projects/svtex
+    lifecycle: duplicate
+    risk: medium
+  - name: svpy
+    path: /Users/jthor/projects/svpy
+    lifecycle: work-org
+    risk: low
+  - name: svvaluation
+    path: /Users/jthor/projects/svvaluation
+    lifecycle: duplicate
+    risk: medium
+  - name: svstrat
+    path: /Users/jthor/projects/svstrat
+    lifecycle: work-org
+    risk: medium
+  - name: svweb
+    path: /Users/jthor/projects/svweb
+    lifecycle: work-org
+    risk: medium
+  - name: tsprojection
+    path: /Users/jthor/projects/tsprojection
+    lifecycle: work-org
+    risk: medium
+  - name: vsconfig
+    path: /Users/jthor/projects/vsconfig
+    lifecycle: stale
+    risk: medium
+  - name: twoform
+    path: /Users/jthor/projects/twoform
+    lifecycle: orphan
+    risk: medium
+  registered_not_found: []

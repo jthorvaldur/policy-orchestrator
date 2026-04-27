@@ -84,5 +84,61 @@ def list_repos(category):
     print(f"\nTotal: {len(repos)} repos")
 
 
+@main.command("discover")
+@click.option("--lifecycle", default=None, help="Filter by lifecycle (active, work-org, reference, duplicate, backup, orphan, empty, dependency, stale)")
+@click.option("--risk", default=None, help="Filter by minimum risk (critical, high, medium, low)")
+@click.option("--duplicates-only", is_flag=True, help="Show only duplicate groups")
+@click.option("--unregistered-only", is_flag=True, help="Show only repos not in registry")
+@click.option("--save", is_flag=True, help="Write results to registries/inventory.yaml")
+@click.option("--format", "fmt", type=click.Choice(["table", "json", "yaml"]), default="table")
+def discover(lifecycle, risk, duplicates_only, unregistered_only, save, fmt):
+    """Discover and classify all git repos on the filesystem."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from repo_discover import run_discovery
+    run_discovery(
+        lifecycle_filter=lifecycle,
+        risk_filter=risk,
+        duplicates_only=duplicates_only,
+        unregistered_only=unregistered_only,
+        save=save,
+        output_format=fmt,
+    )
+
+
+@main.command("inventory")
+@click.option("--lifecycle", default=None, help="Filter by lifecycle category")
+@click.option("--risk", default=None, help="Filter by minimum risk level")
+def inventory(lifecycle, risk):
+    """Query the saved inventory from last discovery run."""
+    import yaml as _yaml
+
+    inv_path = Path(__file__).parent.parent.parent / "registries" / "inventory.yaml"
+    if not inv_path.exists():
+        print("No inventory found. Run 'devctl discover --save' first.")
+        return
+
+    with open(inv_path) as f:
+        data = _yaml.safe_load(f)
+
+    repos = data.get("repos", [])
+    if lifecycle:
+        repos = [r for r in repos if r["lifecycle"] == lifecycle]
+    if risk:
+        risk_order = {"critical": 0, "high": 1, "medium": 2, "low": 3, "none": 4}
+        max_level = risk_order.get(risk, 4)
+        repos = [r for r in repos if risk_order.get(r.get("risk", {}).get("level", "none"), 4) <= max_level]
+
+    print(f"{'Name':<30} {'Location':<14} {'Lifecycle':<12} {'Risk':<10} {'Registered'}")
+    print("-" * 80)
+    for r in repos:
+        risk_level = r.get("risk", {}).get("level", "")
+        if risk_level == "none":
+            risk_level = ""
+        reg = "yes" if r.get("registered") else ""
+        print(f"{r['name']:<30} {r['location_group']:<14} {r['lifecycle']:<12} {risk_level:<10} {reg}")
+
+    print(f"\nShowing {len(repos)} repos (from {data.get('generated', 'unknown')})")
+
+
 if __name__ == "__main__":
     main()
