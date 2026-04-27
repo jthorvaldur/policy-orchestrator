@@ -75,11 +75,11 @@ repos:
     status: active
 
   - name: alpha_research
-    path: null
+    path: ~/GitHub/alpha_research
     github: git@github.com:jthorvaldur/alpha_research.git
     category: quant-finance
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: base_llm
@@ -87,11 +87,11 @@ repos:
     status: active
 
   - name: ts_embed
-    path: null
+    path: ~/GitHub/ts_embed
     github: git@github.com:jthorvaldur/ts_embed.git
     category: quant-finance
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: base_llm
@@ -100,11 +100,11 @@ repos:
 
   # --- AI / Agents ---
   - name: cortex
-    path: null
+    path: ~/GitHub/cortex
     github: git@github.com:jthorvaldur/cortex.git
     category: ai-agents
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: base_llm
@@ -112,11 +112,11 @@ repos:
     status: active
 
   - name: puffin
-    path: null
+    path: ~/GitHub/puffin
     github: https://github.com/jthorvaldur/puffin
     category: ai-agents
     priority: active
-    language: unknown
+    language: python
     visibility: public
     vector_namespace: null
     secret_profile: base_llm
@@ -124,11 +124,11 @@ repos:
     status: active
 
   - name: open-multi-agent-fork
-    path: null
+    path: ~/GitHub/open-multi-agent-fork
     github: https://github.com/jthorvaldur/open-multi-agent-fork
     category: ai-agents
     priority: active
-    language: unknown
+    language: python
     visibility: public
     vector_namespace: null
     secret_profile: base_llm
@@ -136,11 +136,11 @@ repos:
     status: active
 
   - name: vector-lab
-    path: null
+    path: ~/GitHub/vector-lab
     github: git@github.com:jthorvaldur/vector-lab.git
     category: ai-agents
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: repo_docs
     secret_profile: local_vector
@@ -148,11 +148,11 @@ repos:
     status: active
 
   - name: joel-knowledge
-    path: null
+    path: ~/GitHub/joel-knowledge
     github: git@github.com:jthorvaldur/joel-knowledge.git
     category: ai-agents
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: null
@@ -160,11 +160,11 @@ repos:
     status: active
 
   - name: llm-router
-    path: null
+    path: ~/GitHub/llm-router
     github: git@github.com:jthorvaldur/llm-router.git
     category: ai-agents
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: base_llm
@@ -235,11 +235,11 @@ repos:
     status: active
 
   - name: cyfopt
-    path: null
+    path: ~/GitHub/cyfopt
     github: git@github.com:jthorvaldur/cyfopt.git
     category: quant-finance
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: null
@@ -247,11 +247,11 @@ repos:
     status: active
 
   - name: darkgallery
-    path: null
+    path: ~/GitHub/darkgallery
     github: git@github.com:jthorvaldur/darkgallery.git
     category: creative-math
     priority: active
-    language: unknown
+    language: python
     visibility: private
     vector_namespace: null
     secret_profile: null
