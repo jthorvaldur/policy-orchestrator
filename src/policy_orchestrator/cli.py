@@ -140,5 +140,39 @@ def inventory(lifecycle, risk):
     print(f"\nShowing {len(repos)} repos (from {data.get('generated', 'unknown')})")
 
 
+@main.command("ingest-sessions")
+@click.option("--repo", default=None, help="Only ingest sessions from this repo")
+@click.option("--all", "ingest_all", is_flag=True, help="Re-ingest all sessions (ignore state)")
+@click.option("--dry-run", is_flag=True, help="Count what would be ingested without doing it")
+def ingest_sessions_cmd(repo, ingest_all, dry_run):
+    """Ingest Claude Code sessions into Qdrant for semantic search."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from ingest_sessions import ingest_sessions
+    ingest_sessions(
+        repo_filter=repo,
+        incremental=not ingest_all,
+        dry_run=dry_run,
+    )
+
+
+@main.command("search-sessions")
+@click.argument("query")
+@click.option("--repo", default=None, help="Filter to a specific repo")
+@click.option("--role", default=None, type=click.Choice(["user", "assistant"]), help="Filter by role")
+@click.option("--limit", default=10, help="Number of results")
+@click.option("--full", is_flag=True, help="Show full chunk text")
+def search_sessions_cmd(query, repo, role, limit, full):
+    """Semantic search across Claude Code sessions."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from search_sessions import search_sessions
+    search_sessions(
+        query=query,
+        repo_filter=repo,
+        role_filter=role,
+        limit=limit,
+        show_full=full,
+    )
+
+
 if __name__ == "__main__":
     main()
