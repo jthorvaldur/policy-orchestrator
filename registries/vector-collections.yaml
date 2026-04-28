@@ -26,6 +26,42 @@ collections:
     allowed_writers:
       - policy-orchestrator
 
+  claude_code_sessions:
+    description: Embedded Claude Code conversation sessions for cross-repo semantic search
+    sensitivity: medium
+    embedding_model: nomic-embed-text
+    dimension: 768
+    chunker: paragraph_v1
+    owner_repo: policy-orchestrator
+    allowed_readers:
+      - all
+    allowed_writers:
+      - policy-orchestrator
+
+  feedback_events:
+    description: User-AI interaction calibration — tone corrections, confirmed approaches, mode observations
+    sensitivity: high
+    embedding_model: nomic-embed-text
+    dimension: 768
+    chunker: event_v1
+    owner_repo: policy-orchestrator
+    allowed_readers:
+      - all
+    allowed_writers:
+      - policy-orchestrator
+
+  fact_registry:
+    description: Classified facts with source provenance and confidence levels
+    sensitivity: high
+    embedding_model: nomic-embed-text
+    dimension: 768
+    chunker: event_v1
+    owner_repo: policy-orchestrator
+    allowed_readers:
+      - all
+    allowed_writers:
+      - policy-orchestrator
+
   quant_research:
     description: Quantitative finance research and analysis
     sensitivity: high

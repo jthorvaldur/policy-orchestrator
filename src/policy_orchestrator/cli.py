@@ -60,6 +60,24 @@ def policy_lint(repo):
     subprocess.run(args)
 
 
+@main.command("sync")
+@click.option("--files", default=None, help="Comma-separated template files to sync")
+@click.option("--repo", default=None, help="Sync to specific repo only")
+@click.option("--force", is_flag=True, help="Overwrite existing files")
+@click.option("--dry-run", is_flag=True, help="Show what would be synced")
+@click.option("--all-templates", is_flag=True, help="Sync INTENT.md, .env.example, .gitignore")
+def sync_cmd(files, repo, force, dry_run, all_templates):
+    """Sync control plane templates to managed repos."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from repo_sync import sync_all
+    file_list = None
+    if files:
+        file_list = [f.strip() for f in files.split(",")]
+    elif all_templates:
+        file_list = ["INTENT.md", ".env.example", ".gitignore"]
+    sync_all(files=file_list, repo_filter=repo, force=force, dry_run=dry_run)
+
+
 @main.command("list")
 @click.option("--category", default=None, help="Filter by category")
 def list_repos(category):
@@ -172,6 +190,83 @@ def search_sessions_cmd(query, repo, role, limit, full):
         limit=limit,
         show_full=full,
     )
+
+
+@main.command("log-feedback")
+@click.option("--type", "event_type", required=True,
+              type=click.Choice(["correction", "confirmation", "mode_shift", "observation"]))
+@click.option("--signal", required=True, help="What the user said/did")
+@click.option("--action", default="", help="What the agent did")
+@click.option("--delta", default="", help="What was wrong / what changed")
+@click.option("--rule", default="", help="The learned calibration rule")
+@click.option("--repo", default="", help="Which repo this applies to")
+@click.option("--scope", default="all_sessions", type=click.Choice(["all_sessions", "repo_specific"]))
+def log_feedback_cmd(event_type, signal, action, delta, rule, repo, scope):
+    """Log a calibration event to the feedback_events collection."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from log_feedback import log_feedback
+    log_feedback(event_type=event_type, user_signal=signal, agent_action=action,
+                 delta=delta, learned_rule=rule, repo=repo, scope=scope)
+
+
+@main.command("query-feedback")
+@click.argument("query", required=False, default=None)
+@click.option("--repo", default=None, help="Filter to repo")
+@click.option("--type", "event_type", default=None,
+              type=click.Choice(["correction", "confirmation", "mode_shift", "observation"]))
+@click.option("--limit", default=5)
+def query_feedback_cmd(query, repo, event_type, limit):
+    """Query feedback events for calibration notes."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from log_feedback import query_feedback
+    query_feedback(query=query, repo=repo, event_type=event_type, limit=limit)
+
+
+@main.command("log-fact")
+@click.option("--fact", required=True, help="The factual claim")
+@click.option("--source-type", required=True,
+              type=click.Choice(["financial_download", "court_document", "tax_document", "email",
+                                 "text_message", "conversation", "medical_record", "legal_filing",
+                                 "calculation", "public_record", "photograph", "other"]))
+@click.option("--confidence", required=True,
+              type=click.Choice(["verified", "documented", "asserted", "disputed", "inferred", "unknown"]))
+@click.option("--domain", required=True,
+              type=click.Choice(["financial", "legal", "medical", "personal", "technical", "property", "employment"]))
+@click.option("--source-ref", default="", help="File path or document reference")
+@click.option("--source-date", default="", help="Date the fact pertains to (YYYY-MM-DD)")
+@click.option("--claimed-by", default="", help="Who made this claim")
+@click.option("--contradicts", default="", help="What this contradicts")
+@click.option("--repo", default="", help="Originating repo")
+@click.option("--notes", default="", help="Additional context")
+def log_fact_cmd(fact, source_type, confidence, domain, source_ref, source_date,
+                 claimed_by, contradicts, repo, notes):
+    """Log a classified fact with provenance and confidence level."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from log_fact import log_fact
+    log_fact(fact=fact, source_type=source_type, confidence=confidence, domain=domain,
+             source_ref=source_ref, source_date=source_date, claimed_by=claimed_by,
+             contradicts=contradicts, repo=repo, notes=notes)
+
+
+@main.command("query-facts")
+@click.argument("query", required=False, default=None)
+@click.option("--domain", default=None,
+              type=click.Choice(["financial", "legal", "medical", "personal", "technical", "property", "employment"]))
+@click.option("--confidence", default=None,
+              type=click.Choice(["verified", "documented", "asserted", "disputed", "inferred", "unknown"]))
+@click.option("--min-confidence", default=None,
+              type=click.Choice(["verified", "documented", "asserted", "disputed", "inferred"]),
+              help="Show facts at this confidence or higher")
+@click.option("--source-type", default=None)
+@click.option("--repo", default=None)
+@click.option("--limit", default=10)
+@click.option("--all", "show_all", is_flag=True, help="Show all fields including notes")
+def query_facts_cmd(query, domain, confidence, min_confidence, source_type, repo, limit, show_all):
+    """Query the fact registry with optional confidence filtering."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from log_fact import query_facts
+    query_facts(query=query, domain=domain, confidence=confidence, min_confidence=min_confidence,
+                source_type=source_type, repo=repo, limit=limit, show_all=show_all)
 
 
 if __name__ == "__main__":
