@@ -78,6 +78,14 @@ def sync_cmd(files, repo, force, dry_run, all_templates):
     sync_all(files=file_list, repo_filter=repo, force=force, dry_run=dry_run)
 
 
+@main.command("dashboard")
+def dashboard():
+    """Generate HTML dashboard and deploy to GitHub Pages."""
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from generate_dashboard import main as gen
+    gen()
+
+
 @main.command("list")
 @click.option("--category", default=None, help="Filter by category")
 def list_repos(category):

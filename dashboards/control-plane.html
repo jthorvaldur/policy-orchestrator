@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Plane Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07070f;
+      --surface: rgba(255,255,255,0.035);
+      --surface-hover: rgba(122,162,247,0.07);
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(122,162,247,0.30);
+      --text: #e8e8f4;
+      --muted: rgba(232,232,244,0.45);
+      --dim: rgba(232,232,244,0.25);
+      --accent: #7aa2f7;
+      --accent2: #bb9af7;
+      --green: #9ece6a;
+      --amber: #e0af68;
+      --red: #f7768e;
+      --teal: #73daca;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 2.5rem; padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .header h1 {
+      font-size: 1.6rem; font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+    .header h1 strong {
+      font-weight: 600;
+      background: linear-gradient(140deg, #fff 20%, var(--accent) 60%, var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header .timestamp {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--dim);
+    }
+
+    .stats-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem; margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.2rem 1.4rem;
+    }
+    .stat-card .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .stat-card .value {
+      font-size: 1.8rem; font-weight: 600; color: var(--accent);
+    }
+    .stat-card .sub {
+      font-size: 0.75rem; color: var(--dim); margin-top: 0.2rem;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .section-label::after {
+      content: ''; display: block; flex: 1;
+      height: 1px; background: var(--border);
+    }
+
+    .cat-pills {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .cat-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.05em;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 0.3rem 0.8rem;
+      color: var(--muted);
+    }
+    .cat-pill strong { color: var(--accent); margin-left: 0.3rem; }
+
+    .repo-grid {
+      display: grid; grid-template-columns: 1fr;
+      gap: 0.4rem; margin-bottom: 3rem;
+    }
+    .repo-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.8rem 1.2rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+      transition: border-color 0.2s;
+    }
+    .repo-card:hover { border-color: var(--border-hover); }
+    .repo-header {
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .status-dot.amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+    .status-dot.red { background: var(--red); }
+    .repo-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; font-weight: 500; color: var(--text);
+    }
+    .repo-vis {
+      font-size: 0.6rem; color: var(--dim);
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+    .repo-meta {
+      display: flex; gap: 1.2rem;
+      font-size: 0.7rem; color: var(--muted);
+    }
+
+    .qdrant-section { margin-bottom: 3rem; }
+    .qdrant-row {
+      display: grid; grid-template-columns: 200px 1fr 80px;
+      align-items: center; gap: 1rem;
+      padding: 0.4rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+    }
+    .col-name { color: var(--muted); }
+    .col-count { color: var(--accent); text-align: right; }
+    .bar-container {
+      height: 6px; background: var(--surface);
+      border-radius: 3px; overflow: hidden;
+    }
+    .bar {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .footer {
+      text-align: center; padding: 2rem 0;
+      font-size: 0.7rem; color: var(--dim);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><strong>Control Plane</strong> Dashboard</h1>
+    <span class="timestamp">Generated 2026-04-28 16:25</span>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Managed Repos</div>
+      <div class="value">21</div>
+      <div class="sub">6 categories</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Vector Points</div>
+      <div class="value">183,723</div>
+      <div class="sub">10 collections</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Clean Trees</div>
+      <div class="value">2/21</div>
+      <div class="sub">repos with no uncommitted changes</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Contract Coverage</div>
+      <div class="value">100%</div>
+      <div class="sub">CLAUDE + INTENT + .control + .env.ex + .gitignore</div>
+    </div>
+  </div>
+
+  <div class="section-label">Repositories</div>
+  <div class="cat-pills">
+    <span class="cat-pill">ai-agents <strong>6</strong></span><span class="cat-pill">creative-math <strong>2</strong></span><span class="cat-pill">infrastructure <strong>3</strong></span><span class="cat-pill">legal <strong>4</strong></span><span class="cat-pill">quant-finance <strong>4</strong></span><span class="cat-pill">web-portfolio <strong>2</strong></span>
+  </div>
+  <div class="repo-grid">
+    
+        <div class="repo-card" data-category="infrastructure">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">policy-orchestrator</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>infrastructure</span>
+            <span>python</span>
+            <span>main</span>
+            <span>14 minutes ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="legal">
+          <div class="repo-header">
+            <span class="status-dot green"></span>
+            <span class="repo-name">words_quantum_legal</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>legal</span>
+            <span>python</span>
+            <span>main</span>
+            <span>34 hours ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="legal">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">div_legal</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>legal</span>
+            <span>python</span>
+            <span>main</span>
+            <span>2 days ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="legal">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">legal-tax-ops</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>legal</span>
+            <span>python</span>
+            <span>main</span>
+            <span>9 days ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="legal">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">morpheme-page</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>legal</span>
+            <span>javascript</span>
+            <span>master</span>
+            <span>2 days ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="quant-finance">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">vpin</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>quant-finance</span>
+            <span>python</span>
+            <span>master</span>
+            <span>34 hours ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="quant-finance">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">alpha_research</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>quant-finance</span>
+            <span>python</span>
+            <span>master</span>
+            <span>3 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="quant-finance">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">ts_embed</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>quant-finance</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="ai-agents">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">cortex</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>ai-agents</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="ai-agents">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">puffin</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>ai-agents</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="ai-agents">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">open-multi-agent-fork</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>ai-agents</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="ai-agents">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">vector-lab</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>ai-agents</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="ai-agents">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">joel-knowledge</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>ai-agents</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="ai-agents">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">llm-router</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>ai-agents</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="creative-math">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">Escher</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>creative-math</span>
+            <span>python</span>
+            <span>master</span>
+            <span>34 hours ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="web-portfolio">
+          <div class="repo-header">
+            <span class="status-dot green"></span>
+            <span class="repo-name">jthorvaldur.github.io</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>web-portfolio</span>
+            <span>html/javascript</span>
+            <span>main</span>
+            <span>32 hours ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="infrastructure">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">contacts</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>infrastructure</span>
+            <span>python</span>
+            <span>main</span>
+            <span>2 days ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="infrastructure">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">d72</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>infrastructure</span>
+            <span>python</span>
+            <span>master</span>
+            <span>2 days ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="web-portfolio">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">bulldogs</span>
+            <span class="repo-vis">public</span>
+          </div>
+          <div class="repo-meta">
+            <span>web-portfolio</span>
+            <span>html/javascript</span>
+            <span>main</span>
+            <span>7 days ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="quant-finance">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">cyfopt</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>quant-finance</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+        <div class="repo-card" data-category="creative-math">
+          <div class="repo-header">
+            <span class="status-dot amber"></span>
+            <span class="repo-name">darkgallery</span>
+            <span class="repo-vis">private</span>
+          </div>
+          <div class="repo-meta">
+            <span>creative-math</span>
+            <span>python</span>
+            <span>main</span>
+            <span>4 weeks ago</span>
+          </div>
+        </div>
+  </div>
+
+  <div class="section-label">Vector Collections (Qdrant)</div>
+  <div class="qdrant-section">
+    
+          <div class="qdrant-row">
+            <span class="col-name">legal_docs</span>
+            <div class="bar-container"><div class="bar" style="width:100%"></div></div>
+            <span class="col-count">120,475</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">whatsapp_chats</span>
+            <div class="bar-container"><div class="bar" style="width:34%"></div></div>
+            <span class="col-count">40,817</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">claude_code_sessions</span>
+            <div class="bar-container"><div class="bar" style="width:15%"></div></div>
+            <span class="col-count">17,883</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">contacts</span>
+            <div class="bar-container"><div class="bar" style="width:3%"></div></div>
+            <span class="col-count">3,388</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">claude_chats_ai</span>
+            <div class="bar-container"><div class="bar" style="width:0%"></div></div>
+            <span class="col-count">410</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">concepts</span>
+            <div class="bar-container"><div class="bar" style="width:0%"></div></div>
+            <span class="col-count">390</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">directives</span>
+            <div class="bar-container"><div class="bar" style="width:0%"></div></div>
+            <span class="col-count">270</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">patents</span>
+            <div class="bar-container"><div class="bar" style="width:0%"></div></div>
+            <span class="col-count">85</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">fact_registry</span>
+            <div class="bar-container"><div class="bar" style="width:0%"></div></div>
+            <span class="col-count">3</span>
+          </div>
+          <div class="qdrant-row">
+            <span class="col-name">feedback_events</span>
+            <div class="bar-container"><div class="bar" style="width:0%"></div></div>
+            <span class="col-count">2</span>
+          </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/jthorvaldur/policy-orchestrator">policy-orchestrator</a>
+    &nbsp;&middot;&nbsp; Generated by <code>devctl dashboard</code>
+    &nbsp;&middot;&nbsp; <a href="https://jthorvaldur.github.io">jthorvaldur.github.io</a>
+  </div>
+</body>
+</html>
