@@ -200,6 +200,22 @@ def search_sessions_cmd(query, repo, role, limit, full):
     )
 
 
+@main.command("validate-secrets")
+@click.option("--repo", default=None, help="Validate a specific repo")
+@click.option("--live", is_flag=True, help="Ping endpoints to verify keys work")
+@click.option("--keys-only", is_flag=True, help="Just show key inventory")
+def validate_secrets_cmd(repo, live, keys_only):
+    """Validate that repos have the API keys their profiles require."""
+    args = [sys.executable, str(SCRIPTS_DIR / "validate_secrets.py")]
+    if repo:
+        args.append(f"--repo={repo}")
+    if live:
+        args.append("--live")
+    if keys_only:
+        args.append("--keys-only")
+    subprocess.run(args)
+
+
 @main.command("log-feedback")
 @click.option("--type", "event_type", required=True,
               type=click.Choice(["correction", "confirmation", "mode_shift", "observation"]))

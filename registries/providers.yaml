@@ -1,5 +1,6 @@
 providers:
   anthropic:
+    endpoint: https://api.anthropic.com/v1/messages
     models:
       - claude-opus-4-6
       - claude-sonnet-4-6
@@ -11,6 +12,7 @@ providers:
     env_key: ANTHROPIC_API_KEY
 
   openai:
+    endpoint: https://api.openai.com/v1/chat/completions
     models:
       - gpt-4.1
       - o3
@@ -20,7 +22,21 @@ providers:
       - code generation
     env_key: OPENAI_API_KEY
 
+  openrouter:
+    endpoint: https://openrouter.ai/api/v1/chat/completions
+    models:
+      - meta-llama/llama-3.2-3b-instruct    # low-cost classification
+      - mistralai/mistral-7b-instruct        # mid-tier extraction
+      - anthropic/claude-sonnet-4-6          # high-tier via openrouter
+      - google/gemini-2.5-flash              # cheap large-context
+    use_for:
+      - cheap classification and extraction
+      - model variety without per-provider keys
+      - fallback when direct provider keys unavailable
+    env_key: OPENROUTER_API_KEY
+
   google:
+    endpoint: https://generativelanguage.googleapis.com/v1beta
     models:
       - gemini-2.5-pro
       - gemini-2.5-flash
@@ -30,14 +46,53 @@ providers:
       - large context analysis
     env_key: GOOGLE_API_KEY
 
+  vast:
+    endpoint: ${VAST_ENDPOINT}  # dynamic per-instance, e.g. http://203.0.113.5:8000/v1
+    protocol: openai-compatible  # vLLM / text-generation-inference
+    models: []  # user-deployed — depends on what you load on the instance
+    use_for:
+      - batch embedding offload (nomic-embed-text, bge-large)
+      - large-scale document processing
+      - GPU-accelerated inference when local M4 is too slow
+    env_key: VAST_API_KEY
+    endpoint_env: VAST_ENDPOINT
+    notes: |
+      Vast.ai provides on-demand GPU instances. Deploy vLLM or TGI,
+      set VAST_ENDPOINT to the instance URL. OpenAI-compatible API.
+      Get API key from https://cloud.vast.ai/api/
+
   local_ollama:
+    endpoint: ${OLLAMA_BASE_URL:-http://localhost:11434}/api/generate
     models:
-      - llama3
-      - mistral
-      - codellama
+      - llama3.1:8b
+      - nomic-embed-text
+      - gemma4:12b
+      - qwen3.5
     use_for:
       - sensitive data processing
       - legal document analysis (private)
       - offline development
+      - embedding (nomic-embed-text)
     env_key: OLLAMA_BASE_URL
     preference: preferred for legal and private repos
+
+# Task-to-complexity mapping used by llm_router.py
+task_routing:
+  low:
+    tasks: [classify, extract, summarize, tag]
+    prefer: [local_ollama, openrouter]
+    default_model_ollama: "llama3.1:8b"
+    default_model_openrouter: "meta-llama/llama-3.2-3b-instruct"
+  mid:
+    tasks: [analyze, compare, draft]
+    prefer: [anthropic, openrouter]
+    default_model_anthropic: "claude-haiku-4-5"
+    default_model_openrouter: "mistralai/mistral-7b-instruct"
+  high:
+    tasks: [reason, plan, code, legal_analysis, contradict]
+    prefer: [anthropic]
+    default_model_anthropic: "claude-sonnet-4-6"
+  embed:
+    tasks: [embed]
+    prefer: [local_ollama, vast]
+    default_model_ollama: "nomic-embed-text"
