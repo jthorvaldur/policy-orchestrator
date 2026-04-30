@@ -1,0 +1,43 @@
+# === policy-orchestrator template: gitignore-data-heavy ===
+# For repos that process documents, embeddings, or large datasets.
+# Synced from policy-orchestrator/templates/
+
+# Secrets & environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv/
+
+# Embedding outputs — too large for git (100MB-3GB+)
+*.jsonl
+embeddings*/
+
+# Raw data — never commit source files
+data/
+sdata/
+qdrant_data/
+
+# Large binary formats
+*.mbox
+*.eml
+*.zip
+*.tar.gz
+*.pst
+*.sqlite
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+temp/
+tmp/

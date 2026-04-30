@@ -1,0 +1,32 @@
+policy: gitignore-data-heavy
+level: ERROR
+scope:
+  - div_legal
+  - caseledger
+  - words_quantum_legal
+  - legal-tax-ops
+  - contacts
+  - alpha_research
+  - vector-lab
+
+rule: |
+  Repos that process documents, embeddings, or large datasets MUST have
+  gitignore rules preventing accidental commit of:
+    - *.jsonl (embedding outputs, 100MB-3GB+)
+    - data/, sdata/, qdrant_data/ (raw and structured data)
+    - *.mbox, *.zip, *.eml (source archives)
+    - .env (secrets)
+
+  Template: templates/gitignore-data-heavy
+
+  Rationale: git add -A (used by gai commit and similar tools) will
+  stage everything not in .gitignore. A single missing rule can commit
+  a 2.8GB embeddings file or expose sensitive legal data.
+
+check: |
+  For each repo in scope, verify .gitignore contains:
+    - *.jsonl
+    - data/
+    - sdata/
+    - .env
+  Flag ERROR if any are missing.
