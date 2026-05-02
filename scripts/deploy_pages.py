@@ -121,8 +121,9 @@ def deploy_section(name, section, encrypt_fn, dry_run=False, verify=False):
         html = src_path.read_text(encoding="utf-8")
 
         if encryption != "none" and password:
-            # Encrypt with the session key baked in
-            encrypted = encrypt_with_session_key(encrypt_fn, html, password, session_key)
+            # Encrypt with the session key and section title baked in
+            title = section.get("title", "Private Page")
+            encrypted = encrypt_with_session_key(encrypt_fn, html, password, session_key, title)
             tgt_path.parent.mkdir(parents=True, exist_ok=True)
             tgt_path.write_text(encrypted, encoding="utf-8")
 
@@ -144,9 +145,9 @@ def deploy_section(name, section, encrypt_fn, dry_run=False, verify=False):
     return deployed
 
 
-def encrypt_with_session_key(encrypt_fn, html, password, session_key):
-    """Encrypt HTML and patch the session key in the output."""
-    encrypted = encrypt_fn(html, password)
+def encrypt_with_session_key(encrypt_fn, html, password, session_key, title="Protected Page"):
+    """Encrypt HTML and patch the session key and title in the output."""
+    encrypted = encrypt_fn(html, password, title=title)
     # Replace the hardcoded session key '_cp' with the section's session key
     if session_key != "_cp":
         encrypted = encrypted.replace(
