@@ -74,6 +74,18 @@ repos:
     status: active
 
   # --- Quant / Finance ---
+  - name: energy_texas
+    path: ~/GitHub/energy_texas
+    github: git@github.com:jthorvaldur/energy_texas.git
+    category: quant-finance
+    priority: active
+    language: python
+    visibility: private
+    vector_namespace: null
+    secret_profile: base_llm
+    update_policy: manual-review
+    status: active
+
   - name: vpin
     path: ~/GitHub/vpin
     github: git@github.com:jthorvaldur/vpin.git
