@@ -154,18 +154,7 @@ sections:
     encryption: aes-256-gcm
     password_env: ENERGY_TEXAS_PAGE_PASSWORD
     session_key: energy_key
-    pages:
-      - index.html
-      - 00_executive_summary.html
-      - 01_iron_air_batteries.html
-      - 02_battery_manufacturing.html
-      - 03_una_structure.html
-      - 04_bond_financing.html
-      - 05_ercot_grid.html
-      - 06_texas_land.html
-      - 07_solar_partnerships.html
-      - 08_data_centers.html
-      - 09_heat_fallback.html
+    # pages: auto-discover — deploys all *.html in reports/
 
 # ═══════════════════════════════════════════════════════════════════════════
 # REPO: div_legal
@@ -292,7 +281,7 @@ pending:
 #     r/case/                     (6 pages)   session_key: filing_key
 #
 #   ENERGY_TEXAS_PAGE_PASSWORD:
-#     r/energy/                   (11 pages)  session_key: energy_key
+#     r/energy/                   (21 pages)  session_key: energy_key
 #
 # ═══════════════════════════════════════════════════════════════════════════
 # Deploy pattern (same for all sections):

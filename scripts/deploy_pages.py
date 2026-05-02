@@ -11,6 +11,7 @@ Usage:
     python scripts/deploy_pages.py --dry-run             # show what would happen
     python scripts/deploy_pages.py --push                # commit + push the hub repo
     python scripts/deploy_pages.py --verify              # verify encrypted pages decrypt ok
+    python scripts/deploy_pages.py --auto                # auto-detect section from cwd
 """
 
 import os
@@ -193,6 +194,23 @@ def verify_decryption(encrypted_path, password):
         return False
 
 
+def detect_section_from_cwd(sections):
+    """Find the section matching the current working directory."""
+    cwd = Path.cwd()
+    repo_name = cwd.name
+
+    # Also check if we're inside a repo (e.g. in a subdirectory)
+    for parent in [cwd] + list(cwd.parents):
+        if (parent / ".git").exists():
+            repo_name = parent.name
+            break
+
+    for name, section in sections.items():
+        if section.get("source_repo") == repo_name:
+            return name
+    return None
+
+
 def main():
     data = load_registry()
     sections = data.get("sections", {})
@@ -204,6 +222,7 @@ def main():
     push = False
     include_pending = False
     verify = False
+    auto = False
     for arg in sys.argv[1:]:
         if arg.startswith("--section="):
             filter_section = arg.split("=", 1)[1]
@@ -215,10 +234,27 @@ def main():
             include_pending = True
         elif arg == "--verify":
             verify = True
+        elif arg == "--auto":
+            auto = True
+
+    # Auto-detect section from cwd
+    if auto and not filter_section:
+        all_for_detect = {**sections, **pending}
+        detected = detect_section_from_cwd(all_for_detect)
+        if detected:
+            filter_section = detected
+            # Auto-include pending if the detected section is in pending
+            if detected in pending:
+                include_pending = True
+            print(f"  Auto-detected: {detected}")
+        else:
+            cwd_name = Path.cwd().name
+            print(f"  No section found for repo '{cwd_name}' in pages.yaml")
+            sys.exit(1)
 
     # Merge pending if requested
     all_sections = dict(sections)
-    if include_pending:
+    if include_pending or auto:
         all_sections.update(pending)
 
     # Load encrypt function

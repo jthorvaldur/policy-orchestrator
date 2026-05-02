@@ -222,7 +222,8 @@ def validate_secrets_cmd(repo, live, keys_only):
 @click.option("--dry-run", is_flag=True, help="Show what would be deployed")
 @click.option("--push", is_flag=True, help="Commit + push the hub repo after deploy")
 @click.option("--verify", is_flag=True, help="Verify encrypted pages decrypt correctly")
-def deploy_pages_cmd(section, pending, dry_run, push, verify):
+@click.option("--auto", is_flag=True, help="Auto-detect section from current directory")
+def deploy_pages_cmd(section, pending, dry_run, push, verify, auto):
     """Deploy encrypted HTML pages to jthorvaldur.github.io."""
     args = [sys.executable, str(SCRIPTS_DIR / "deploy_pages.py")]
     if section:
@@ -235,6 +236,8 @@ def deploy_pages_cmd(section, pending, dry_run, push, verify):
         args.append("--push")
     if verify:
         args.append("--verify")
+    if auto:
+        args.append("--auto")
     subprocess.run(args)
 
 
@@ -242,6 +245,19 @@ def deploy_pages_cmd(section, pending, dry_run, push, verify):
 def audit_pages_cmd():
     """Audit GitHub Pages for encryption and security policy compliance."""
     subprocess.run([sys.executable, str(SCRIPTS_DIR / "audit_pages_security.py")])
+
+
+@main.command("verify-pages")
+@click.option("--section", default=None, help="Verify a specific section")
+@click.option("--quick", is_flag=True, help="One page per section")
+def verify_pages_cmd(section, quick):
+    """Live-verify deployed pages decrypt correctly via HTTPS."""
+    args = [sys.executable, str(SCRIPTS_DIR / "verify_pages_live.py")]
+    if section:
+        args.append(f"--section={section}")
+    if quick:
+        args.append("--quick")
+    subprocess.run(args)
 
 
 @main.command("log-feedback")
