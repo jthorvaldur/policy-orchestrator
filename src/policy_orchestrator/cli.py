@@ -216,6 +216,28 @@ def validate_secrets_cmd(repo, live, keys_only):
     subprocess.run(args)
 
 
+@main.command("deploy-pages")
+@click.option("--section", default=None, help="Deploy a specific section")
+@click.option("--pending", is_flag=True, help="Include pending (not yet deployed) sections")
+@click.option("--dry-run", is_flag=True, help="Show what would be deployed")
+@click.option("--push", is_flag=True, help="Commit + push the hub repo after deploy")
+@click.option("--verify", is_flag=True, help="Verify encrypted pages decrypt correctly")
+def deploy_pages_cmd(section, pending, dry_run, push, verify):
+    """Deploy encrypted HTML pages to jthorvaldur.github.io."""
+    args = [sys.executable, str(SCRIPTS_DIR / "deploy_pages.py")]
+    if section:
+        args.append(f"--section={section}")
+    if pending:
+        args.append("--pending")
+    if dry_run:
+        args.append("--dry-run")
+    if push:
+        args.append("--push")
+    if verify:
+        args.append("--verify")
+    subprocess.run(args)
+
+
 @main.command("log-feedback")
 @click.option("--type", "event_type", required=True,
               type=click.Choice(["correction", "confirmation", "mode_shift", "observation"]))

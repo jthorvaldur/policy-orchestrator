@@ -1,0 +1,273 @@
+# pages.yaml — GitHub Pages deployment registry
+#
+# Maps source repos to their deploy targets on jthorvaldur.github.io.
+# Each entry defines: what generates the pages, where they go, how they're protected.
+#
+# Deploy hub: jthorvaldur.github.io (user Pages repo, auto-publishes on push to main)
+# Encryption: AES-256-GCM client-side, PBKDF2 100K iterations
+# Encrypt tool: contacts/tools/encrypt_page.py (shared, symlink into other repos)
+# Central deploy: devctl deploy-pages (reads this file, encrypts, writes to hub)
+#
+# Passwords in ~/.oh-my-zsh/custom/keys.zsh:
+#   CONTACTS_PAGE_PASSWORD           — contacts, concepts, d72, food-trust, qwl
+#   JTHORVALDUR_LEGAL_PAGE_PASSWORD  — filing, div_legal reports, caseledger exhibits
+#   ENERGY_TEXAS_PAGE_PASSWORD       — energy_texas reports
+
+hub:
+  repo: jthorvaldur.github.io
+  path: ~/GitHub/jthorvaldur.github.io
+  url: https://jthorvaldur.github.io
+  deploy: push to main (auto-publishes)
+  sync_script: scripts/sync_all.sh
+  passwords_file: .passwords  # gitignored
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: contacts
+# Status: DEPLOYED
+# How to update: cd ~/GitHub/contacts && ./scripts/update_all.sh
+#   Or centrally: devctl deploy-pages --section=contacts --push
+# Generates: contact analytics, concept maps, dimensional analysis, food-trust
+# ═══════════════════════════════════════════════════════════════════════════
+
+sections:
+  contacts:
+    source_repo: contacts
+    source_dir: out/
+    target_dir: r/contacts/
+    encryption: aes-256-gcm
+    password_env: CONTACTS_PAGE_PASSWORD
+    session_key: _cp
+    deploy_script: scripts/deploy_pages.py --push
+    encrypt_tool: tools/encrypt_page.py
+    pages:
+      - contacts_index.html -> index.html
+      - contacts_browser.html -> browser.html
+      - dashboard.html -> dashboard.html
+      - coherence_viz.html -> coherence.html
+      - signal_signature.html -> signal.html
+      - behavioral_heatmap.html -> behavioral.html
+      - birthday_calendar.html -> calendar.html
+      - birthdays.html -> radial.html
+      - vdb_summary.html -> vdb.html
+
+  concepts:
+    source_repo: contacts
+    source_dir: out/
+    target_dir: r/concepts/
+    encryption: aes-256-gcm
+    password_env: CONTACTS_PAGE_PASSWORD
+    session_key: _cp
+    deploy_script: scripts/deploy_pages.py --push
+    encrypt_tool: tools/encrypt_page.py
+    pages:
+      - concept_browser.html -> browser.html
+      - concept_network.html -> network.html
+      - system_overview.html -> system.html
+
+  d72:
+    source_repo: contacts
+    source_dir: out/
+    target_dir: r/d72/
+    encryption: aes-256-gcm
+    password_env: CONTACTS_PAGE_PASSWORD
+    session_key: _cp
+    deploy_script: scripts/deploy_pages.py --push
+    encrypt_tool: tools/encrypt_page.py
+    pages:
+      - dimensional_analysis.html -> dimensional-analysis.html
+
+  food-trust:
+    source_repo: contacts
+    source_dir: out/
+    target_dir: r/food-trust/
+    encryption: aes-256-gcm
+    password_env: CONTACTS_PAGE_PASSWORD
+    session_key: _cp
+    deploy_script: scripts/deploy_pages.py --push
+    encrypt_tool: tools/encrypt_page.py
+    pages:
+      - governance_stack.html -> governance_stack.html
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: words_quantum_legal
+# Status: DEPLOYED
+# How to update: cd ~/GitHub/words_quantum_legal && node tools/encrypt_pages.mjs $PASSWORD ~/GitHub/jthorvaldur.github.io/r/qwl/
+#   Or centrally: devctl deploy-pages --section=qwl --push
+# Generates: quantum legal analysis visualizations
+# ═══════════════════════════════════════════════════════════════════════════
+
+  qwl:
+    source_repo: words_quantum_legal
+    source_dir: viz/
+    target_dir: r/qwl/
+    encryption: aes-256-gcm
+    password_env: CONTACTS_PAGE_PASSWORD
+    session_key: qwl_key
+    deploy_script: node tools/encrypt_pages.mjs $PASSWORD ~/GitHub/jthorvaldur.github.io/r/qwl/
+    encrypt_tool: tools/encrypt_pages.mjs
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: jthorvaldur.github.io (self-contained filing section)
+# Status: DEPLOYED
+# How to update: cd ~/GitHub/jthorvaldur.github.io && node r/cook6724-QgixOl/filing/_encrypt.js
+#   Or centrally: devctl deploy-pages --section=filing --push
+# Generates: legal filing documents (encrypted in-place)
+# ═══════════════════════════════════════════════════════════════════════════
+
+  filing:
+    source_repo: jthorvaldur.github.io
+    source_dir: r/cook6724-QgixOl/filing/_originals/
+    target_dir: r/cook6724-QgixOl/filing/
+    encryption: aes-256-gcm
+    password_env: JTHORVALDUR_LEGAL_PAGE_PASSWORD
+    session_key: filing_key
+    deploy_script: node r/cook6724-QgixOl/filing/_encrypt.js
+    encrypt_tool: r/cook6724-QgixOl/filing/_encrypt.js
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: bulldogs
+# Status: DEPLOYED (automatic via GitHub Actions)
+# How to update: push to main — .github/workflows/deploy.yml auto-deploys
+# No encryption. Public project page.
+# ═══════════════════════════════════════════════════════════════════════════
+
+  bulldogs:
+    source_repo: bulldogs
+    source_dir: site/ + viz/ + data/
+    target_dir: /bulldogs/
+    encryption: none
+    deploy_script: .github/workflows/deploy.yml
+    url: https://jthorvaldur.github.io/bulldogs/
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: energy_texas
+# Status: DEPLOYED — 10 research reports (ERCOT, iron-air, UNA, bonds, solar, DC)
+# How to update: devctl deploy-pages --section=energy_texas --push
+# Generates: ERCOT, battery, solar, land analysis
+# Password: ENERGY_TEXAS_PAGE_PASSWORD (separate from legal/contacts)
+# ═══════════════════════════════════════════════════════════════════════════
+
+  energy_texas:
+    source_repo: energy_texas
+    source_dir: reports/
+    target_dir: r/energy/
+    encryption: aes-256-gcm
+    password_env: ENERGY_TEXAS_PAGE_PASSWORD
+    session_key: energy_key
+    pages:
+      - index.html
+      - 00_executive_summary.html
+      - 01_iron_air_batteries.html
+      - 02_battery_manufacturing.html
+      - 03_una_structure.html
+      - 04_bond_financing.html
+      - 05_ercot_grid.html
+      - 06_texas_land.html
+      - 07_solar_partnerships.html
+      - 08_data_centers.html
+      - 09_heat_fallback.html
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: div_legal
+# Status: PENDING — reports exist, deploy not wired up
+# How to update: devctl deploy-pages --section=div_legal_reports --pending --push
+# Generates: legal analysis reports (timeline, disclosure, cycles, etc.)
+# ═══════════════════════════════════════════════════════════════════════════
+
+pending:
+  div_legal_reports:
+    source_repo: div_legal
+    source_dir: reports/
+    target_dir: r/reports/
+    encryption: aes-256-gcm
+    password_env: JTHORVALDUR_LEGAL_PAGE_PASSWORD
+    session_key: filing_key
+    pages_count: 45+
+    notes: >
+      Legal analysis reports (timeline, disclosure, cycles, summary).
+      Some already linked from jthorvaldur.github.io/r/reports/ but
+      not systematically deployed via central script.
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: caseledger
+# Status: PENDING — 5 exhibit pages ready, deploy not wired up
+# How to update: devctl deploy-pages --section=caseledger_exhibits --pending --push
+# Generates: legal case exhibits (timeline, cycles, chain, dashboard, filing graph)
+# ═══════════════════════════════════════════════════════════════════════════
+
+  caseledger_exhibits:
+    source_repo: caseledger
+    source_dir: web/exhibits/
+    target_dir: r/case/
+    encryption: aes-256-gcm
+    password_env: JTHORVALDUR_LEGAL_PAGE_PASSWORD
+    session_key: filing_key
+    pages:
+      - index.html
+      - timeline.html
+      - cycles.html
+      - chain.html
+      - dashboard.html
+      - filing_graph.html
+    # Also has facts_data.json, graph_data.json, stats.json — copied as assets
+    # Inline CSS + Google Fonts CDN, no local stylesheet dependency
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REPO: legal-tax-ops
+# Status: PENDING — 10 dimension reports and dashboards
+# How to update: devctl deploy-pages --section=legal_tax_ops --pending --push
+# Generates: dimensional analysis, roadmaps, dashboards
+# ═══════════════════════════════════════════════════════════════════════════
+
+  legal_tax_ops:
+    source_repo: legal-tax-ops
+    source_dir: reports/
+    target_dir: r/dimensions/
+    encryption: aes-256-gcm
+    password_env: CONTACTS_PAGE_PASSWORD
+    session_key: _cp
+    pages:
+      - allison_3d.html
+      - allison_hensgen_space.html
+      - joel_roadmap.html
+      - joel_thorarinson_dashboard.html
+      - joel_thorarinson_deep_view.html
+      - joel_thorarinson_report.html
+      - joel_thorarinson_roadmap.html
+      - jthorvaldur.github.io_dimensions.html
+      - legal-tax-ops_dimensions.html
+    # example_report.html excluded — template, not content
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Password zones (which password unlocks which sections):
+#
+#   CONTACTS_PAGE_PASSWORD:
+#     r/contacts/    (9 pages)   session_key: _cp
+#     r/concepts/    (3 pages)   session_key: _cp
+#     r/d72/         (1 page)    session_key: _cp
+#     r/food-trust/  (1 page)    session_key: _cp
+#     r/qwl/         (19 pages)  session_key: qwl_key
+#     r/dimensions/  (9 pages)   session_key: _cp
+#
+#   JTHORVALDUR_LEGAL_PAGE_PASSWORD:
+#     r/cook6724-QgixOl/filing/  (7 pages)   session_key: filing_key
+#     r/reports/                  (45+ pages) session_key: filing_key
+#     r/case/                     (6 pages)   session_key: filing_key
+#
+#   ENERGY_TEXAS_PAGE_PASSWORD:
+#     r/energy/                   (11 pages)  session_key: energy_key
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# Deploy pattern (same for all sections):
+#
+#   1. Source repo generates HTML in source_dir/
+#   2. devctl deploy-pages reads this file + password from env
+#   3. Encrypts each page with AES-256-GCM (PBKDF2 100K iter)
+#   4. Writes encrypted HTML to ~/GitHub/jthorvaldur.github.io/target_dir/
+#   5. --push commits + pushes → GitHub auto-publishes
+#
+# To add a new section:
+#   1. Add entry here (under sections: or pending:)
+#   2. Set password_env in keys.zsh (new password or reuse existing zone)
+#   3. Run: devctl deploy-pages --section=NAME --pending --verify --push
+# ═══════════════════════════════════════════════════════════════════════════

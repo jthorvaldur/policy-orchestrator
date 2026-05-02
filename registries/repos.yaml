@@ -270,6 +270,19 @@ repos:
     update_policy: manual-review
     status: active
 
+  - name: energy_texas
+    path: ~/GitHub/energy_texas
+    github: git@github.com:jthorvaldur/energy_texas.git
+    category: infrastructure
+    priority: active
+    language: python
+    visibility: private
+    vector_namespace: null
+    secret_profile: null
+    update_policy: manual-review
+    status: active
+    pages: r/energy/
+
   - name: darkgallery
     path: ~/GitHub/darkgallery
     github: git@github.com:jthorvaldur/darkgallery.git
