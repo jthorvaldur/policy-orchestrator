@@ -182,11 +182,48 @@ pending:
     encryption: aes-256-gcm
     password_env: JTHORVALDUR_LEGAL_PAGE_PASSWORD
     session_key: filing_key
-    pages_count: 45+
-    notes: >
-      Legal analysis reports (timeline, disclosure, cycles, summary).
-      Some already linked from jthorvaldur.github.io/r/reports/ but
-      not systematically deployed via central script.
+    # summary.html excluded — 15MB email summary, local only
+    pages:
+      - case_timeline.html
+      - cycle_analysis.html
+      - disclosure_analysis.html
+      - filing_graph.html
+      - gpu_dashboard.html
+      - recruiter_network.html
+      - separation_analysis.html
+      - timeline_02-1.html
+      - timeline_1918.html
+      - timeline_1935.html
+      - timeline_1940.html
+      - timeline_1945.html
+      - timeline_1970.html
+      - timeline_1979.html
+      - timeline_1999.html
+      - timeline_2000.html
+      - timeline_2001.html
+      - timeline_2003.html
+      - timeline_2004.html
+      - timeline_2006.html
+      - timeline_2007.html
+      - timeline_2008.html
+      - timeline_2009.html
+      - timeline_2010.html
+      - timeline_2011.html
+      - timeline_2012.html
+      - timeline_2013.html
+      - timeline_2014.html
+      - timeline_2015.html
+      - timeline_2016.html
+      - timeline_2017.html
+      - timeline_2018.html
+      - timeline_2019.html
+      - timeline_2020.html
+      - timeline_2021.html
+      - timeline_2022.html
+      - timeline_2023.html
+      - timeline_2024.html
+      - timeline_2025.html
+      - timeline_2026.html
 
 # ═══════════════════════════════════════════════════════════════════════════
 # REPO: caseledger

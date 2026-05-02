@@ -1,0 +1,123 @@
+# pages-encryption.yaml — Hard policy for GitHub Pages encryption
+#
+# This is a HARD policy — violations are ERRORs that must be fixed before deploy.
+# Enforced by: devctl policy, gai pages, deploy_pages.py --verify
+
+policy: pages-encryption
+level: ERROR
+scope: jthorvaldur.github.io
+
+# ── Rules ─────────────────────────────────────────────────────────────────
+
+rules:
+  # R1: No plaintext sensitive content in public repo
+  no_plaintext_sensitive:
+    description: >
+      HTML pages containing PII, case data, legal filings, financial data,
+      or personal communications must be encrypted with AES-256-GCM before
+      committing to jthorvaldur.github.io.
+    check: >
+      grep for name patterns (cook, thorarinson, hensgen, allison, conniff,
+      tarara) in unencrypted HTML. Pages with >0 matches that lack
+      "const SALT" are violations.
+    exceptions:
+      - r/index.html (password gate, name in credential hint only)
+      - r/qwl/index.html (password gate)
+      - r/qwl/data/basis_map.html (password gate)
+      - cv/index.html (intentionally public profile)
+      - index.html (homepage, public portfolio)
+
+  # R2: No URL hash password support
+  no_hash_passwords:
+    description: >
+      Encrypted pages must not support location.hash auto-decryption.
+      Passwords in URL hashes leak to browser history, analytics,
+      and referrer headers.
+    check: grep for "location.hash.length" in all r/**/*.html
+    target: 0 matches
+
+  # R3: Unique salt and IV per page
+  unique_crypto_params:
+    description: >
+      Each encrypted page must have a unique random salt (16 bytes)
+      and IV (12 bytes). Re-using salt+IV with the same key breaks
+      AES-GCM authentication.
+    check: extract SALT and IV from all encrypted pages, verify no duplicates
+
+  # R4: sessionStorage only, never localStorage
+  session_not_local:
+    description: >
+      Decrypted passwords must be stored in sessionStorage (cleared
+      on tab close), never localStorage (persists across sessions).
+    check: grep for "localStorage" in all r/**/*.html
+    target: 0 matches
+
+  # R5: _originals never committed
+  no_originals_in_git:
+    description: >
+      Plaintext source files in _originals/ directories must be
+      gitignored and never appear in git ls-files.
+    check: git ls-files | grep _originals
+    target: 0 matches
+
+  # R6: Passwords never in commit messages or code
+  no_passwords_in_history:
+    description: >
+      Actual password values must never appear in commit messages,
+      HTML source, JavaScript, or any tracked file.
+    check: >
+      grep for known password patterns in git log --all and
+      git ls-files output. Password env var NAMES are ok,
+      password VALUES are not.
+
+  # R7: Assets deployed alongside encrypted pages
+  assets_deployed:
+    description: >
+      If source HTML references local CSS/JS (e.g. style.css),
+      those assets must be copied to the target directory.
+      Encrypted pages that document.write() after decryption
+      resolve relative paths against the deployed directory.
+    check: >
+      For each section in pages.yaml, check if source_dir has
+      non-HTML assets. If so, verify they exist in target_dir.
+
+  # R8: PBKDF2 minimum 100K iterations
+  pbkdf2_iterations:
+    description: >
+      Key derivation must use PBKDF2 with at least 100,000 iterations
+      and SHA-256. This is the current NIST recommendation.
+    check: grep for "iterations" in encrypt tools, verify >= 100000
+
+# ── Encryption parameters ─────────────────────────────────────────────────
+
+crypto_spec:
+  algorithm: AES-256-GCM
+  key_derivation: PBKDF2-SHA256
+  iterations: 100000  # minimum
+  salt_size: 16       # bytes
+  iv_size: 12         # bytes
+  tag_size: 16        # bytes (appended to ciphertext)
+  session_storage: sessionStorage  # never localStorage
+
+# ── Password zones ────────────────────────────────────────────────────────
+# Each zone uses a separate password. Pages within a zone share
+# a sessionStorage key so users enter the password once per tab.
+
+password_zones:
+  CONTACTS_PAGE_PASSWORD:
+    session_keys: [_cp, qwl_key]
+    sections: [contacts, concepts, d72, food-trust, qwl, dimensions]
+
+  JTHORVALDUR_LEGAL_PAGE_PASSWORD:
+    session_keys: [filing_key]
+    sections: [filing, div_legal_reports, caseledger_exhibits, thor2026]
+
+  ENERGY_TEXAS_PAGE_PASSWORD:
+    session_keys: [energy_key]
+    sections: [energy_texas]
+
+# ── Audit schedule ────────────────────────────────────────────────────────
+# Run before every deploy and periodically:
+#   devctl deploy-pages --verify        (checks decryption)
+#   devctl policy --repo=jthorvaldur.github.io  (checks all rules)
+#   Security agent scan (see agents.yaml)

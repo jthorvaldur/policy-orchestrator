@@ -238,6 +238,12 @@ def deploy_pages_cmd(section, pending, dry_run, push, verify):
     subprocess.run(args)
 
 
+@main.command("audit-pages")
+def audit_pages_cmd():
+    """Audit GitHub Pages for encryption and security policy compliance."""
+    subprocess.run([sys.executable, str(SCRIPTS_DIR / "audit_pages_security.py")])
+
+
 @main.command("log-feedback")
 @click.option("--type", "event_type", required=True,
               type=click.Choice(["correction", "confirmation", "mode_shift", "observation"]))
