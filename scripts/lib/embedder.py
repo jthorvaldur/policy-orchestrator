@@ -1,28 +1,27 @@
-"""Ollama embedding client — shared across all vector scripts."""
+"""Embedding client — delegates to docvec (BGE via sentence-transformers).
 
-import time
+Falls back to Ollama nomic-embed-text if sentence-transformers unavailable.
+"""
+from docvec.config import EmbedConfig
+from docvec.embedder import embed_text as _embed_text, embed_batch as _embed_batch
 
-import httpx
-
-OLLAMA_BASE_URL = "http://localhost:11434"
-EMBEDDING_MODEL = "nomic-embed-text"
+try:
+    import sentence_transformers  # noqa: F401
+    _config = EmbedConfig(embed_backend="st", dense_model="BAAI/bge-base-en-v1.5")
+except ImportError:
+    _config = EmbedConfig(
+        embed_backend="ollama",
+        ollama_url="http://localhost:11434",
+        ollama_model="nomic-embed-text",
+    )
 
 
 def embed_text(text: str, max_chars: int = 8000, max_retries: int = 3) -> list[float]:
-    """Get 768-dim embedding vector via Ollama nomic-embed-text."""
+    """Get 768-dim embedding vector via BGE (preferred) or Ollama (fallback)."""
     if len(text) > max_chars:
         text = text[:max_chars]
-    for attempt in range(max_retries):
-        try:
-            resp = httpx.post(
-                f"{OLLAMA_BASE_URL}/api/embeddings",
-                json={"model": EMBEDDING_MODEL, "prompt": text},
-                timeout=120.0,
-            )
-            resp.raise_for_status()
-            return resp.json()["embedding"]
-        except (httpx.HTTPStatusError, httpx.ConnectError, httpx.ReadTimeout):
-            if attempt < max_retries - 1:
-                time.sleep(1.0 * (attempt + 1))
-                continue
-            raise
+    return _embed_text(text, config=_config)
+
+
+def embed_batch(texts: list[str]) -> list[list[float]]:
+    return _embed_batch(texts, config=_config)
