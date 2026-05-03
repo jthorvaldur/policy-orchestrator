@@ -297,6 +297,19 @@ def embed_cmd(repo, full, gpu, collection):
     subprocess.run(args)
 
 
+@main.command("db-status")
+@click.option("--repo", default=None, help="Show only this repo's collections")
+@click.option("--port", type=int, default=None, help="Show only this port")
+def db_status_cmd(repo, port):
+    """Show database status: repos, collections, data sources, live counts."""
+    args = [sys.executable, str(SCRIPTS_DIR / "db_status.py")]
+    if repo:
+        args.append(f"--repo={repo}")
+    if port:
+        args.append(f"--port={port}")
+    subprocess.run(args)
+
+
 @main.command("audit-vectors")
 @click.option("--repo", default=None, help="Filter to a specific repo's collections")
 def audit_vectors_cmd(repo):

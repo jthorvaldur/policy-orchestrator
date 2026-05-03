@@ -15,7 +15,28 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 238000
+    points_expected: 244000
+    data_sources:
+      - name: Gmail IMAP (2 accounts)
+        type: email
+        method: imap_sync.py (incremental by UID)
+        repo: div_legal
+      - name: JPM statements (376 PDFs)
+        type: financial
+        method: PDF extraction
+        repo: div_legal
+      - name: Heather's disclosure (600 docs)
+        type: legal_filing
+        method: zip extraction
+        repo: div_legal
+      - name: Signal conversations
+        type: chat
+        method: ingest_signal.py
+        repo: div_legal
+      - name: Conniff file transfer
+        type: court_document
+        method: OCR + extraction
+        repo: div_legal
 
   case_docs:
     port: 7333
@@ -32,6 +53,11 @@ collections:
     hnsw_m: 16
     hnsw_ef_construct: 200
     points_expected: 1711000
+    data_sources:
+      - name: Shared corpus from div_legal
+        type: legal
+        method: rsync sdata/md/ then fastembed ONNX
+        repo: caseledger
 
   contacts:
     port: 6333
@@ -45,6 +71,19 @@ collections:
     vector_type: flat
     quantization: none
     points_expected: 3400
+    data_sources:
+      - name: macOS Contacts.app
+        type: contacts
+        method: AppleScript extraction
+        repo: contacts
+      - name: WhatsApp contacts
+        type: contacts
+        method: SQLite extraction
+        repo: contacts
+      - name: LinkedIn contacts
+        type: contacts
+        method: CSV import
+        repo: contacts
 
   whatsapp_chats:
     port: 6333
@@ -58,6 +97,15 @@ collections:
     vector_type: flat
     quantization: none
     points_expected: 41000
+    data_sources:
+      - name: WhatsApp (live SQLite)
+        type: chat
+        method: "contacts index --chats (ChatStorage.sqlite)"
+        repo: contacts
+      - name: Signal (73 conversations)
+        type: chat
+        method: sigexport CLI + ingest_signal.py
+        repo: contacts
 
   claude_code_sessions:
     port: 6333
@@ -72,6 +120,11 @@ collections:
     quantization: none
     points_expected: 19000
     migration_note: "TODO: migrate to BGE by 2026-06-01"
+    data_sources:
+      - name: Claude Code sessions (all repos)
+        type: conversation
+        method: "devctl ingest-sessions (JSONL from ~/.claude/projects/)"
+        repo: policy-orchestrator
 
   claude_chats_ai:
     port: 6333
@@ -85,6 +138,11 @@ collections:
     vector_type: flat
     quantization: none
     points_expected: 410
+    data_sources:
+      - name: Claude.ai web conversations (132 convos)
+        type: conversation
+        method: "contacts import-claude"
+        repo: contacts
 
   concepts:
     port: 6333
