@@ -1,5 +1,17 @@
 repos:
   # --- Control Plane ---
+  - name: docvec
+    path: ~/GitHub/docvec
+    github: git@github.com:jthorvaldur/docvec.git
+    category: infrastructure
+    priority: critical
+    language: python
+    visibility: private
+    vector_namespace: null
+    secret_profile: local_vector
+    update_policy: manual-review
+    status: active
+
   - name: policy-orchestrator
     path: ~/GitHub/policy-orchestrator
     github: https://github.com/jthorvaldur/policy-orchestrator
