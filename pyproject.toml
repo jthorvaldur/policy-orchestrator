@@ -10,7 +10,11 @@ dependencies = [
     "qdrant-client>=1.9",
     "httpx>=0.27",
     "cryptography>=47.0.0",
+    "docvec",
 ]
+
+[tool.uv.sources]
+docvec = { path = "../docvec" }
 
 [project.scripts]
 devctl = "policy_orchestrator.cli:main"

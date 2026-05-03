@@ -260,6 +260,53 @@ def verify_pages_cmd(section, quick):
     subprocess.run(args)
 
 
+@main.command("search")
+@click.argument("query")
+@click.option("--limit", "-n", default=10, help="Number of results")
+@click.option("--collection", "-c", default=None, help="Search specific collection")
+@click.option("--collections", default=None, help="Comma-separated collection names")
+@click.option("--rerank", is_flag=True, help="Apply cross-encoder reranking")
+def search_cmd(query, limit, collection, collections, rerank):
+    """Unified search across all vector collections."""
+    args = [sys.executable, str(SCRIPTS_DIR / "search_unified.py"), query]
+    if limit != 10:
+        args.extend(["--limit", str(limit)])
+    if collection:
+        args.extend(["--collection", collection])
+    if collections:
+        args.extend(["--collections", collections])
+    if rerank:
+        args.append("--rerank")
+    subprocess.run(args)
+
+
+@main.command("embed")
+@click.option("--repo", required=True, help="Repo name from registry")
+@click.option("--full", is_flag=True, help="Full re-embed (clear state)")
+@click.option("--gpu", is_flag=True, help="Offload to Vast.ai GPU")
+@click.option("--collection", default=None, help="Specific collection")
+def embed_cmd(repo, full, gpu, collection):
+    """Trigger embedding for a repo's vector collection."""
+    args = [sys.executable, str(SCRIPTS_DIR / "embed.py"), f"--repo={repo}"]
+    if full:
+        args.append("--full")
+    if gpu:
+        args.append("--gpu")
+    if collection:
+        args.extend(["--collection", collection])
+    subprocess.run(args)
+
+
+@main.command("audit-vectors")
+@click.option("--repo", default=None, help="Filter to a specific repo's collections")
+def audit_vectors_cmd(repo):
+    """Audit vector collection health across all Qdrant instances."""
+    args = [sys.executable, str(SCRIPTS_DIR / "audit_vectors.py")]
+    if repo:
+        args.append(f"--repo={repo}")
+    subprocess.run(args)
+
+
 @main.command("log-feedback")
 @click.option("--type", "event_type", required=True,
               type=click.Choice(["correction", "confirmation", "mode_shift", "observation"]))

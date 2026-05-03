@@ -1,78 +1,164 @@
 collections:
-  legal:
-    description: Legal documents, case files, contractual analysis
+  legal_docs_v2:
+    port: 6333
+    description: Legal documents — emails, PDFs, filings, financial statements
     sensitivity: high
-    embedding_model: BAAI/bge-large-en-v1.5
-    dimension: 1024
-    chunker: markdown_v2
-    owner_repo: words_quantum_legal
-    allowed_readers:
-      - words_quantum_legal
-      - div_legal
-      - legal-tax-ops
-    allowed_writers:
-      - words_quantum_legal
-      - div_legal
+    owner_repo: div_legal
+    allowed_readers: [div_legal, caseledger, policy-orchestrator]
+    allowed_writers: [div_legal]
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    sparse_model: prithivida/Splade_PP_en_v1
+    quantization: int8
+    hnsw_m: 16
+    hnsw_ef_construct: 200
+    chunk_max_chars: 512
+    chunk_overlap_chars: 128
+    points_expected: 238000
 
-  repo_docs:
-    description: Cross-repo documentation and README content
+  case_docs:
+    port: 7333
+    description: CaseLedger document intelligence — full corpus with hybrid search
+    sensitivity: high
+    owner_repo: caseledger
+    allowed_readers: [caseledger, div_legal, policy-orchestrator]
+    allowed_writers: [caseledger]
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    sparse_model: prithivida/Splade_PP_en_v1
+    quantization: int8
+    hnsw_m: 16
+    hnsw_ef_construct: 200
+    points_expected: 1711000
+
+  contacts:
+    port: 6333
+    description: macOS Contacts, WhatsApp, LinkedIn, iMessage contacts
     sensitivity: medium
-    embedding_model: text-embedding-3-large
-    dimension: 3072
-    chunker: markdown_v2
-    owner_repo: policy-orchestrator
-    allowed_readers:
-      - all
-    allowed_writers:
-      - policy-orchestrator
+    owner_repo: contacts
+    allowed_readers: [contacts, policy-orchestrator]
+    allowed_writers: [contacts]
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    points_expected: 3400
+
+  whatsapp_chats:
+    port: 6333
+    description: WhatsApp and Signal chat messages
+    sensitivity: high
+    owner_repo: contacts
+    allowed_readers: [contacts, div_legal, policy-orchestrator]
+    allowed_writers: [contacts]
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    points_expected: 41000
 
   claude_code_sessions:
-    description: Embedded Claude Code conversation sessions for cross-repo semantic search
+    port: 6333
+    description: Claude Code conversation sessions for cross-repo search
     sensitivity: medium
+    owner_repo: policy-orchestrator
+    allowed_readers: [all]
+    allowed_writers: [policy-orchestrator]
     embedding_model: nomic-embed-text
     dimension: 768
-    chunker: paragraph_v1
-    owner_repo: policy-orchestrator
-    allowed_readers:
-      - all
-    allowed_writers:
-      - policy-orchestrator
+    vector_type: flat
+    quantization: none
+    points_expected: 19000
+    migration_note: "TODO: migrate to BGE by 2026-06-01"
+
+  claude_chats_ai:
+    port: 6333
+    description: Claude.ai web conversation exports
+    sensitivity: medium
+    owner_repo: contacts
+    allowed_readers: [contacts, policy-orchestrator]
+    allowed_writers: [contacts]
+    embedding_model: nomic-embed-text
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    points_expected: 410
+
+  concepts:
+    port: 6333
+    description: Phone screenshot extractions via vision AI
+    sensitivity: medium
+    owner_repo: contacts
+    allowed_readers: [contacts, policy-orchestrator]
+    allowed_writers: [contacts]
+    embedding_model: nomic-embed-text
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    points_expected: 390
+
+  directives:
+    port: 6333
+    description: Markdown directives
+    sensitivity: medium
+    owner_repo: contacts
+    allowed_readers: [contacts, policy-orchestrator]
+    allowed_writers: [contacts]
+    embedding_model: nomic-embed-text
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    points_expected: 270
+
+  patents:
+    port: 6333
+    description: Patent documents
+    sensitivity: medium
+    owner_repo: contacts
+    allowed_readers: [contacts, policy-orchestrator]
+    allowed_writers: [contacts]
+    embedding_model: nomic-embed-text
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    points_expected: 85
 
   feedback_events:
-    description: User-AI interaction calibration — tone corrections, confirmed approaches, mode observations
+    port: 6333
+    description: User-AI interaction calibration events
     sensitivity: high
+    owner_repo: policy-orchestrator
+    allowed_readers: [all]
+    allowed_writers: [policy-orchestrator]
     embedding_model: nomic-embed-text
     dimension: 768
-    chunker: event_v1
-    owner_repo: policy-orchestrator
-    allowed_readers:
-      - all
-    allowed_writers:
-      - policy-orchestrator
+    vector_type: flat
+    quantization: none
+    migration_note: "TODO: migrate to BGE"
 
   fact_registry:
+    port: 6333
     description: Classified facts with source provenance and confidence levels
     sensitivity: high
+    owner_repo: policy-orchestrator
+    allowed_readers: [all]
+    allowed_writers: [policy-orchestrator]
     embedding_model: nomic-embed-text
     dimension: 768
-    chunker: event_v1
-    owner_repo: policy-orchestrator
-    allowed_readers:
-      - all
-    allowed_writers:
-      - policy-orchestrator
+    vector_type: flat
+    quantization: none
+    migration_note: "TODO: migrate to BGE"
 
   quant_research:
+    port: 6333
     description: Quantitative finance research and analysis
     sensitivity: high
-    embedding_model: BAAI/bge-large-en-v1.5
-    dimension: 1024
-    chunker: markdown_v2
     owner_repo: alpha_research
-    allowed_readers:
-      - alpha_research
-      - vpin
-      - ts_embed
-      - cyfopt
-    allowed_writers:
-      - alpha_research
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    allowed_readers: [alpha_research, vpin, ts_embed, cyfopt]
+    allowed_writers: [alpha_research]
