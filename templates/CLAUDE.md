@@ -33,6 +33,22 @@ Before producing output, agents should:
    - `claude_code_sessions` — past conversation context from this and related repos
 4. Distinguish facts by confidence: verified > documented > asserted > inferred > disputed
 
+## Data-First Protocol
+When answering questions about data, facts, documents, conversations, or history:
+1. **Query the vector DB first.** Use `devctl search "query"` or direct Qdrant search before answering from memory or general knowledge. The DB has 2M+ vectors across legal docs, chats, sessions, and facts.
+2. **Cite the source.** Include collection name, confidence level, and date when referencing DB results.
+3. **Distinguish confidence levels.** A bank statement (verified) is not the same as an email claim (asserted). Never present asserted facts as verified.
+4. **Log new facts.** When you discover or confirm a fact during work, log it: `devctl log-fact --fact "..." --source-type X --confidence Y --domain Z`
+
+Available collections (Qdrant localhost:6333 and :7333):
+- `legal_docs_v2` — 244K legal documents (emails, PDFs, filings, financial)
+- `case_docs` — 1.7M case documents (:7333)
+- `whatsapp_chats` — 19K chat messages
+- `claude_code_sessions` — 45K conversation chunks from all repos
+- `contacts` — 3.4K contact records
+- `fact_registry` — classified facts with confidence levels
+- `feedback_events` — interaction calibration notes
+
 ## Agent Protocol (from INTENT.md)
 - Identify the relevant repo intent before producing output
 - Preserve existing conventions unless explicitly changing them
