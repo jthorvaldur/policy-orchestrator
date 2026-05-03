@@ -88,15 +88,22 @@ def dashboard():
 
 @main.command("readme")
 @click.option("--repo", required=True, help="Repo name from registry")
+@click.option("--init", is_flag=True, help="Generate from scratch (even if README exists)")
+@click.option("--update", is_flag=True, help="Only refresh auto-generated sections")
 @click.option("--dry-run", is_flag=True, help="Print to stdout, don't write")
-@click.option("--force", is_flag=True, help="Overwrite even if README has human sections")
-def readme_cmd(repo, dry_run, force):
-    """Generate or regenerate README.md for a managed repo."""
+def readme_cmd(repo, init, update, dry_run):
+    """Generate or augment README.md for a managed repo.
+
+    Default: if README exists and has content, updates auto-sections only.
+    If README is missing/stub, generates from scratch using CLAUDE.md, CLI --help, and dir tree.
+    """
     args = [sys.executable, str(SCRIPTS_DIR / "generate_readme.py"), f"--repo={repo}"]
+    if init:
+        args.append("--init")
+    if update:
+        args.append("--update")
     if dry_run:
         args.append("--dry-run")
-    if force:
-        args.append("--force")
     subprocess.run(args)
 
 
