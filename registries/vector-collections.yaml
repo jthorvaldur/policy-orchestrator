@@ -96,7 +96,7 @@ collections:
     dimension: 768
     vector_type: flat
     quantization: none
-    points_expected: 41000
+    points_expected: 19000  # post-BGE re-embed (was 41K with nomic chunking)
     data_sources:
       - name: WhatsApp (live SQLite)
         type: chat
@@ -118,7 +118,7 @@ collections:
     dimension: 768
     vector_type: flat
     quantization: none
-    points_expected: 19000
+    points_expected: 45000
     migration_note: "TODO: migrate to BGE by 2026-06-01"
     data_sources:
       - name: Claude Code sessions (all repos)
