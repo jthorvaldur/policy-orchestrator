@@ -86,6 +86,20 @@ def dashboard():
     gen()
 
 
+@main.command("readme")
+@click.option("--repo", required=True, help="Repo name from registry")
+@click.option("--dry-run", is_flag=True, help="Print to stdout, don't write")
+@click.option("--force", is_flag=True, help="Overwrite even if README has human sections")
+def readme_cmd(repo, dry_run, force):
+    """Generate or regenerate README.md for a managed repo."""
+    args = [sys.executable, str(SCRIPTS_DIR / "generate_readme.py"), f"--repo={repo}"]
+    if dry_run:
+        args.append("--dry-run")
+    if force:
+        args.append("--force")
+    subprocess.run(args)
+
+
 @main.command("list")
 @click.option("--category", default=None, help="Filter by category")
 def list_repos(category):
