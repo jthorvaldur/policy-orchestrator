@@ -1,11 +1,15 @@
 collections:
   legal_docs_v2:
     port: 6333
-    description: Legal documents — emails, PDFs, filings, financial statements
+    description: "Legal documents \u2014 emails, PDFs, filings, financial statements"
     sensitivity: high
     owner_repo: div_legal
-    allowed_readers: [div_legal, caseledger, policy-orchestrator]
-    allowed_writers: [div_legal]
+    allowed_readers:
+    - div_legal
+    - caseledger
+    - policy-orchestrator
+    allowed_writers:
+    - div_legal
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: hybrid
@@ -17,38 +21,41 @@ collections:
     chunk_overlap_chars: 128
     points_expected: 239000
     data_sources:
-      - name: Gmail IMAP (2 accounts)
-        type: email
-        method: imap_sync.py (incremental by UID)
-        repo: div_legal
-      - name: JPM statements (376 PDFs)
-        type: financial
-        method: PDF extraction
-        repo: div_legal
-      - name: Revolut CSVs (4 currencies)
-        type: financial
-        method: CSV extraction
-        repo: div_legal
-      - name: Heather's disclosure (600 docs)
-        type: legal_filing
-        method: zip extraction
-        repo: div_legal
-      - name: Signal conversations
-        type: chat
-        method: ingest_signal.py
-        repo: div_legal
-      - name: Conniff file transfer
-        type: court_document
-        method: OCR + extraction
-        repo: div_legal
-
+    - name: Gmail IMAP (2 accounts)
+      type: email
+      method: imap_sync.py (incremental by UID)
+      repo: div_legal
+    - name: JPM statements (376 PDFs)
+      type: financial
+      method: PDF extraction
+      repo: div_legal
+    - name: Revolut CSVs (4 currencies)
+      type: financial
+      method: CSV extraction
+      repo: div_legal
+    - name: Heather's disclosure (600 docs)
+      type: legal_filing
+      method: zip extraction
+      repo: div_legal
+    - name: Signal conversations
+      type: chat
+      method: ingest_signal.py
+      repo: div_legal
+    - name: Conniff file transfer
+      type: court_document
+      method: OCR + extraction
+      repo: div_legal
   case_docs:
     port: 7333
-    description: CaseLedger document intelligence — full corpus with hybrid search
+    description: "CaseLedger document intelligence \u2014 full corpus with hybrid search"
     sensitivity: high
     owner_repo: caseledger
-    allowed_readers: [caseledger, div_legal, policy-orchestrator]
-    allowed_writers: [caseledger]
+    allowed_readers:
+    - caseledger
+    - div_legal
+    - policy-orchestrator
+    allowed_writers:
+    - caseledger
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: hybrid
@@ -60,18 +67,20 @@ collections:
     chunk_overlap_chars: 128
     points_expected: 1711000
     data_sources:
-      - name: Shared corpus from div_legal
-        type: legal
-        method: rsync sdata/md/ then fastembed ONNX
-        repo: caseledger
-
+    - name: Shared corpus from div_legal
+      type: legal
+      method: rsync sdata/md/ then fastembed ONNX
+      repo: caseledger
   openai_chats:
     port: 6333
-    description: OpenAI ChatGPT conversation exports — legal analysis, financial calculations, research
+    description: "OpenAI ChatGPT conversation exports \u2014 legal analysis, financial calculations, research"
     sensitivity: medium
     owner_repo: div_legal
-    allowed_readers: [div_legal, policy-orchestrator]
-    allowed_writers: [div_legal]
+    allowed_readers:
+    - div_legal
+    - policy-orchestrator
+    allowed_writers:
+    - div_legal
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: hybrid
@@ -84,89 +93,97 @@ collections:
     source_conversations: 1709
     points_expected: 5571
     data_sources:
-      - name: ChatGPT export (1,709 conversations, Jul 2023 - Apr 2026)
-        type: conversation
-        method: JSON extraction + chunking (5 msgs/chunk, 2 overlap)
-        repo: div_legal
-
+    - name: ChatGPT export (1,709 conversations, Jul 2023 - Apr 2026)
+      type: conversation
+      method: JSON extraction + chunking (5 msgs/chunk, 2 overlap)
+      repo: div_legal
   contacts:
     port: 6333
     description: macOS Contacts, WhatsApp, LinkedIn, iMessage contacts
     sensitivity: medium
     owner_repo: contacts
-    allowed_readers: [contacts, policy-orchestrator]
-    allowed_writers: [contacts]
+    allowed_readers:
+    - contacts
+    - policy-orchestrator
+    allowed_writers:
+    - contacts
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
     points_expected: 3400
     data_sources:
-      - name: macOS Contacts.app
-        type: contacts
-        method: AppleScript extraction
-        repo: contacts
-      - name: WhatsApp contacts
-        type: contacts
-        method: SQLite extraction
-        repo: contacts
-      - name: LinkedIn contacts
-        type: contacts
-        method: CSV import
-        repo: contacts
-
+    - name: macOS Contacts.app
+      type: contacts
+      method: AppleScript extraction
+      repo: contacts
+    - name: WhatsApp contacts
+      type: contacts
+      method: SQLite extraction
+      repo: contacts
+    - name: LinkedIn contacts
+      type: contacts
+      method: CSV import
+      repo: contacts
   whatsapp_chats:
     port: 6333
     description: WhatsApp and Signal chat messages
     sensitivity: high
     owner_repo: contacts
-    allowed_readers: [contacts, div_legal, policy-orchestrator]
-    allowed_writers: [contacts]
+    allowed_readers:
+    - contacts
+    - div_legal
+    - policy-orchestrator
+    allowed_writers:
+    - contacts
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
     points_expected: 19000
     data_sources:
-      - name: WhatsApp (live SQLite)
-        type: chat
-        method: "contacts index --chats (ChatStorage.sqlite)"
-        repo: contacts
-      - name: Signal (73 conversations)
-        type: chat
-        method: sigexport CLI + ingest_signal.py
-        repo: contacts
-
+    - name: WhatsApp (live SQLite)
+      type: chat
+      method: contacts index --chats (ChatStorage.sqlite)
+      repo: contacts
+    - name: Signal (73 conversations)
+      type: chat
+      method: sigexport CLI + ingest_signal.py
+      repo: contacts
   claude_code_sessions:
     port: 6333
     description: Claude Code conversation sessions for cross-repo search
     sensitivity: medium
     owner_repo: policy-orchestrator
-    allowed_readers: [all]
-    allowed_writers: [policy-orchestrator]
+    allowed_readers:
+    - all
+    allowed_writers:
+    - policy-orchestrator
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
     chunk_max_chars: 512
     chunk_overlap_chars: 64
-    points_expected: 45000
+    points_expected: 68000
     data_sources:
-      - name: Claude Code sessions (all repos)
-        type: conversation
-        method: "devctl ingest-sessions (JSONL from ~/.claude/projects/)"
-        repo: policy-orchestrator
-
+    - name: Claude Code sessions (all repos)
+      type: conversation
+      method: devctl ingest-sessions (JSONL from ~/.claude/projects/)
+      repo: policy-orchestrator
   claude_chats_ai:
     port: 6333
     description: Claude.ai web conversation exports (re-export from claude.ai/settings to refresh)
     sensitivity: medium
     owner_repo: contacts
-    allowed_readers: [contacts, policy-orchestrator]
-    allowed_writers: [contacts]
+    allowed_readers:
+    - contacts
+    - policy-orchestrator
+    allowed_writers:
+    - contacts
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
     chunk_max_chars: 1500
     chunk_overlap_chars: 200
@@ -175,70 +192,78 @@ collections:
     points_expected: 2000
     coverage_pct: 100
     data_sources:
-      - name: Claude.ai web conversations (132 convos)
-        type: conversation
-        method: "contacts import-claude"
-        repo: contacts
-
+    - name: Claude.ai web conversations (132 convos)
+      type: conversation
+      method: contacts import-claude
+      repo: contacts
   concepts:
     port: 6333
     description: Phone screenshot extractions via vision AI
     sensitivity: medium
     owner_repo: contacts
-    allowed_readers: [contacts, policy-orchestrator]
-    allowed_writers: [contacts]
+    allowed_readers:
+    - contacts
+    - policy-orchestrator
+    allowed_writers:
+    - contacts
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
     points_expected: 390
-
   directives:
     port: 6333
     description: Markdown directives
     sensitivity: medium
     owner_repo: contacts
-    allowed_readers: [contacts, policy-orchestrator]
-    allowed_writers: [contacts]
+    allowed_readers:
+    - contacts
+    - policy-orchestrator
+    allowed_writers:
+    - contacts
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
     points_expected: 270
-
   patents:
     port: 6333
     description: Patent documents
     sensitivity: medium
     owner_repo: contacts
-    allowed_readers: [contacts, policy-orchestrator]
-    allowed_writers: [contacts]
+    allowed_readers:
+    - contacts
+    - policy-orchestrator
+    allowed_writers:
+    - contacts
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
     points_expected: 85
-
   feedback_events:
     port: 6333
     description: User-AI interaction calibration events
     sensitivity: high
     owner_repo: policy-orchestrator
-    allowed_readers: [all]
-    allowed_writers: [policy-orchestrator]
+    allowed_readers:
+    - all
+    allowed_writers:
+    - policy-orchestrator
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none
-
   fact_registry:
     port: 6333
     description: Classified facts with source provenance and confidence levels
     sensitivity: high
     owner_repo: policy-orchestrator
-    allowed_readers: [all]
-    allowed_writers: [policy-orchestrator]
+    allowed_readers:
+    - all
+    allowed_writers:
+    - policy-orchestrator
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
-    vector_type: flat
+    vector_type: hybrid
     quantization: none

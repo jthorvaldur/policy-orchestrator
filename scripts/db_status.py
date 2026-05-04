@@ -40,22 +40,46 @@ def load_collections():
         return yaml.safe_load(f).get("collections", {})
 
 
-def get_live_counts():
-    """Query actual point counts from all Qdrant ports."""
-    counts = {}
+def get_live_state():
+    """Query actual state from all Qdrant ports — points, vector config, quantization."""
+    state = {}
     for port in [6333, 7333]:
         try:
             client = QdrantClient(host="localhost", port=port, timeout=5)
             for col in client.get_collections().collections:
                 info = client.get_collection(col.name)
-                counts[(port, col.name)] = {
+                cfg = info.config.params
+
+                # Detect hybrid (named vectors with sparse)
+                sparse = cfg.sparse_vectors
+                has_sparse = bool(sparse) and len(sparse) > 0
+                vtype = "hybrid" if has_sparse else "flat"
+
+                # Quantization
+                quant = info.config.quantization_config
+                quant_str = "int8" if quant and "Scalar" in type(quant).__name__ else \
+                            "binary" if quant and "Binary" in type(quant).__name__ else "none"
+
+                # Dimension
+                vectors = cfg.vectors
+                if hasattr(vectors, 'size'):
+                    dim = vectors.size
+                elif isinstance(vectors, dict) and vectors:
+                    first = next(iter(vectors.values()))
+                    dim = first.size if hasattr(first, 'size') else 0
+                else:
+                    dim = 0
+
+                state[(port, col.name)] = {
                     "points": info.points_count,
                     "status": info.status.value if hasattr(info.status, 'value') else str(info.status),
-                    "segments": len(info.segments) if hasattr(info, 'segments') else 0,
+                    "vector_type": vtype,
+                    "quantization": quant_str,
+                    "dimension": dim,
                 }
         except Exception:
             pass
-    return counts
+    return state
 
 
 def size_color(points):
@@ -88,7 +112,7 @@ def main():
 
     repos = load_repos()
     collections = load_collections()
-    live = get_live_counts()
+    live = get_live_state()
 
     # Group collections by owner repo
     by_repo = defaultdict(list)
@@ -144,8 +168,9 @@ def main():
             actual = live_info.get("points", None)
             status = live_info.get("status", "unknown")
             model = col_config.get("embedding_model", "?")
-            vtype = col_config.get("vector_type", "flat")
-            quant = col_config.get("quantization", "none")
+            # Use LIVE state for vector type and quantization, not registry
+            vtype = live_info.get("vector_type", col_config.get("vector_type", "?"))
+            quant = live_info.get("quantization", col_config.get("quantization", "?"))
             desc = col_config.get("description", "")
             migration = col_config.get("migration_note", "")
 
