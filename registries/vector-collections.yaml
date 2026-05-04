@@ -15,7 +15,7 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 244000
+    points_expected: 239000
     data_sources:
       - name: Gmail IMAP (2 accounts)
         type: email
@@ -24,6 +24,10 @@ collections:
       - name: JPM statements (376 PDFs)
         type: financial
         method: PDF extraction
+        repo: div_legal
+      - name: Revolut CSVs (4 currencies)
+        type: financial
+        method: CSV extraction
         repo: div_legal
       - name: Heather's disclosure (600 docs)
         type: legal_filing
@@ -58,6 +62,24 @@ collections:
         type: legal
         method: rsync sdata/md/ then fastembed ONNX
         repo: caseledger
+
+  openai_chats:
+    port: 6333
+    description: OpenAI ChatGPT conversation exports — legal analysis, financial calculations, research
+    sensitivity: medium
+    owner_repo: div_legal
+    allowed_readers: [div_legal, policy-orchestrator]
+    allowed_writers: [div_legal]
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: flat
+    quantization: none
+    points_expected: 5571
+    data_sources:
+      - name: ChatGPT export (1,709 conversations, Jul 2023 - Apr 2026)
+        type: conversation
+        method: JSON extraction + chunking (5 msgs/chunk, 2 overlap)
+        repo: div_legal
 
   contacts:
     port: 6333
@@ -96,7 +118,7 @@ collections:
     dimension: 768
     vector_type: flat
     quantization: none
-    points_expected: 19000  # post-BGE re-embed (was 41K with nomic chunking)
+    points_expected: 19000
     data_sources:
       - name: WhatsApp (live SQLite)
         type: chat
@@ -114,12 +136,11 @@ collections:
     owner_repo: policy-orchestrator
     allowed_readers: [all]
     allowed_writers: [policy-orchestrator]
-    embedding_model: nomic-embed-text
+    embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: flat
     quantization: none
     points_expected: 45000
-    migration_note: "TODO: migrate to BGE by 2026-06-01"
     data_sources:
       - name: Claude Code sessions (all repos)
         type: conversation
@@ -133,7 +154,7 @@ collections:
     owner_repo: contacts
     allowed_readers: [contacts, policy-orchestrator]
     allowed_writers: [contacts]
-    embedding_model: nomic-embed-text
+    embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: flat
     quantization: none
@@ -151,7 +172,7 @@ collections:
     owner_repo: contacts
     allowed_readers: [contacts, policy-orchestrator]
     allowed_writers: [contacts]
-    embedding_model: nomic-embed-text
+    embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: flat
     quantization: none
@@ -164,7 +185,7 @@ collections:
     owner_repo: contacts
     allowed_readers: [contacts, policy-orchestrator]
     allowed_writers: [contacts]
-    embedding_model: nomic-embed-text
+    embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: flat
     quantization: none
@@ -177,7 +198,7 @@ collections:
     owner_repo: contacts
     allowed_readers: [contacts, policy-orchestrator]
     allowed_writers: [contacts]
-    embedding_model: nomic-embed-text
+    embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: flat
     quantization: none
@@ -190,11 +211,10 @@ collections:
     owner_repo: policy-orchestrator
     allowed_readers: [all]
     allowed_writers: [policy-orchestrator]
-    embedding_model: nomic-embed-text
+    embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: flat
     quantization: none
-    migration_note: "TODO: migrate to BGE"
 
   fact_registry:
     port: 6333
@@ -203,20 +223,7 @@ collections:
     owner_repo: policy-orchestrator
     allowed_readers: [all]
     allowed_writers: [policy-orchestrator]
-    embedding_model: nomic-embed-text
-    dimension: 768
-    vector_type: flat
-    quantization: none
-    migration_note: "TODO: migrate to BGE"
-
-  quant_research:
-    port: 6333
-    description: Quantitative finance research and analysis
-    sensitivity: high
-    owner_repo: alpha_research
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: flat
     quantization: none
-    allowed_readers: [alpha_research, vpin, ts_embed, cyfopt]
-    allowed_writers: [alpha_research]
