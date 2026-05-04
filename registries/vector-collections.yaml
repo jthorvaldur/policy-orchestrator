@@ -56,6 +56,8 @@ collections:
     quantization: int8
     hnsw_m: 16
     hnsw_ef_construct: 200
+    chunk_max_chars: 512
+    chunk_overlap_chars: 128
     points_expected: 1711000
     data_sources:
       - name: Shared corpus from div_legal
@@ -77,6 +79,9 @@ collections:
     quantization: none
     hnsw_m: 16
     hnsw_ef_construct: 200
+    chunk_msgs: 5
+    chunk_overlap_msgs: 2
+    source_conversations: 1709
     points_expected: 5571
     data_sources:
       - name: ChatGPT export (1,709 conversations, Jul 2023 - Apr 2026)
@@ -143,6 +148,8 @@ collections:
     dimension: 768
     vector_type: flat
     quantization: none
+    chunk_max_chars: 512
+    chunk_overlap_chars: 64
     points_expected: 45000
     data_sources:
       - name: Claude Code sessions (all repos)
@@ -152,7 +159,7 @@ collections:
 
   claude_chats_ai:
     port: 6333
-    description: Claude.ai web conversation exports
+    description: Claude.ai web conversation exports (re-export from claude.ai/settings to refresh)
     sensitivity: medium
     owner_repo: contacts
     allowed_readers: [contacts, policy-orchestrator]
@@ -161,7 +168,12 @@ collections:
     dimension: 768
     vector_type: flat
     quantization: none
-    points_expected: 410
+    chunk_max_chars: 1500
+    chunk_overlap_chars: 200
+    source_conversations: 132
+    source_lines: 48843
+    points_expected: 2000
+    coverage_pct: 100
     data_sources:
       - name: Claude.ai web conversations (132 convos)
         type: conversation

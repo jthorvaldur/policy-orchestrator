@@ -21,11 +21,8 @@ from qdrant_client.models import Distance, PointStruct, VectorParams
 QDRANT_HOST = "localhost"
 QDRANT_PORT = 6333
 COLLECTION_NAME = "claude_code_sessions"
-VECTOR_DIM = 768  # nomic-embed-text
+VECTOR_DIM = 768  # BAAI/bge-base-en-v1.5
 DISTANCE = Distance.COSINE
-
-OLLAMA_BASE_URL = "http://localhost:11434"
-EMBEDDING_MODEL = "nomic-embed-text"
 
 SESSIONS_ROOT = Path.home() / ".claude" / "projects"
 STATE_FILE = Path(__file__).parent.parent / "local" / "ingest_state.json"
@@ -40,23 +37,9 @@ BATCH_SIZE = 100
 
 
 def embed_text(text: str, max_chars: int = 8000, max_retries: int = 3) -> list[float]:
-    """Get embedding vector via Ollama."""
-    if len(text) > max_chars:
-        text = text[:max_chars]
-    for attempt in range(max_retries):
-        try:
-            resp = httpx.post(
-                f"{OLLAMA_BASE_URL}/api/embeddings",
-                json={"model": EMBEDDING_MODEL, "prompt": text},
-                timeout=120.0,
-            )
-            resp.raise_for_status()
-            return resp.json()["embedding"]
-        except (httpx.HTTPStatusError, httpx.ConnectError, httpx.ReadTimeout):
-            if attempt < max_retries - 1:
-                time.sleep(1.0 * (attempt + 1))
-                continue
-            raise
+    """Get embedding vector via BGE (sentence-transformers) or Ollama fallback."""
+    from lib.embedder import embed_text as _embed
+    return _embed(text, max_chars=max_chars)
 
 
 # ---------------------------------------------------------------------------

@@ -170,9 +170,41 @@ def main():
 
             print(f"    {icon} {C['bold']}{col_name}{C['reset']}  :{port}  {pts_str}  {type_badge}  {quant_badge}  {C['dim']}{model}{C['reset']}")
 
+            # Chunking + coverage info
+            chunk_parts = []
+            if col_config.get("chunk_max_chars"):
+                chunk_parts.append(f"{col_config['chunk_max_chars']}ch")
+            if col_config.get("chunk_turns"):
+                chunk_parts.append(f"{col_config['chunk_turns']}turns")
+            if col_config.get("chunk_msgs"):
+                chunk_parts.append(f"{col_config['chunk_msgs']}msgs")
+            if col_config.get("chunk_overlap_chars"):
+                chunk_parts.append(f"+{col_config['chunk_overlap_chars']}ov")
+            if col_config.get("chunk_overlap_turns"):
+                chunk_parts.append(f"+{col_config['chunk_overlap_turns']}ov")
+            if col_config.get("chunk_overlap_msgs"):
+                chunk_parts.append(f"+{col_config['chunk_overlap_msgs']}ov")
+            src_convos = col_config.get("source_conversations")
+            if src_convos:
+                chunk_parts.append(f"from {fmt(src_convos)} convos")
+            src_lines = col_config.get("source_lines")
+            if src_lines:
+                chunk_parts.append(f"{fmt(src_lines)} source lines")
+            coverage = col_config.get("coverage_pct")
+            if coverage is not None:
+                cov_color = C["green"] if coverage >= 80 else C["yellow"] if coverage >= 50 else C["red"]
+                chunk_parts.append(f"{cov_color}{coverage}% coverage{C['reset']}")
+
+            if chunk_parts:
+                print(f"      {C['dim']}chunk: {' '.join(chunk_parts)}{C['reset']}")
+
             if migration:
                 print(f"      {C['yellow']}{migration}{C['reset']}")
-            if desc:
+
+            note = col_config.get("note", "")
+            if note:
+                print(f"      {C['yellow']}{note}{C['reset']}")
+            elif desc:
                 print(f"      {C['dim']}{desc}{C['reset']}")
 
             # Data sources (compact)
