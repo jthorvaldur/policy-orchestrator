@@ -8,12 +8,89 @@ from pathlib import Path
 import click
 
 SCRIPTS_DIR = Path(__file__).parent.parent.parent / "scripts"
+REGISTRIES_DIR = Path(__file__).parent.parent.parent / "registries"
+
+# ANSI
+C = {
+    "reset": "\033[0m", "bold": "\033[1m", "dim": "\033[90m",
+    "green": "\033[32m", "yellow": "\033[33m", "cyan": "\033[36m",
+    "red": "\033[31m", "mag": "\033[35m",
+}
 
 
-@click.group()
-def main():
+def _show_overview():
+    """Show a quick dashboard when devctl is called with no args."""
+    import yaml
+
+    print(f"\n{C['bold']}  devctl{C['reset']} — control plane\n")
+
+    # Repos
+    try:
+        with open(REGISTRIES_DIR / "repos.yaml") as f:
+            repos = yaml.safe_load(f).get("repos", [])
+        categories = {}
+        for r in repos:
+            cat = r.get("category", "?")
+            categories[cat] = categories.get(cat, 0) + 1
+        cat_str = "  ".join(f"{C['dim']}{c}:{C['reset']}{n}" for c, n in sorted(categories.items()))
+        print(f"  {C['bold']}{len(repos)}{C['reset']} repos  {cat_str}")
+    except Exception:
+        print(f"  {C['red']}could not load repos.yaml{C['reset']}")
+
+    # Vector DB
+    try:
+        from qdrant_client import QdrantClient
+        total = 0
+        cols = 0
+        for port in [6333, 7333]:
+            try:
+                client = QdrantClient(host="localhost", port=port, timeout=3)
+                for col in client.get_collections().collections:
+                    info = client.get_collection(col.name)
+                    total += info.points_count
+                    cols += 1
+            except Exception:
+                pass
+        print(f"  {C['bold']}{total:,}{C['reset']} vectors  {C['dim']}across{C['reset']} {cols} collections")
+    except ImportError:
+        pass
+
+    # Pages
+    try:
+        with open(REGISTRIES_DIR / "pages.yaml") as f:
+            pages_data = yaml.safe_load(f)
+        deployed = len(pages_data.get("sections", {}))
+        pending = len(pages_data.get("pending", {}))
+        pages_str = f"{C['green']}{deployed} deployed{C['reset']}"
+        if pending:
+            pages_str += f"  {C['yellow']}{pending} pending{C['reset']}"
+        print(f"  {C['bold']}{deployed + pending}{C['reset']} page sections  {pages_str}")
+    except Exception:
+        pass
+
+    # Commands by category
+    print(f"\n  {C['bold']}Commands{C['reset']}\n")
+    groups = {
+        "Repos":    ["status", "list", "audit", "discover", "inventory"],
+        "Data":     ["db-status", "search", "embed", "audit-vectors"],
+        "Pages":    ["deploy-pages", "audit-pages", "verify-pages"],
+        "Secrets":  ["secrets", "validate-secrets"],
+        "Facts":    ["log-fact", "query-facts", "log-feedback", "query-feedback"],
+        "Tools":    ["sync", "dashboard", "readme", "policy", "ingest-sessions", "search-sessions"],
+    }
+    for group, cmds in groups.items():
+        cmd_str = f"{C['dim']}, {C['reset']}".join(cmds)
+        print(f"  {C['cyan']}{group:<10}{C['reset']} {cmd_str}")
+
+    print(f"\n  {C['dim']}Run devctl <command> --help for details{C['reset']}\n")
+
+
+@click.group(invoke_without_command=True)
+@click.pass_context
+def main(ctx):
     """devctl — multi-repo development control plane."""
-    pass
+    if ctx.invoked_subcommand is None:
+        _show_overview()
 
 
 @main.command()

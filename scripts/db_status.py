@@ -10,6 +10,25 @@ from qdrant_client import QdrantClient
 
 REGISTRIES = Path(__file__).parent.parent / "registries"
 
+# ANSI colors
+C = {
+    "reset": "\033[0m",
+    "bold": "\033[1m",
+    "dim": "\033[90m",
+    "red": "\033[31m",
+    "green": "\033[32m",
+    "yellow": "\033[33m",
+    "blue": "\033[34m",
+    "mag": "\033[35m",
+    "cyan": "\033[36m",
+    "white": "\033[37m",
+}
+
+
+def fmt(n):
+    """Format number with commas."""
+    return f"{n:,}"
+
 
 def load_repos():
     with open(REGISTRIES / "repos.yaml") as f:
@@ -29,10 +48,35 @@ def get_live_counts():
             client = QdrantClient(host="localhost", port=port, timeout=5)
             for col in client.get_collections().collections:
                 info = client.get_collection(col.name)
-                counts[(port, col.name)] = info.points_count
+                counts[(port, col.name)] = {
+                    "points": info.points_count,
+                    "status": info.status.value if hasattr(info.status, 'value') else str(info.status),
+                    "segments": len(info.segments) if hasattr(info, 'segments') else 0,
+                }
         except Exception:
             pass
     return counts
+
+
+def size_color(points):
+    """Color based on collection size."""
+    if points >= 100_000:
+        return C["green"]
+    if points >= 10_000:
+        return C["cyan"]
+    if points >= 1_000:
+        return C["white"]
+    if points >= 100:
+        return C["dim"]
+    return C["yellow"]
+
+
+def status_icon(status_str):
+    if status_str == "green":
+        return f"{C['green']}●{C['reset']}"
+    if status_str == "yellow":
+        return f"{C['yellow']}●{C['reset']}"
+    return f"{C['red']}●{C['reset']}"
 
 
 def main():
@@ -52,7 +96,7 @@ def main():
         owner = col_config.get("owner_repo", "?")
         by_repo[owner].append((col_name, col_config))
 
-    # Also track which repos READ from collections they don't own
+    # Track which repos READ from collections they don't own
     reads_from = defaultdict(list)
     for col_name, col_config in collections.items():
         owner = col_config.get("owner_repo")
@@ -61,11 +105,15 @@ def main():
                 reads_from[reader].append(col_name)
 
     total_points = 0
+    total_collections = 0
 
-    # Print by repo
+    # Sort repos by total points (biggest first)
     repo_order = sorted(by_repo.keys(), key=lambda r: -sum(
-        live.get((c[1].get("port", 6333), c[0]), 0) for c in by_repo[r]
+        live.get((c[1].get("port", 6333), c[0]), {}).get("points", 0) for c in by_repo[r]
     ))
+
+    print(f"\n{C['bold']}  Database Status{C['reset']}")
+    print(f"  {'─'*65}\n")
 
     for repo_name in repo_order:
         if args.repo and repo_name != args.repo:
@@ -75,65 +123,86 @@ def main():
         repo_info = repos.get(repo_name, {})
         category = repo_info.get("category", "?")
 
-        print(f"\n{'=' * 70}")
-        print(f"  {repo_name}  [{category}]")
+        # Sum points for this repo
+        repo_total = sum(
+            live.get((c[1].get("port", 6333), c[0]), {}).get("points", 0)
+            for c in repo_cols
+        )
+
+        col_color = size_color(repo_total)
+        print(f"  {C['bold']}{repo_name}{C['reset']}  {C['dim']}[{category}]{C['reset']}  {col_color}{fmt(repo_total)} vectors{C['reset']}")
+
         if repo_name in reads_from:
-            print(f"  Also reads: {', '.join(reads_from[repo_name])}")
-        print(f"{'=' * 70}")
+            print(f"  {C['dim']}reads: {', '.join(reads_from[repo_name])}{C['reset']}")
 
         for col_name, col_config in repo_cols:
             port = col_config.get("port", 6333)
             if args.port and port != args.port:
                 continue
 
-            actual = live.get((port, col_name))
-            expected = col_config.get("points_expected", 0)
+            live_info = live.get((port, col_name), {})
+            actual = live_info.get("points", None)
+            status = live_info.get("status", "unknown")
             model = col_config.get("embedding_model", "?")
             vtype = col_config.get("vector_type", "flat")
             quant = col_config.get("quantization", "none")
             desc = col_config.get("description", "")
             migration = col_config.get("migration_note", "")
 
+            icon = status_icon(status)
+
             if actual is not None:
                 total_points += actual
-                status = f"{actual:>10,} pts"
-                if expected > 0:
-                    pct = (actual / expected) * 100
-                    if pct < 80:
-                        status += f"  ({pct:.0f}% of expected)"
+                total_collections += 1
+                pts_color = size_color(actual)
+                pts_str = f"{pts_color}{fmt(actual):>12}{C['reset']}"
             else:
-                status = "  NOT FOUND"
+                pts_str = f"{C['red']}{'NOT FOUND':>12}{C['reset']}"
+                total_collections += 1
 
-            print(f"\n  {col_name}  :{port}")
-            print(f"    {status}  |  {vtype}  {quant}  {model}")
+            # Type badge
+            if vtype == "hybrid":
+                type_badge = f"{C['green']}hybrid{C['reset']}"
+            else:
+                type_badge = f"{C['dim']}flat{C['reset']}"
+
+            quant_badge = f"{C['cyan']}{quant}{C['reset']}" if quant != "none" else f"{C['dim']}none{C['reset']}"
+
+            print(f"    {icon} {C['bold']}{col_name}{C['reset']}  :{port}  {pts_str}  {type_badge}  {quant_badge}  {C['dim']}{model}{C['reset']}")
+
             if migration:
-                print(f"    {migration}")
+                print(f"      {C['yellow']}{migration}{C['reset']}")
             if desc:
-                print(f"    {desc}")
+                print(f"      {C['dim']}{desc}{C['reset']}")
 
-            # Data sources
+            # Data sources (compact)
             sources = col_config.get("data_sources", [])
             if sources:
-                print(f"    Sources:")
-                for src in sources:
-                    print(f"      {src['type']:<15} {src['name']}")
-                    print(f"      {'':15} method: {src['method']}")
+                src_names = [s["name"] for s in sources]
+                print(f"      {C['dim']}sources: {', '.join(src_names)}{C['reset']}")
+
+        print()
 
     # Unregistered collections
     registered_keys = {(c.get("port", 6333), n) for n, c in collections.items()}
-    unregistered = [(port, name, count) for (port, name), count in live.items()
+    unregistered = [(port, name, info) for (port, name), info in live.items()
                     if (port, name) not in registered_keys]
 
     if unregistered:
-        print(f"\n{'=' * 70}")
-        print(f"  UNREGISTERED COLLECTIONS")
-        print(f"{'=' * 70}")
-        for port, name, count in sorted(unregistered):
-            total_points += count
-            print(f"  {name:<25} :{port}  {count:>10,} pts  (not in registry)")
+        print(f"  {C['yellow']}{C['bold']}Unregistered{C['reset']}")
+        for port, name, info in sorted(unregistered):
+            pts = info.get("points", 0)
+            total_points += pts
+            total_collections += 1
+            print(f"    {C['yellow']}?{C['reset']} {name:<25} :{port}  {C['yellow']}{fmt(pts):>12}{C['reset']}  {C['dim']}not in registry{C['reset']}")
+        print()
 
-    print(f"\n{'─' * 70}")
-    print(f"  Total: {total_points:,} vectors across {len(live)} collections on {len(set(p for p,_ in live))} ports")
+    # Summary
+    ports = len(set(p for p, _ in live))
+    print(f"  {'─'*65}")
+    print(f"  {C['bold']}{fmt(total_points)}{C['reset']} vectors  "
+          f"{C['dim']}across{C['reset']} {total_collections} collections  "
+          f"{C['dim']}on{C['reset']} {ports} ports\n")
 
 
 if __name__ == "__main__":
