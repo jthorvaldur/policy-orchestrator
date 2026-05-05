@@ -1,0 +1,699 @@
+# devctl command registry — machine-readable reference
+# Generated from src/policy_orchestrator/cli.py
+# Categories: Repos, Data, Pages, Secrets, Facts, Build, Tools
+
+commands:
+
+  # ── Repos ──────────────────────────────────────────────────
+
+  - name: status
+    category: Repos
+    description: Show git status of all registered repos
+    options:
+      - name: --category
+        type: string
+        default: null
+        description: Filter by repo category
+      - name: --dirty
+        type: flag
+        default: false
+        description: Show only repos with dirty git trees
+    examples:
+      - devctl status
+      - devctl status --dirty
+      - devctl status --category=legal
+    related_commands:
+      - list
+      - audit
+      - health
+
+  - name: list
+    category: Repos
+    description: List all registered repos with metadata
+    options:
+      - name: --category
+        type: string
+        default: null
+        description: Filter by category
+    examples:
+      - devctl list
+      - devctl list --category=legal
+    related_commands:
+      - status
+      - discover
+      - inventory
+
+  - name: audit
+    category: Repos
+    description: Audit repos for policy compliance
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Audit a specific repo
+      - name: --all
+        type: flag
+        default: true
+        description: Audit all repos
+    examples:
+      - devctl audit
+      - devctl audit --repo=vpin
+    related_commands:
+      - policy
+      - status
+      - secrets
+
+  - name: discover
+    category: Repos
+    description: Discover and classify all git repos on the filesystem
+    options:
+      - name: --lifecycle
+        type: string
+        default: null
+        description: "Filter: active, work-org, reference, duplicate, backup, orphan, empty, dependency, stale"
+      - name: --risk
+        type: string
+        default: null
+        description: "Filter by minimum risk: critical, high, medium, low"
+      - name: --duplicates-only
+        type: flag
+        default: false
+        description: Show only duplicate groups
+      - name: --unregistered-only
+        type: flag
+        default: false
+        description: Show only repos not in registry
+      - name: --save
+        type: flag
+        default: false
+        description: Write results to registries/inventory.yaml
+      - name: --format
+        type: choice
+        default: table
+        description: "Output format: table, json, yaml"
+    examples:
+      - devctl discover
+      - devctl discover --unregistered-only --save
+      - devctl discover --lifecycle=orphan --risk=high
+      - devctl discover --duplicates-only --format=yaml
+    related_commands:
+      - inventory
+      - list
+      - status
+
+  - name: inventory
+    category: Repos
+    description: Query the saved inventory from last discovery run
+    options:
+      - name: --lifecycle
+        type: string
+        default: null
+        description: Filter by lifecycle category
+      - name: --risk
+        type: string
+        default: null
+        description: Filter by minimum risk level
+    examples:
+      - devctl inventory
+      - devctl inventory --lifecycle=stale
+      - devctl inventory --risk=high
+    related_commands:
+      - discover
+      - list
+
+  # ── Data ───────────────────────────────────────────────────
+
+  - name: db-status
+    category: Data
+    description: Show database status with repos, collections, and live counts
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Show only this repo's collections
+      - name: --port
+        type: integer
+        default: null
+        description: Show only this Qdrant port
+    examples:
+      - devctl db-status
+      - devctl db-status --repo=div_legal
+      - devctl db-status --port=6333
+    related_commands:
+      - audit-vectors
+      - search
+      - embed
+
+  - name: search
+    category: Data
+    description: Unified semantic search across all vector collections
+    options:
+      - name: QUERY
+        type: argument
+        default: null
+        description: Search query (required, positional)
+      - name: --limit
+        type: integer
+        default: 10
+        description: Number of results
+      - name: --collection
+        type: string
+        default: null
+        description: Search a specific collection
+      - name: --collections
+        type: string
+        default: null
+        description: Comma-separated collection names
+      - name: --rerank
+        type: flag
+        default: false
+        description: Apply cross-encoder reranking
+    examples:
+      - devctl search "custody modification"
+      - devctl search "property valuation" -n 5 --rerank
+      - devctl search "API key rotation" -c session_chunks
+    related_commands:
+      - search-sessions
+      - db-status
+      - embed
+
+  - name: embed
+    category: Data
+    description: Trigger embedding for a repo's vector collection
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Repo name from registry (required)
+      - name: --full
+        type: flag
+        default: false
+        description: Full re-embed, clearing previous state
+      - name: --gpu
+        type: flag
+        default: false
+        description: Offload to Vast.ai GPU
+      - name: --collection
+        type: string
+        default: null
+        description: Target a specific collection
+    examples:
+      - devctl embed --repo=div_legal
+      - devctl embed --repo=div_legal --full
+      - devctl embed --repo=contacts --gpu
+    related_commands:
+      - db-status
+      - audit-vectors
+      - search
+
+  - name: audit-vectors
+    category: Data
+    description: Audit vector collection health across all Qdrant instances
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Filter to a specific repo's collections
+    examples:
+      - devctl audit-vectors
+      - devctl audit-vectors --repo=div_legal
+    related_commands:
+      - db-status
+      - embed
+      - health
+
+  # ── Pages ──────────────────────────────────────────────────
+
+  - name: deploy-pages
+    category: Pages
+    description: Deploy encrypted HTML pages to jthorvaldur.github.io
+    options:
+      - name: --section
+        type: string
+        default: null
+        description: Deploy a specific section
+      - name: --pending
+        type: flag
+        default: false
+        description: Include pending (not yet deployed) sections
+      - name: --dry-run
+        type: flag
+        default: false
+        description: Show what would be deployed
+      - name: --push
+        type: flag
+        default: false
+        description: Commit and push the hub repo after deploy
+      - name: --verify
+        type: flag
+        default: false
+        description: Verify encrypted pages decrypt correctly
+      - name: --auto
+        type: flag
+        default: false
+        description: Auto-detect section from current directory
+    examples:
+      - devctl deploy-pages --section=legal --push
+      - devctl deploy-pages --pending --dry-run
+      - devctl deploy-pages --auto --verify
+    related_commands:
+      - audit-pages
+      - verify-pages
+
+  - name: audit-pages
+    category: Pages
+    description: Audit GitHub Pages for encryption and security policy compliance
+    options: []
+    examples:
+      - devctl audit-pages
+    related_commands:
+      - deploy-pages
+      - verify-pages
+
+  - name: verify-pages
+    category: Pages
+    description: Live-verify deployed pages decrypt correctly via HTTPS
+    options:
+      - name: --section
+        type: string
+        default: null
+        description: Verify a specific section
+      - name: --quick
+        type: flag
+        default: false
+        description: Test one page per section instead of all
+    examples:
+      - devctl verify-pages
+      - devctl verify-pages --section=legal
+      - devctl verify-pages --quick
+    related_commands:
+      - deploy-pages
+      - audit-pages
+
+  # ── Secrets ────────────────────────────────────────────────
+
+  - name: secrets
+    category: Secrets
+    description: Check repos for secret hygiene violations
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Check a specific repo
+    examples:
+      - devctl secrets
+      - devctl secrets --repo=vpin
+    related_commands:
+      - validate-secrets
+      - audit
+
+  - name: validate-secrets
+    category: Secrets
+    description: Validate that repos have the API keys their profiles require
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Validate a specific repo
+      - name: --live
+        type: flag
+        default: false
+        description: Ping endpoints to verify keys work
+      - name: --keys-only
+        type: flag
+        default: false
+        description: Just show key inventory without validation
+    examples:
+      - devctl validate-secrets
+      - devctl validate-secrets --repo=div_legal --live
+      - devctl validate-secrets --keys-only
+    related_commands:
+      - secrets
+      - health
+
+  # ── Facts ──────────────────────────────────────────────────
+
+  - name: log-fact
+    category: Facts
+    description: Log a classified fact with provenance and confidence level
+    options:
+      - name: --fact
+        type: string
+        default: null
+        description: The factual claim (required)
+      - name: --source-type
+        type: choice
+        default: null
+        description: "Source: financial_download, court_document, tax_document, email, text_message, conversation, medical_record, legal_filing, calculation, public_record, photograph, other"
+      - name: --confidence
+        type: choice
+        default: null
+        description: "Level: verified, documented, asserted, disputed, inferred, unknown"
+      - name: --domain
+        type: choice
+        default: null
+        description: "Domain: financial, legal, medical, personal, technical, property, employment"
+      - name: --source-ref
+        type: string
+        default: ""
+        description: File path or document reference
+      - name: --source-date
+        type: string
+        default: ""
+        description: Date the fact pertains to (YYYY-MM-DD)
+      - name: --claimed-by
+        type: string
+        default: ""
+        description: Who made this claim
+      - name: --contradicts
+        type: string
+        default: ""
+        description: What this fact contradicts
+      - name: --repo
+        type: string
+        default: ""
+        description: Originating repo
+      - name: --notes
+        type: string
+        default: ""
+        description: Additional context
+    examples:
+      - devctl log-fact --fact "Property appraised at $425,000" --source-type court_document --confidence documented --domain property
+    related_commands:
+      - query-facts
+      - log-feedback
+
+  - name: query-facts
+    category: Facts
+    description: Query the fact registry with optional confidence filtering
+    options:
+      - name: QUERY
+        type: argument
+        default: null
+        description: Optional semantic search query (positional)
+      - name: --domain
+        type: choice
+        default: null
+        description: "Filter: financial, legal, medical, personal, technical, property, employment"
+      - name: --confidence
+        type: choice
+        default: null
+        description: Exact confidence match
+      - name: --min-confidence
+        type: choice
+        default: null
+        description: Show facts at this confidence or higher
+      - name: --source-type
+        type: string
+        default: null
+        description: Filter by source type
+      - name: --repo
+        type: string
+        default: null
+        description: Filter by originating repo
+      - name: --limit
+        type: integer
+        default: 10
+        description: Number of results
+      - name: --all
+        type: flag
+        default: false
+        description: Show all fields including notes
+    examples:
+      - devctl query-facts
+      - devctl query-facts "property valuation" --domain=property
+      - devctl query-facts --min-confidence=documented --limit=20
+    related_commands:
+      - log-fact
+      - search
+
+  - name: log-feedback
+    category: Facts
+    description: Log a calibration event to the feedback_events collection
+    options:
+      - name: --type
+        type: choice
+        default: null
+        description: "Event type: correction, confirmation, mode_shift, observation (required)"
+      - name: --signal
+        type: string
+        default: null
+        description: What the user said/did (required)
+      - name: --action
+        type: string
+        default: ""
+        description: What the agent did
+      - name: --delta
+        type: string
+        default: ""
+        description: What was wrong or what changed
+      - name: --rule
+        type: string
+        default: ""
+        description: The learned calibration rule
+      - name: --repo
+        type: string
+        default: ""
+        description: Which repo this applies to
+      - name: --scope
+        type: choice
+        default: all_sessions
+        description: "Scope: all_sessions, repo_specific"
+    examples:
+      - devctl log-feedback --type correction --signal "Don't create markdown files" --rule "Never create .md unless asked"
+    related_commands:
+      - query-feedback
+      - log-fact
+
+  - name: query-feedback
+    category: Facts
+    description: Query feedback events for calibration notes
+    options:
+      - name: QUERY
+        type: argument
+        default: null
+        description: Optional semantic search query (positional)
+      - name: --repo
+        type: string
+        default: null
+        description: Filter to repo
+      - name: --type
+        type: choice
+        default: null
+        description: "Filter: correction, confirmation, mode_shift, observation"
+      - name: --limit
+        type: integer
+        default: 5
+        description: Number of results
+    examples:
+      - devctl query-feedback
+      - devctl query-feedback "file creation" --type=correction
+      - devctl query-feedback --repo=div_legal --limit=10
+    related_commands:
+      - log-feedback
+      - query-facts
+
+  # ── Build ──────────────────────────────────────────────────
+
+  - name: provenance
+    category: Build
+    description: Track build provenance -- what generated each output and how to recreate it
+    options:
+      - name: ACTION
+        type: argument
+        default: null
+        description: "Action: show, stale, rebuild, list (required, positional)"
+      - name: PATH
+        type: argument
+        default: null
+        description: File path for show action (optional, positional)
+      - name: --repo
+        type: string
+        default: null
+        description: Filter to a specific repo (used with list)
+    examples:
+      - devctl provenance list
+      - devctl provenance stale
+      - devctl provenance show output/timeline.html
+      - devctl provenance rebuild
+      - devctl provenance list --repo=div_legal
+    related_commands:
+      - benchmark
+      - health
+
+  - name: benchmark
+    category: Build
+    description: Benchmark system operations (embed, upsert, query, encrypt)
+    options:
+      - name: --category
+        type: string
+        default: null
+        description: "Only run: embed, db_upsert, db_query, generate"
+      - name: --compare
+        type: flag
+        default: false
+        description: Compare against historical results
+      - name: --project
+        type: integer
+        default: null
+        description: Project time at this scale (number of items)
+    examples:
+      - devctl benchmark
+      - devctl benchmark --category=db_query --compare
+      - devctl benchmark --project=100000
+    related_commands:
+      - provenance
+      - health
+
+  - name: health
+    category: Build
+    description: System health check covering services, data, repos, pages, and disk
+    options: []
+    examples:
+      - devctl health
+    related_commands:
+      - status
+      - db-status
+      - audit-vectors
+      - benchmark
+
+  # ── Tools ──────────────────────────────────────────────────
+
+  - name: sync
+    category: Tools
+    description: Sync control plane templates to managed repos
+    options:
+      - name: --files
+        type: string
+        default: null
+        description: Comma-separated template files to sync
+      - name: --repo
+        type: string
+        default: null
+        description: Sync to a specific repo only
+      - name: --force
+        type: flag
+        default: false
+        description: Overwrite existing files
+      - name: --dry-run
+        type: flag
+        default: false
+        description: Show what would be synced
+      - name: --all-templates
+        type: flag
+        default: false
+        description: Sync INTENT.md, .env.example, .gitignore
+    examples:
+      - devctl sync --all-templates --dry-run
+      - devctl sync --files=INTENT.md --repo=vpin --force
+    related_commands:
+      - audit
+      - policy
+
+  - name: dashboard
+    category: Tools
+    description: Generate HTML dashboard and deploy to GitHub Pages
+    options: []
+    examples:
+      - devctl dashboard
+    related_commands:
+      - deploy-pages
+      - health
+
+  - name: readme
+    category: Tools
+    description: Generate or augment README.md for a managed repo
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Repo name from registry (required)
+      - name: --init
+        type: flag
+        default: false
+        description: Generate from scratch even if README exists
+      - name: --update
+        type: flag
+        default: false
+        description: Only refresh auto-generated sections
+      - name: --dry-run
+        type: flag
+        default: false
+        description: Print to stdout instead of writing
+    examples:
+      - devctl readme --repo=vpin --update
+      - devctl readme --repo=div_legal --init --dry-run
+    related_commands:
+      - sync
+      - audit
+
+  - name: policy
+    category: Tools
+    description: Lint repos against hard and soft policies
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Lint a specific repo
+    examples:
+      - devctl policy
+      - devctl policy --repo=div_legal
+    related_commands:
+      - audit
+      - secrets
+
+  - name: ingest-sessions
+    category: Tools
+    description: Ingest Claude Code sessions into Qdrant for semantic search
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Only ingest sessions from this repo
+      - name: --all
+        type: flag
+        default: false
+        description: Re-ingest all sessions, ignoring previous state
+      - name: --dry-run
+        type: flag
+        default: false
+        description: Count what would be ingested without doing it
+    examples:
+      - devctl ingest-sessions
+      - devctl ingest-sessions --repo=div_legal
+      - devctl ingest-sessions --all --dry-run
+    related_commands:
+      - search-sessions
+      - embed
+
+  - name: search-sessions
+    category: Tools
+    description: Semantic search across Claude Code sessions
+    options:
+      - name: QUERY
+        type: argument
+        default: null
+        description: Search query (required, positional)
+      - name: --repo
+        type: string
+        default: null
+        description: Filter to a specific repo
+      - name: --role
+        type: choice
+        default: null
+        description: "Filter by role: user, assistant"
+      - name: --limit
+        type: integer
+        default: 10
+        description: Number of results
+      - name: --full
+        type: flag
+        default: false
+        description: Show full chunk text
+    examples:
+      - devctl search-sessions "embedding pipeline"
+      - devctl search-sessions "custody" --repo=div_legal --role=assistant
+      - devctl search-sessions "API setup" --limit=5 --full
+    related_commands:
+      - ingest-sessions
+      - search

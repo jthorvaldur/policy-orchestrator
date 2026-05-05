@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """devctl — control plane CLI for multi-repo management."""
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -83,7 +84,26 @@ def _show_overview():
         cmd_str = f"{C['dim']}, {C['reset']}".join(cmds)
         print(f"  {C['cyan']}{group:<10}{C['reset']} {cmd_str}")
 
-    print(f"\n  {C['dim']}Run devctl <command> --help for details{C['reset']}\n")
+    # Quick start cheat sheet
+    print(f"\n  {C['bold']}Quick Start{C['reset']}\n")
+    cheat = [
+        ("Check everything",        "devctl health"),
+        ("What's dirty?",           "devctl status --dirty"),
+        ("Search all data",         'devctl search "query"'),
+        ("Deploy pages from cwd",   "devctl deploy-pages --auto --verify --push"),
+        ("Run benchmarks",          "devctl benchmark"),
+        ("Scale projection",        "devctl benchmark --project=100000"),
+        ("Vector DB overview",      "devctl db-status"),
+        ("Security audit pages",    "devctl audit-pages"),
+        ("Live page verification",  "devctl verify-pages --quick"),
+        ("What generated a file?",  "devctl provenance show path/file.html"),
+        ("Stale outputs?",          "devctl provenance stale"),
+        ("Log a verified fact",     'devctl log-fact --fact "X" --source-type email --confidence verified --domain legal'),
+    ]
+    for desc, cmd in cheat:
+        print(f"  {C['dim']}{desc:<26}{C['reset']} {cmd}")
+
+    print(f"\n  {C['dim']}Full reference: docs/DEVCTL.md  |  devctl <command> --help{C['reset']}\n")
 
 
 @click.group(invoke_without_command=True)
@@ -536,12 +556,18 @@ def benchmark_cmd(category, compare, project):
 
 @main.command("health")
 def health_cmd():
-    """System health check — Docker, Qdrant, provenance, disk."""
-    # Inline health check — quick and doesn't need a separate script
+    """System health check — services, data, repos, pages, disk."""
+    import json
     import shutil
+    import urllib.request
+
+    import yaml
 
     print(f"\n{C['bold']}  System Health{C['reset']}")
-    print(f"  {'─'*55}\n")
+    print(f"  {'─'*60}\n")
+
+    # ── Services ──
+    print(f"  {C['bold']}Services{C['reset']}")
 
     # Docker
     try:
@@ -550,12 +576,23 @@ def health_cmd():
             capture_output=True, text=True, timeout=5,
         )
         containers = [l.split("\t") for l in result.stdout.strip().split("\n") if l]
-        running = len(containers)
-        print(f"  {C['green']}●{C['reset']} Docker: {running} containers running")
-        for name, status in containers:
-            print(f"    {C['dim']}{name}: {status}{C['reset']}")
-    except Exception as e:
-        print(f"  {C['red']}●{C['reset']} Docker: {e}")
+        print(f"  {C['green']}●{C['reset']} Docker       {len(containers)} containers  {C['dim']}{', '.join(c[0] for c in containers)}{C['reset']}")
+    except Exception:
+        print(f"  {C['red']}●{C['reset']} Docker       unreachable  {C['dim']}fix: open Docker Desktop{C['reset']}")
+
+    # Ollama
+    try:
+        url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+        req = urllib.request.Request(f"{url}/api/tags")
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            data = json.loads(resp.read())
+            model_names = [m.get("name", "?") for m in data.get("models", [])]
+            print(f"  {C['green']}●{C['reset']} Ollama       {len(model_names)} models  {C['dim']}{', '.join(model_names)}{C['reset']}")
+    except Exception:
+        print(f"  {C['red']}●{C['reset']} Ollama       unreachable  {C['dim']}fix: ollama serve{C['reset']}")
+
+    # ── Data ──
+    print(f"\n  {C['bold']}Data{C['reset']}")
 
     # Qdrant
     try:
@@ -565,31 +602,96 @@ def health_cmd():
                 client = QdrantClient(host="localhost", port=port, timeout=3)
                 cols = client.get_collections().collections
                 total = sum(client.get_collection(c.name).points_count for c in cols)
-                print(f"  {C['green']}●{C['reset']} Qdrant :{port}: {len(cols)} collections, {total:,} vectors")
+                print(f"  {C['green']}●{C['reset']} Qdrant :{port}  {len(cols)} collections  {total:,} vectors")
             except Exception:
-                print(f"  {C['red']}●{C['reset']} Qdrant :{port}: unreachable")
+                print(f"  {C['red']}●{C['reset']} Qdrant :{port}  unreachable  {C['dim']}fix: docker start qdrant{C['reset']}")
     except ImportError:
-        print(f"  {C['yellow']}●{C['reset']} qdrant-client not installed")
+        pass
 
-    # Ollama
+    # Source files backing the vectors
     try:
-        import urllib.request
-        url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
-        req = urllib.request.Request(f"{url}/api/tags")
-        with urllib.request.urlopen(req, timeout=3) as resp:
-            data = json.loads(resp.read())
-            models = len(data.get("models", []))
-            print(f"  {C['green']}●{C['reset']} Ollama: {models} models loaded")
-    except Exception:
-        print(f"  {C['red']}●{C['reset']} Ollama: unreachable")
+        with open(REGISTRIES_DIR / "vector-collections.yaml") as f:
+            vcols = yaml.safe_load(f).get("collections", {})
 
-    # Disk
-    total, used, free = shutil.disk_usage("/")
-    github_size = subprocess.run(
-        ["du", "-sh", str(Path.home() / "GitHub")],
-        capture_output=True, text=True, timeout=10,
-    ).stdout.split("\t")[0].strip() if True else "?"
-    print(f"  {C['green']}●{C['reset']} Disk: {free // (1024**3)}GB free, ~/GitHub = {github_size}")
+        source_dirs = {
+            "div_legal": ("~/GitHub/div_legal/sdata/md", "*.md"),
+            "contacts": ("~/GitHub/contacts/data", "**/*.jsonl"),
+            "energy_texas": ("~/GitHub/energy_texas/reports", "*.html"),
+        }
+        file_counts = []
+        for repo, (dir_pattern, glob) in source_dirs.items():
+            d = Path(dir_pattern).expanduser()
+            if d.exists():
+                count = len(list(d.glob(glob)))
+                file_counts.append(f"{repo}:{count}")
+        if file_counts:
+            print(f"  {C['dim']}  source files  {', '.join(file_counts)}{C['reset']}")
+    except Exception:
+        pass
+
+    # Postgres
+    try:
+        result = subprocess.run(
+            ["docker", "exec", "infra-postgres-1", "psql", "-U", "caseledger", "-d", "caseledger",
+             "-t", "-c", "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'"],
+            capture_output=True, text=True, timeout=5,
+        )
+        tables = result.stdout.strip()
+        if tables:
+            print(f"  {C['green']}●{C['reset']} Postgres     :5433  {tables} tables  {C['dim']}caseledger{C['reset']}")
+    except Exception:
+        pass
+
+    # ── Repos ──
+    print(f"\n  {C['bold']}Repos{C['reset']}")
+    try:
+        with open(REGISTRIES_DIR / "repos.yaml") as f:
+            repos = yaml.safe_load(f).get("repos", [])
+        # Count repos on disk
+        github_dir = Path.home() / "GitHub"
+        on_disk = len([d for d in github_dir.iterdir() if d.is_dir() and (d / ".git").exists()]) if github_dir.exists() else 0
+        # Count dirty
+        dirty = 0
+        for d in github_dir.iterdir():
+            if d.is_dir() and (d / ".git").exists():
+                r = subprocess.run(["git", "status", "-s"], cwd=d, capture_output=True, text=True, timeout=5)
+                if r.stdout.strip():
+                    dirty += 1
+        clean = on_disk - dirty
+        print(f"  {C['green']}●{C['reset']} Repos        {len(repos)} registered  {on_disk} on disk  "
+              f"{C['green']}{clean} clean{C['reset']}  {C['yellow']}{dirty} dirty{C['reset']}")
+    except Exception:
+        pass
+
+    # ── Pages ──
+    print(f"\n  {C['bold']}Pages{C['reset']}")
+    try:
+        with open(REGISTRIES_DIR / "pages.yaml") as f:
+            pages_data = yaml.safe_load(f)
+        deployed = pages_data.get("sections", {})
+        pending = pages_data.get("pending", {})
+
+        # Count actual HTML files on disk in hub
+        hub = Path.home() / "GitHub" / "jthorvaldur.github.io" / "r"
+        html_files = [f for f in hub.rglob("*.html") if "_originals" not in str(f)] if hub.exists() else []
+        html_on_disk = len(html_files)
+        encrypted = 0
+        for f in html_files:
+            try:
+                with open(f, "r", errors="ignore") as fh:
+                    head = fh.read(4000)
+                if "const SALT" in head or "AES-GCM" in head:
+                    encrypted += 1
+            except Exception:
+                pass
+
+        print(f"  {C['green']}●{C['reset']} GitHub Pages  {len(deployed)} deployed  {len(pending)} pending  "
+              f"{html_on_disk} HTML files  {C['green']}{encrypted} encrypted{C['reset']}")
+    except Exception:
+        pass
+
+    # ── Build ──
+    print(f"\n  {C['bold']}Build{C['reset']}")
 
     # Provenance
     prov_db = Path.home() / ".local" / "share" / "devctl" / "provenance.db"
@@ -597,10 +699,30 @@ def health_cmd():
         import sqlite3
         conn = sqlite3.connect(str(prov_db))
         count = conn.execute("SELECT COUNT(*) FROM builds").fetchone()[0]
+        repos_tracked = conn.execute("SELECT COUNT(DISTINCT repo) FROM builds").fetchone()[0]
         conn.close()
-        print(f"  {C['green']}●{C['reset']} Provenance: {count} tracked builds")
+        print(f"  {C['green']}●{C['reset']} Provenance   {count} builds tracked  {repos_tracked} repos")
     else:
-        print(f"  {C['yellow']}●{C['reset']} Provenance: no index (run devctl provenance rebuild)")
+        print(f"  {C['yellow']}●{C['reset']} Provenance   no index  {C['dim']}fix: devctl provenance rebuild{C['reset']}")
+
+    # Benchmarks
+    bench_file = Path(__file__).parent.parent.parent / ".profiling" / "benchmarks.jsonl"
+    if bench_file.exists():
+        lines = sum(1 for _ in open(bench_file))
+        print(f"  {C['green']}●{C['reset']} Benchmarks   {lines} measurements on file")
+    else:
+        print(f"  {C['yellow']}●{C['reset']} Benchmarks   none  {C['dim']}fix: devctl benchmark{C['reset']}")
+
+    # ── Disk ──
+    print(f"\n  {C['bold']}Disk{C['reset']}")
+    total, used, free = shutil.disk_usage("/")
+    github_size = subprocess.run(
+        ["du", "-sh", str(Path.home() / "GitHub")],
+        capture_output=True, text=True, timeout=10,
+    ).stdout.split("\t")[0].strip()
+    pct = (used / total) * 100
+    color = C["green"] if pct < 80 else C["yellow"] if pct < 90 else C["red"]
+    print(f"  {color}●{C['reset']} Storage      {free // (1024**3)}GB free ({100 - pct:.0f}%)  ~/GitHub = {github_size}")
 
     print()
 

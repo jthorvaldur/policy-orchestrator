@@ -8,3 +8,13 @@
 {"operation": "qdrant_search_claude_code_sessions", "category": "db_query", "items": 20, "duration_avg_ms": 3.8, "duration_p95_ms": 10.7, "collection_size": 68454, "timestamp": "2026-05-05T15:02:09.557895+00:00"}
 {"operation": "encrypt_page", "category": "generate", "batch_size": 10, "duration_ms": 172, "items": 10, "throughput": 58.1, "units": "pages/sec", "timestamp": "2026-05-05T15:02:09.731534+00:00"}
 {"operation": "encrypt_page", "category": "generate", "batch_size": 100, "duration_ms": 1291, "items": 100, "throughput": 77.5, "units": "pages/sec", "timestamp": "2026-05-05T15:02:11.023632+00:00"}
+{"operation": "embed_ollama", "category": "embed", "batch_size": 1, "duration_ms": 421, "items": 1, "throughput": 2.4, "units": "vectors/sec", "model": "nomic-embed-text", "timestamp": "2026-05-05T16:05:11.376591+00:00"}
+{"operation": "embed_ollama", "category": "embed", "batch_size": 10, "duration_ms": 120, "items": 10, "throughput": 83.3, "units": "vectors/sec", "model": "nomic-embed-text", "timestamp": "2026-05-05T16:05:11.498179+00:00"}
+{"operation": "embed_ollama", "category": "embed", "batch_size": 50, "duration_ms": 377, "items": 50, "throughput": 132.6, "units": "vectors/sec", "model": "nomic-embed-text", "timestamp": "2026-05-05T16:05:11.876813+00:00"}
+{"operation": "qdrant_upsert", "category": "db_upsert", "batch_size": 10, "duration_ms": 6, "items": 10, "throughput": 1666.7, "units": "points/sec", "timestamp": "2026-05-05T16:05:12.301194+00:00"}
+{"operation": "qdrant_upsert", "category": "db_upsert", "batch_size": 100, "duration_ms": 41, "items": 100, "throughput": 2439.0, "units": "points/sec", "timestamp": "2026-05-05T16:05:12.393459+00:00"}
+{"operation": "qdrant_upsert", "category": "db_upsert", "batch_size": 500, "duration_ms": 187, "items": 500, "throughput": 2673.8, "units": "points/sec", "timestamp": "2026-05-05T16:05:12.679140+00:00"}
+{"operation": "qdrant_search_legal_docs_v2", "category": "db_query", "items": 20, "duration_avg_ms": 5.2, "duration_p95_ms": 8.6, "collection_size": 239951, "timestamp": "2026-05-05T16:05:12.808787+00:00"}
+{"operation": "qdrant_search_claude_code_sessions", "category": "db_query", "items": 20, "duration_avg_ms": 2.7, "duration_p95_ms": 4.4, "collection_size": 68454, "timestamp": "2026-05-05T16:05:12.866602+00:00"}
+{"operation": "encrypt_page", "category": "generate", "batch_size": 10, "duration_ms": 160, "items": 10, "throughput": 62.5, "units": "pages/sec", "timestamp": "2026-05-05T16:05:13.028513+00:00"}
+{"operation": "encrypt_page", "category": "generate", "batch_size": 100, "duration_ms": 1246, "items": 100, "throughput": 80.3, "units": "pages/sec", "timestamp": "2026-05-05T16:05:14.275029+00:00"}
