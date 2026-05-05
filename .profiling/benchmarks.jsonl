@@ -1,0 +1,10 @@
+{"operation": "embed_ollama", "category": "embed", "batch_size": 1, "duration_ms": 431, "items": 1, "throughput": 2.3, "units": "vectors/sec", "model": "nomic-embed-text", "timestamp": "2026-05-05T15:02:07.976691+00:00"}
+{"operation": "embed_ollama", "category": "embed", "batch_size": 10, "duration_ms": 111, "items": 10, "throughput": 90.1, "units": "vectors/sec", "model": "nomic-embed-text", "timestamp": "2026-05-05T15:02:08.089626+00:00"}
+{"operation": "embed_ollama", "category": "embed", "batch_size": 50, "duration_ms": 418, "items": 50, "throughput": 119.6, "units": "vectors/sec", "model": "nomic-embed-text", "timestamp": "2026-05-05T15:02:08.509215+00:00"}
+{"operation": "qdrant_upsert", "category": "db_upsert", "batch_size": 10, "duration_ms": 7, "items": 10, "throughput": 1428.6, "units": "points/sec", "timestamp": "2026-05-05T15:02:08.955510+00:00"}
+{"operation": "qdrant_upsert", "category": "db_upsert", "batch_size": 100, "duration_ms": 40, "items": 100, "throughput": 2500.0, "units": "points/sec", "timestamp": "2026-05-05T15:02:09.046667+00:00"}
+{"operation": "qdrant_upsert", "category": "db_upsert", "batch_size": 500, "duration_ms": 199, "items": 500, "throughput": 2512.6, "units": "points/sec", "timestamp": "2026-05-05T15:02:09.348275+00:00"}
+{"operation": "qdrant_search_legal_docs_v2", "category": "db_query", "items": 20, "duration_avg_ms": 5.2, "duration_p95_ms": 8.3, "collection_size": 239951, "timestamp": "2026-05-05T15:02:09.478587+00:00"}
+{"operation": "qdrant_search_claude_code_sessions", "category": "db_query", "items": 20, "duration_avg_ms": 3.8, "duration_p95_ms": 10.7, "collection_size": 68454, "timestamp": "2026-05-05T15:02:09.557895+00:00"}
+{"operation": "encrypt_page", "category": "generate", "batch_size": 10, "duration_ms": 172, "items": 10, "throughput": 58.1, "units": "pages/sec", "timestamp": "2026-05-05T15:02:09.731534+00:00"}
+{"operation": "encrypt_page", "category": "generate", "batch_size": 100, "duration_ms": 1291, "items": 100, "throughput": 77.5, "units": "pages/sec", "timestamp": "2026-05-05T15:02:11.023632+00:00"}

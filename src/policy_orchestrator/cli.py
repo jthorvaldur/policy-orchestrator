@@ -76,6 +76,7 @@ def _show_overview():
         "Pages":    ["deploy-pages", "audit-pages", "verify-pages"],
         "Secrets":  ["secrets", "validate-secrets"],
         "Facts":    ["log-fact", "query-facts", "log-feedback", "query-feedback"],
+        "Build":    ["provenance", "benchmark", "health"],
         "Tools":    ["sync", "dashboard", "readme", "policy", "ingest-sessions", "search-sessions"],
     }
     for group, cmds in groups.items():
@@ -493,6 +494,115 @@ def query_facts_cmd(query, domain, confidence, min_confidence, source_type, repo
     from log_fact import query_facts
     query_facts(query=query, domain=domain, confidence=confidence, min_confidence=min_confidence,
                 source_type=source_type, repo=repo, limit=limit, show_all=show_all)
+
+
+@main.command("provenance")
+@click.argument("action", type=click.Choice(["show", "stale", "rebuild", "list"]))
+@click.argument("path", required=False, default=None)
+@click.option("--repo", default=None, help="Filter to a specific repo")
+def provenance_cmd(action, path, repo):
+    """Track build provenance — what generated each output and how to recreate it."""
+    args = [sys.executable, str(SCRIPTS_DIR / "provenance_index.py")]
+    if action == "show" and path:
+        args.extend(["show", path])
+    elif action == "rebuild":
+        args.append("rebuild")
+    elif action == "stale":
+        args.append("stale")
+    elif action == "list":
+        args.append("list")
+        if repo:
+            args.append(f"--repo={repo}")
+    else:
+        args.append(action)
+    subprocess.run(args)
+
+
+@main.command("benchmark")
+@click.option("--category", default=None, help="Only run this category (embed, db_upsert, db_query, generate)")
+@click.option("--compare", is_flag=True, help="Compare against historical results")
+@click.option("--project", type=int, default=None, help="Project time at this scale (number of items)")
+def benchmark_cmd(category, compare, project):
+    """Benchmark system operations — embed, upsert, query, encrypt."""
+    args = [sys.executable, str(SCRIPTS_DIR / "benchmark.py")]
+    if category:
+        args.append(f"--category={category}")
+    if compare:
+        args.append("--compare")
+    if project:
+        args.append(f"--project={project}")
+    subprocess.run(args)
+
+
+@main.command("health")
+def health_cmd():
+    """System health check — Docker, Qdrant, provenance, disk."""
+    # Inline health check — quick and doesn't need a separate script
+    import shutil
+
+    print(f"\n{C['bold']}  System Health{C['reset']}")
+    print(f"  {'─'*55}\n")
+
+    # Docker
+    try:
+        result = subprocess.run(
+            ["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"],
+            capture_output=True, text=True, timeout=5,
+        )
+        containers = [l.split("\t") for l in result.stdout.strip().split("\n") if l]
+        running = len(containers)
+        print(f"  {C['green']}●{C['reset']} Docker: {running} containers running")
+        for name, status in containers:
+            print(f"    {C['dim']}{name}: {status}{C['reset']}")
+    except Exception as e:
+        print(f"  {C['red']}●{C['reset']} Docker: {e}")
+
+    # Qdrant
+    try:
+        from qdrant_client import QdrantClient
+        for port in [6333, 7333]:
+            try:
+                client = QdrantClient(host="localhost", port=port, timeout=3)
+                cols = client.get_collections().collections
+                total = sum(client.get_collection(c.name).points_count for c in cols)
+                print(f"  {C['green']}●{C['reset']} Qdrant :{port}: {len(cols)} collections, {total:,} vectors")
+            except Exception:
+                print(f"  {C['red']}●{C['reset']} Qdrant :{port}: unreachable")
+    except ImportError:
+        print(f"  {C['yellow']}●{C['reset']} qdrant-client not installed")
+
+    # Ollama
+    try:
+        import urllib.request
+        url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+        req = urllib.request.Request(f"{url}/api/tags")
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            data = json.loads(resp.read())
+            models = len(data.get("models", []))
+            print(f"  {C['green']}●{C['reset']} Ollama: {models} models loaded")
+    except Exception:
+        print(f"  {C['red']}●{C['reset']} Ollama: unreachable")
+
+    # Disk
+    total, used, free = shutil.disk_usage("/")
+    github_size = subprocess.run(
+        ["du", "-sh", str(Path.home() / "GitHub")],
+        capture_output=True, text=True, timeout=10,
+    ).stdout.split("\t")[0].strip() if True else "?"
+    print(f"  {C['green']}●{C['reset']} Disk: {free // (1024**3)}GB free, ~/GitHub = {github_size}")
+
+    # Provenance
+    prov_db = Path.home() / ".local" / "share" / "devctl" / "provenance.db"
+    if prov_db.exists():
+        import sqlite3
+        conn = sqlite3.connect(str(prov_db))
+        count = conn.execute("SELECT COUNT(*) FROM builds").fetchone()[0]
+        conn.close()
+        print(f"  {C['green']}●{C['reset']} Provenance: {count} tracked builds")
+    else:
+        print(f"  {C['yellow']}●{C['reset']} Provenance: no index (run devctl provenance rebuild)")
+
+    print()
 
 
 if __name__ == "__main__":
