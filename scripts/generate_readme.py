@@ -36,29 +36,52 @@ def run(cmd, cwd=None, timeout=10):
 
 
 def get_description(repo_path):
-    """Extract description from CLAUDE.md or pyproject.toml."""
+    """Extract description from pyproject.toml, package.json, or CLAUDE.md."""
+    # Prefer pyproject.toml — most likely to have a real description
+    pyproject = repo_path / "pyproject.toml"
+    if pyproject.exists():
+        for line in pyproject.read_text().split("\n"):
+            if line.strip().startswith("description"):
+                desc = line.split("=", 1)[1].strip().strip('"').strip("'")
+                if desc and "your description" not in desc.lower() and len(desc) > 10:
+                    return desc
+
+    # package.json
+    pkg_json = repo_path / "package.json"
+    if pkg_json.exists():
+        try:
+            pkg = json.loads(pkg_json.read_text())
+            desc = pkg.get("description", "")
+            if desc and len(desc) > 10:
+                return desc
+        except Exception:
+            pass
+
+    # CLAUDE.md overview section
     claude_md = repo_path / "CLAUDE.md"
     if claude_md.exists():
         content = claude_md.read_text()
         in_overview = False
         desc_lines = []
         for line in content.split("\n"):
-            if line.startswith("## Overview"):
+            if "## Overview" in line or "## Project Overview" in line:
                 in_overview = True
                 continue
             if in_overview:
                 if line.startswith("##"):
                     break
-                if line.strip() and not line.startswith(">") and not line.startswith("#"):
-                    desc_lines.append(line.strip())
+                stripped = line.strip()
+                if stripped and not stripped.startswith(">") and not stripped.startswith("#"):
+                    if "your description" not in stripped.lower() and "{{" not in stripped:
+                        desc_lines.append(stripped)
         if desc_lines:
             return " ".join(desc_lines)
 
-    pyproject = repo_path / "pyproject.toml"
-    if pyproject.exists():
-        for line in pyproject.read_text().split("\n"):
-            if line.strip().startswith("description"):
-                return line.split("=", 1)[1].strip().strip('"')
+    # GitHub repo description
+    repo_name = repo_path.name
+    gh_desc = run(["gh", "repo", "view", f"jthorvaldur/{repo_name}", "--json", "description", "--jq", ".description"])
+    if gh_desc and len(gh_desc) > 10:
+        return gh_desc
 
     return ""
 
@@ -152,40 +175,53 @@ def get_tree_annotated(repo_path, max_depth=2):
     return lines
 
 
+def get_dependencies(repo_path):
+    """Extract key dependencies from pyproject.toml or package.json."""
+    deps = []
+    pyproject = repo_path / "pyproject.toml"
+    if pyproject.exists():
+        content = pyproject.read_text()
+        in_deps = False
+        for line in content.split("\n"):
+            if line.strip().startswith("dependencies") and "=" in line:
+                in_deps = True
+                continue
+            if line.strip() == "]":
+                in_deps = False
+            if in_deps and line.strip().startswith('"'):
+                dep = line.strip().strip('",').split(">=")[0].split(">")[0].split("<")[0].split("[")[0].strip()
+                if dep and not dep.startswith("#"):
+                    deps.append(dep)
+    return deps[:15]
+
+
+def get_notebooks(repo_path):
+    """Find Jupyter notebooks, deduplicated by filename, organized by directory."""
+    notebooks = {}
+    seen_names = set()
+    for nb in sorted(repo_path.rglob("*.ipynb")):
+        if ".venv" in str(nb) or "node_modules" in str(nb) or ".ipynb_checkpoints" in str(nb):
+            continue
+        if nb.stem in seen_names:
+            continue
+        seen_names.add(nb.stem)
+        parent = nb.parent.name
+        notebooks.setdefault(parent, []).append(nb.stem)
+    return notebooks
+
+
 def generate_init(repo_name, repo_path, repo_config):
     """Generate a full README from scratch for repos without one."""
     desc = get_description(repo_path) or f"{repo_name} project."
     cli = detect_cli(repo_path)
     tree = get_tree_annotated(repo_path)
     category = repo_config.get("category", "")
+    language = repo_config.get("language", "python")
     commit_count = run(["git", "rev-list", "--count", "HEAD"], cwd=str(repo_path)) or "?"
+    deps = get_dependencies(repo_path)
+    notebooks = get_notebooks(repo_path)
 
     sections = [f"# {repo_name}\n", f"{desc}\n"]
-
-    # Quick start / CLI
-    if cli:
-        sections.append("## Quick Start\n")
-        sections.append("```bash")
-        for cmd_name, help_text in cli.items():
-            # Extract just the usage line and first few commands
-            for line in help_text.split("\n"):
-                line = line.strip()
-                if line.startswith("Usage:") or line.startswith("usage:"):
-                    sections.append(f"# {line}")
-                elif line and not line.startswith("-") and not line.startswith("Options"):
-                    sections.append(f"  {line}")
-            break  # just first CLI tool
-        sections.append("```\n")
-
-    # Architecture / Structure
-    if tree:
-        sections.append("## Structure\n")
-        sections.append("```")
-        for line in tree[:25]:
-            sections.append(line)
-        if len(tree) > 25:
-            sections.append(f"... +{len(tree) - 25} more")
-        sections.append("```\n")
 
     # Setup
     has_py = (repo_path / "pyproject.toml").exists()
@@ -198,6 +234,20 @@ def generate_init(repo_name, repo_path, repo_config):
         sections.append("```bash")
         if has_py:
             sections.append("uv sync")
+            # Check for optional dep groups
+            pyproject = repo_path / "pyproject.toml"
+            if pyproject.exists() and "[project.optional-dependencies]" in pyproject.read_text():
+                content = pyproject.read_text()
+                groups = []
+                for line in content.split("\n"):
+                    if line.strip().endswith("= [") and not line.strip().startswith("[") and not line.strip().startswith("dependencies"):
+                        group = line.strip().split("=")[0].strip()
+                        if group and group != "dependencies":
+                            groups.append(group)
+                if groups:
+                    sections.append(f"# Optional: uv sync --extra {groups[0]}")
+                    if "all" in groups:
+                        sections.append(f"# Full stack: uv sync --all-extras")
         if has_npm:
             sections.append("npm install")
         if has_cargo:
@@ -206,8 +256,48 @@ def generate_init(repo_name, repo_path, repo_config):
             sections.append("go build ./...")
         sections.append("```\n")
 
+    # CLI
+    if cli:
+        sections.append("## Commands\n")
+        for cmd_name, help_text in cli.items():
+            sections.append(f"### `{cmd_name}`\n")
+            sections.append("```")
+            for line in help_text.split("\n")[:20]:
+                sections.append(line)
+            if len(help_text.split("\n")) > 20:
+                sections.append("...")
+            sections.append("```\n")
+
+    # Notebooks
+    if notebooks:
+        sections.append("## Notebooks\n")
+        for folder, nbs in sorted(notebooks.items()):
+            sections.append(f"**{folder}/**")
+            for nb in nbs[:10]:
+                title = nb.replace("_", " ").replace("-", " ")
+                sections.append(f"- `{nb}.ipynb` — {title}")
+            if len(nbs) > 10:
+                sections.append(f"- ... +{len(nbs) - 10} more")
+            sections.append("")
+
+    # Dependencies
+    if deps:
+        sections.append("## Key Dependencies\n")
+        sections.append(", ".join(f"`{d}`" for d in deps))
+        sections.append("")
+
+    # Structure
+    if tree:
+        sections.append("## Structure\n")
+        sections.append("```")
+        for line in tree[:30]:
+            sections.append(line)
+        if len(tree) > 30:
+            sections.append(f"... +{len(tree) - 30} more")
+        sections.append("```\n")
+
     # Footer
-    sections.append("## Part of\n")
+    sections.append("---\n")
     sections.append(f"Managed by [policy-orchestrator](https://github.com/jthorvaldur/policy-orchestrator).")
     if category:
         sections.append(f"Category: {category}. {commit_count} commits.")
