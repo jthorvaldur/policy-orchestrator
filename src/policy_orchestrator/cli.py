@@ -99,6 +99,7 @@ def _show_overview():
         ("What generated a file?",  "devctl provenance show path/file.html"),
         ("Stale outputs?",          "devctl provenance stale"),
         ("Log a verified fact",     'devctl log-fact --fact "X" --source-type email --confidence verified --domain legal'),
+        ("Init a new repo",         "devctl init --name=my_repo --category=research"),
     ]
     for desc, cmd in cheat:
         print(f"  {C['dim']}{desc:<26}{C['reset']} {cmd}")
@@ -112,6 +113,28 @@ def main(ctx):
     """devctl — multi-repo development control plane."""
     if ctx.invoked_subcommand is None:
         _show_overview()
+
+
+@main.command("init")
+@click.option("--name", required=True, help="Repo directory name in ~/GitHub/")
+@click.option("--category", default=None, help="Category (legal, ai-agents, quant-finance, infrastructure, research, creative-math, web-portfolio)")
+@click.option("--visibility", default="private", type=click.Choice(["public", "private"]))
+@click.option("--no-github", is_flag=True, help="Skip GitHub repo creation")
+@click.option("--no-push", is_flag=True, help="Skip initial push")
+@click.option("--dry-run", is_flag=True, help="Show what would be done")
+def init_cmd(name, category, visibility, no_github, no_push, dry_run):
+    """Initialize a new repo into the control plane."""
+    args = [sys.executable, str(SCRIPTS_DIR / "init_repo.py"), f"--name={name}"]
+    if category:
+        args.append(f"--category={category}")
+    args.append(f"--visibility={visibility}")
+    if no_github:
+        args.append("--no-github")
+    if no_push:
+        args.append("--no-push")
+    if dry_run:
+        args.append("--dry-run")
+    subprocess.run(args)
 
 
 @main.command()
