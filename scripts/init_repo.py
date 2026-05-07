@@ -242,7 +242,20 @@ def main():
         "VISIBILITY": args.visibility,
     }
 
-    # 0. Ensure uv project + venv
+    # Core deps by category — the common stack across the ecosystem
+    CORE_DEPS = {
+        "_base": ["httpx", "pyyaml", "click", "tqdm"],
+        "legal": ["anthropic", "qdrant-client", "jinja2", "pymupdf", "beautifulsoup4", "markdownify", "python-frontmatter"],
+        "ai-agents": ["anthropic", "qdrant-client", "sentence-transformers"],
+        "quant-finance": ["pandas", "numpy", "matplotlib", "polars"],
+        "infrastructure": ["qdrant-client", "anthropic"],
+        "research": ["pandas", "numpy", "matplotlib"],
+        "creative-math": ["numpy", "matplotlib"],
+        "web-portfolio": [],
+        "product": ["anthropic", "qdrant-client", "sentence-transformers", "jinja2"],
+    }
+
+    # 0. Ensure uv project + venv + core deps
     print("  Python setup:")
     if language == "python":
         pyproject = repo_path / "pyproject.toml"
@@ -254,6 +267,23 @@ def main():
                 print(f"  WOULD uv init")
         else:
             print(f"  SKIP  pyproject.toml (already exists)")
+
+        # Add core deps for this category
+        deps_to_add = CORE_DEPS.get("_base", []) + CORE_DEPS.get(category, [])
+        # Check which are already in pyproject.toml
+        pyproject = repo_path / "pyproject.toml"
+        existing_deps = ""
+        if pyproject.exists():
+            existing_deps = pyproject.read_text().lower()
+        new_deps = [d for d in deps_to_add if d.lower() not in existing_deps]
+
+        if new_deps and not args.dry_run:
+            run(["uv", "add"] + new_deps, cwd=repo_path, check=True)
+            print(f"  DONE  uv add {', '.join(new_deps)}")
+        elif new_deps:
+            print(f"  WOULD uv add {', '.join(new_deps)}")
+        else:
+            print(f"  SKIP  core deps (already present)")
 
         if not args.dry_run:
             run(["uv", "sync"], cwd=repo_path, check=True)

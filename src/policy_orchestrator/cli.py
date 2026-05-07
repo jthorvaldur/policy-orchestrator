@@ -668,18 +668,23 @@ def health_cmd():
     # ── Repos ──
     print(f"\n  {C['bold']}Repos{C['reset']}")
     try:
+        import concurrent.futures
+
         with open(REGISTRIES_DIR / "repos.yaml") as f:
             repos = yaml.safe_load(f).get("repos", [])
-        # Count repos on disk
         github_dir = Path.home() / "GitHub"
-        on_disk = len([d for d in github_dir.iterdir() if d.is_dir() and (d / ".git").exists()]) if github_dir.exists() else 0
-        # Count dirty
-        dirty = 0
-        for d in github_dir.iterdir():
-            if d.is_dir() and (d / ".git").exists():
+        git_dirs = [d for d in github_dir.iterdir() if d.is_dir() and (d / ".git").exists()] if github_dir.exists() else []
+        on_disk = len(git_dirs)
+
+        def _is_dirty(d):
+            try:
                 r = subprocess.run(["git", "status", "-s"], cwd=d, capture_output=True, text=True, timeout=5)
-                if r.stdout.strip():
-                    dirty += 1
+                return bool(r.stdout.strip())
+            except Exception:
+                return False
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+            dirty = sum(pool.map(_is_dirty, git_dirs))
         clean = on_disk - dirty
         print(f"  {C['green']}●{C['reset']} Repos        {len(repos)} registered  {on_disk} on disk  "
               f"{C['green']}{clean} clean{C['reset']}  {C['yellow']}{dirty} dirty{C['reset']}")
