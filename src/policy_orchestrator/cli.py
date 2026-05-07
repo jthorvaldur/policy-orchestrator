@@ -617,15 +617,36 @@ def health_cmd():
     # ── Data ──
     print(f"\n  {C['bold']}Data{C['reset']}")
 
-    # Qdrant
+    # Qdrant — live counts per collection with drift detection
     try:
         from qdrant_client import QdrantClient
+
+        # Load registry for expected counts
+        try:
+            with open(REGISTRIES_DIR / "vector-collections.yaml") as f:
+                vcols_reg = yaml.safe_load(f).get("collections", {})
+        except Exception:
+            vcols_reg = {}
+
         for port in [6333, 7333]:
             try:
-                client = QdrantClient(host="localhost", port=port, timeout=3)
+                client = QdrantClient(host="localhost", port=port, timeout=5)
                 cols = client.get_collections().collections
-                total = sum(client.get_collection(c.name).points_count for c in cols)
-                print(f"  {C['green']}●{C['reset']} Qdrant :{port}  {len(cols)} collections  {total:,} vectors")
+                total = 0
+                drifted = []
+                for c in cols:
+                    info = client.get_collection(c.name)
+                    count = info.points_count or 0
+                    total += count
+                    expected = vcols_reg.get(c.name, {}).get("points_expected", 0)
+                    if expected and abs(count - expected) / max(expected, 1) > 0.05:
+                        drifted.append(f"{c.name}:{count:,}(exp {expected:,})")
+                status = C["green"]
+                extra = ""
+                if drifted:
+                    status = C["yellow"]
+                    extra = f"  {C['dim']}drift: {', '.join(drifted)}{C['reset']}"
+                print(f"  {status}●{C['reset']} Qdrant :{port}  {len(cols)} collections  {total:,} vectors{extra}")
             except Exception:
                 print(f"  {C['red']}●{C['reset']} Qdrant :{port}  unreachable  {C['dim']}fix: docker start qdrant{C['reset']}")
     except ImportError:
@@ -744,12 +765,18 @@ def health_cmd():
     # ── Disk ──
     print(f"\n  {C['bold']}Disk{C['reset']}")
     total, used, free = shutil.disk_usage("/")
-    github_size = subprocess.run(
-        ["du", "-sh", str(Path.home() / "GitHub")],
-        capture_output=True, text=True, timeout=10,
-    ).stdout.split("\t")[0].strip()
     pct = (used / total) * 100
     color = C["green"] if pct < 80 else C["yellow"] if pct < 90 else C["red"]
+    try:
+        result = subprocess.run(
+            ["du", "-sh", str(Path.home() / "GitHub")],
+            capture_output=True, text=True, timeout=30,
+        )
+        github_size = result.stdout.split("\t")[0].strip() if result.returncode == 0 else "?"
+    except subprocess.TimeoutExpired:
+        github_size = "?"
+    except Exception:
+        github_size = "?"
     print(f"  {color}●{C['reset']} Storage      {free // (1024**3)}GB free ({100 - pct:.0f}%)  ~/GitHub = {github_size}")
 
     print()
