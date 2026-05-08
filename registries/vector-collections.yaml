@@ -19,7 +19,7 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 253000
+    points_expected: 307000
     data_sources:
     - name: Gmail IMAP (2 accounts)
       type: email
