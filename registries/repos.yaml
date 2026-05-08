@@ -298,7 +298,7 @@ repos:
   update_policy: manual-review
   status: active
 - name: cmeordergw
-  path: null
+  path: ~/GitHub/cmeordergw
   github: git@github.com:jthorvaldur/cmeordergw.git
   category: trading
   priority: reference
@@ -307,7 +307,7 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: cv
   path: ~/GitHub/cv
   github: git@github.com:jthorvaldur/cv.git
@@ -320,7 +320,7 @@ repos:
   update_policy: manual-review
   status: active
 - name: delta72
-  path: null
+  path: ~/GitHub/delta72
   github: git@github.com:jthorvaldur/delta72.git
   category: creative-math
   priority: reference
@@ -329,9 +329,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: development-environment
-  path: null
+  path: ~/GitHub/development-environment
   github: git@github.com:jthorvaldur/development-environment.git
   category: infrastructure
   priority: reference
@@ -340,9 +340,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: edelta
-  path: null
+  path: ~/GitHub/edelta
   github: git@github.com:jthorvaldur/edelta.git
   category: infrastructure
   priority: reference
@@ -351,9 +351,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: environ
-  path: null
+  path: ~/GitHub/environ
   github: git@github.com:jthorvaldur/environ.git
   category: infrastructure
   priority: reference
@@ -362,9 +362,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: environx
-  path: null
+  path: ~/GitHub/environx
   github: git@github.com:jthorvaldur/environx.git
   category: infrastructure
   priority: reference
@@ -373,9 +373,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: etfdata
-  path: null
+  path: ~/GitHub/etfdata
   github: git@github.com:jthorvaldur/etfdata.git
   category: quant-finance
   priority: reference
@@ -384,9 +384,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: fi-futures
-  path: null
+  path: ~/GitHub/fi-futures
   github: git@github.com:jthorvaldur/fi-futures.git
   category: quant-finance
   priority: reference
@@ -395,9 +395,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: genutil
-  path: null
+  path: ~/GitHub/genutil
   github: git@github.com:jthorvaldur/genutil.git
   category: infrastructure
   priority: reference
@@ -406,9 +406,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: imclean
-  path: null
+  path: ~/GitHub/imclean
   github: git@github.com:jthorvaldur/imclean.git
   category: infrastructure
   priority: reference
@@ -417,9 +417,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: imdb
-  path: null
+  path: ~/GitHub/imdb
   github: git@github.com:jthorvaldur/imdb.git
   category: infrastructure
   priority: reference
@@ -428,9 +428,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: nova
-  path: null
+  path: ~/GitHub/nova
   github: git@github.com:jthorvaldur/nova.git
   category: trading
   priority: reference
@@ -439,9 +439,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: ns-setup
-  path: null
+  path: ~/GitHub/ns-setup
   github: git@github.com:jthorvaldur/ns-setup.git
   category: infrastructure
   priority: reference
@@ -450,9 +450,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: pylearn
-  path: null
+  path: ~/GitHub/pylearn
   github: git@github.com:jthorvaldur/pylearn.git
   category: infrastructure
   priority: reference
@@ -461,9 +461,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: sv_bin
-  path: null
+  path: ~/GitHub/sv_bin
   github: git@github.com:jthorvaldur/sv_bin.git
   category: trading
   priority: reference
@@ -472,9 +472,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svconfig
-  path: null
+  path: ~/GitHub/svconfig
   github: git@github.com:jthorvaldur/svconfig.git
   category: trading
   priority: reference
@@ -483,9 +483,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svdocs
-  path: null
+  path: ~/GitHub/svdocs
   github: git@github.com:jthorvaldur/svdocs.git
   category: trading
   priority: reference
@@ -494,9 +494,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svgo
-  path: null
+  path: ~/GitHub/svgo
   github: git@github.com:jthorvaldur/svgo.git
   category: trading
   priority: reference
@@ -505,9 +505,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svjavafix
-  path: null
+  path: ~/GitHub/svjavafix
   github: git@github.com:jthorvaldur/svjavafix.git
   category: trading
   priority: reference
@@ -516,9 +516,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svjs
-  path: null
+  path: ~/GitHub/svjs
   github: git@github.com:jthorvaldur/svjs.git
   category: trading
   priority: reference
@@ -527,9 +527,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svpnl
-  path: null
+  path: ~/GitHub/svpnl
   github: git@github.com:jthorvaldur/svpnl.git
   category: trading
   priority: reference
@@ -538,9 +538,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svprod
-  path: null
+  path: ~/GitHub/svprod
   github: git@github.com:jthorvaldur/svprod.git
   category: trading
   priority: reference
@@ -549,9 +549,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svprod-config
-  path: null
+  path: ~/GitHub/svprod-config
   github: git@github.com:jthorvaldur/svprod-config.git
   category: trading
   priority: reference
@@ -560,9 +560,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svpy
-  path: null
+  path: ~/GitHub/svpy
   github: git@github.com:jthorvaldur/svpy.git
   category: trading
   priority: reference
@@ -571,9 +571,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svpyfix
-  path: null
+  path: ~/GitHub/svpyfix
   github: git@github.com:jthorvaldur/svpyfix.git
   category: trading
   priority: reference
@@ -582,9 +582,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svrisk
-  path: null
+  path: ~/GitHub/svrisk
   github: git@github.com:jthorvaldur/svrisk.git
   category: trading
   priority: reference
@@ -593,9 +593,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svstrat
-  path: null
+  path: ~/GitHub/svstrat
   github: git@github.com:jthorvaldur/svstrat.git
   category: trading
   priority: reference
@@ -604,9 +604,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svtex
-  path: null
+  path: ~/GitHub/svtex
   github: git@github.com:jthorvaldur/svtex.git
   category: trading
   priority: reference
@@ -615,9 +615,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svvaluation
-  path: null
+  path: ~/GitHub/svvaluation
   github: git@github.com:jthorvaldur/svvaluation.git
   category: trading
   priority: reference
@@ -626,9 +626,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: svweb
-  path: null
+  path: ~/GitHub/svweb
   github: git@github.com:jthorvaldur/svweb.git
   category: trading
   priority: reference
@@ -637,9 +637,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: tsprojection
-  path: null
+  path: ~/GitHub/tsprojection
   github: git@github.com:jthorvaldur/tsprojection.git
   category: quant-finance
   priority: reference
@@ -648,9 +648,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: twoform
-  path: null
+  path: ~/GitHub/twoform
   github: git@github.com:jthorvaldur/twoform.git
   category: quant-finance
   priority: reference
@@ -659,9 +659,9 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active
 - name: vsconfig
-  path: null
+  path: ~/GitHub/vsconfig
   github: git@github.com:jthorvaldur/vsconfig.git
   category: trading
   priority: reference
@@ -670,4 +670,4 @@ repos:
   vector_namespace: null
   secret_profile: null
   update_policy: manual-review
-  status: remote-only
+  status: active

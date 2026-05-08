@@ -407,7 +407,7 @@ def verify_pages_cmd(section, quick):
 @click.option("--limit", "-n", default=10, help="Number of results")
 @click.option("--collection", "-c", default=None, help="Search specific collection")
 @click.option("--collections", default=None, help="Comma-separated collection names")
-@click.option("--rerank", is_flag=True, help="Apply cross-encoder reranking")
+@click.option("--rerank/--no-rerank", default=True, help="Cross-encoder reranking (default: on)")
 def search_cmd(query, limit, collection, collections, rerank):
     """Unified search across all vector collections."""
     args = [sys.executable, str(SCRIPTS_DIR / "search_unified.py"), query]
@@ -417,8 +417,8 @@ def search_cmd(query, limit, collection, collections, rerank):
         args.extend(["--collection", collection])
     if collections:
         args.extend(["--collections", collections])
-    if rerank:
-        args.append("--rerank")
+    if not rerank:
+        args.append("--no-rerank")
     subprocess.run(args)
 
 
