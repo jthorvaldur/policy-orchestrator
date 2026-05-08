@@ -19,7 +19,7 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 307000
+    points_expected: 361095
     data_sources:
     - name: Gmail IMAP (2 accounts)
       type: email
@@ -268,8 +268,8 @@ collections:
     embedding_model: BAAI/bge-base-en-v1.5
     dimension: 768
     vector_type: hybrid
-    quantization: none
-    points_expected: 664
+    quantization: int8
+    points_expected: 16770
   fact_registry:
     port: 6333
     description: Classified facts with source provenance and confidence levels
