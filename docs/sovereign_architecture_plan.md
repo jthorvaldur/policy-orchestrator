@@ -3,7 +3,7 @@
 > **Status:** Plan / Architecture
 > **Date:** 2026-05-08
 > **Author:** Joel Thorarinson + Claude Opus 4.6
-> **Context:** Emerged from div_legal case work, Magnus/Andrew conversations, morpheme research, and the recognition that conventional legal process operates within a single jurisdictional frame while the actual rights at stake exist in multiple frames simultaneously.
+> **Context:** Emerged from div_legal case work, Magnus/Andrew/Volkmar conversations, morpheme research, and the recognition that conventional legal process operates within a single jurisdictional frame while the actual rights at stake exist in multiple frames simultaneously.
 
 ---
 
@@ -102,7 +102,7 @@ The conventional legal strategy (div_legal, caseledger) operates at Layer 2. The
 - Does DNA establish standing independent of any court order?
 
 #### 2.3 `embedded-commands`
-**Purpose:** Influence engineering toolkit. NLP command embedding for legal, business, and personal communications. Chase Hughes framework formalized as a CLI.
+**Purpose:** Influence engineering toolkit. NLP command embedding for legal, business, and personal communications. Chase Hughes framework formalized as a CLI. Research everything on Chase Hughes, all frameworks.
 
 **Contents:**
 - `docs/six_cognitive_layers.md` — conscious, emotional, identity, social, temporal, somatic
@@ -238,17 +238,17 @@ grammar rewrite "custody of children"       # rephrase in natural rights languag
 
 ### Phase 1: Capture (now)
 - [x] Save all concepts to memory (this document)
-- [ ] Create each repo with INTENT.md, CLAUDE.md, GOAL.md
-- [ ] Register in policy-orchestrator
+- [x] Create each repo with INTENT.md, CLAUDE.md, GOAL.md
+- [x] Register in policy-orchestrator
 
-### Phase 2: Foundation (next session)
-- [ ] `sovereign-legal` — jurisdictional stack + Black's Law translations
-- [ ] `embedded-commands` — six layers + command library + audit CLI
-- [ ] `quantum-grammar` — legal morpheme parser (extends morpheme-page)
+### Phase 2: Foundation (2026-05-08)
+- [x] `sovereign-legal` — jurisdictional stack + Black's Law translations + court analysis + question framework + CLI
+- [x] `embedded-commands` — six layers + command library + audit CLI + DARVO detection + audience projection
+- [x] `quantum-grammar` — SKIPPED: already implemented in `words_quantum_legal` + `morpheme-page`
 
-### Phase 3: Application (ongoing)
-- [ ] `dna-rights` — natural rights framework + offspring distinction
-- [ ] `decentralized-value` — energy/food/land/crypto umbrella
+### Phase 3: Application (2026-05-08)
+- [x] `dna-rights` — natural rights framework + offspring distinction + DNA as claim + force performance + CLI
+- [ ] `decentralized-value` — DEFERRED: `energy_texas` + food-trust already deployed, umbrella can be added later
 - [ ] HTML presentations for each
 - [ ] Integration with caseledger and div_legal
 
