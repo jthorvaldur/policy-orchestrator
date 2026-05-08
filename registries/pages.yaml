@@ -140,6 +140,23 @@ sections:
     url: https://jthorvaldur.github.io/bulldogs/
 
 # ═══════════════════════════════════════════════════════════════════════════
+# REPO: positions
+# Status: DEPLOYED — public research page, no encryption
+# How to update: cd ~/GitHub/positions && uv run positions html && cp docs/index.html ~/GitHub/jthorvaldur.github.io/positions/
+# Generates: comparative taxonomy visualization (133 positions, 5 traditions)
+# ═══════════════════════════════════════════════════════════════════════════
+
+  positions:
+    source_repo: positions
+    source_dir: docs/
+    target_dir: /positions/
+    encryption: none
+    deploy_script: manual copy (uv run positions html)
+    url: https://jthorvaldur.github.io/positions/
+    pages:
+      - index.html -> index.html
+
+# ═══════════════════════════════════════════════════════════════════════════
 # REPO: energy_texas
 # Status: DEPLOYED — 10 research reports (ERCOT, iron-air, UNA, bonds, solar, DC)
 # How to update: devctl deploy-pages --section=energy_texas --push
