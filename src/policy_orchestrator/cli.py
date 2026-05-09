@@ -240,17 +240,39 @@ def list_repos(category):
         registry = yaml.safe_load(f)
 
     repos = registry.get("repos", [])
+
+    # Deduplicate by name
+    seen = set()
+    deduped = []
+    for r in repos:
+        if r["name"] not in seen:
+            seen.add(r["name"])
+            deduped.append(r)
+    repos = deduped
+
     if category:
         repos = [r for r in repos if r["category"] == category]
 
-    print(f"{'Name':<30} {'Category':<18} {'Language':<15} {'Visibility':<12} {'Priority'}")
-    print("-" * 95)
+    total = len(repos)
+    print(f"\n{C['bold']}  devctl list{C['reset']}  {C['dim']}{total} repos{C['reset']}\n")
+
+    # Group by category
+    groups: dict[str, list] = {}
     for repo in repos:
-        print(
-            f"{repo['name']:<30} {repo['category']:<18} {repo.get('language', '-'):<15} "
-            f"{repo.get('visibility', '-'):<12} {repo.get('priority', '-')}"
-        )
-    print(f"\nTotal: {len(repos)} repos")
+        cat = repo.get("category", "other")
+        groups.setdefault(cat, []).append(repo)
+
+    for cat in sorted(groups):
+        cat_repos = groups[cat]
+        print(f"  {C['bold']}{cat}{C['reset']} {C['dim']}({len(cat_repos)}){C['reset']}")
+        for repo in cat_repos:
+            vis = repo.get("visibility", "private")
+            dot = f"{C['green']}\u25cf{C['reset']}" if vis == "private" else f"{C['yellow']}\u25cf{C['reset']}"
+            name = repo["name"]
+            lang = repo.get("language", "-")
+            priority = repo.get("priority", "-")
+            print(f"    {dot} {name:<20s} {C['dim']}{lang:<10s} {vis:<10s}{C['reset']} {priority}")
+        print()
 
 
 @main.command("discover")
