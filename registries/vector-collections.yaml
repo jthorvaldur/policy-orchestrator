@@ -21,19 +21,19 @@ collections:
     chunk_overlap_chars: 128
     points_expected: 361095
     data_sources:
-    - name: Gmail IMAP (2 accounts)
+    - name: Email IMAP (2 accounts)
       type: email
       method: imap_sync.py (incremental by UID)
       repo: div_legal
-    - name: JPM statements (376 PDFs)
+    - name: Bank statements (376 PDFs)
       type: financial
       method: PDF extraction
       repo: div_legal
-    - name: Revolut CSVs (4 currencies)
+    - name: Multi-currency exchange CSVs (4 currencies)
       type: financial
       method: CSV extraction
       repo: div_legal
-    - name: Heather's disclosure (600 docs)
+    - name: Third-party disclosure (600 docs)
       type: legal_filing
       method: zip extraction
       repo: div_legal
@@ -41,7 +41,7 @@ collections:
       type: chat
       method: ingest_signal.py
       repo: div_legal
-    - name: Conniff file transfer
+    - name: Atty C file transfer
       type: court_document
       method: OCR + extraction
       repo: div_legal

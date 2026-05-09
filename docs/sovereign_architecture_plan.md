@@ -3,7 +3,7 @@
 > **Status:** Plan / Architecture
 > **Date:** 2026-05-08
 > **Author:** Joel Thorarinson + Claude Opus 4.6
-> **Context:** Emerged from div_legal case work, Magnus/Andrew/Volkmar conversations, morpheme research, and the recognition that conventional legal process operates within a single jurisdictional frame while the actual rights at stake exist in multiple frames simultaneously.
+> **Context:** Emerged from div_legal case work, Consultant M/Consultant A/Consultant V conversations, morpheme research, and the recognition that conventional legal process operates within a single jurisdictional frame while the actual rights at stake exist in multiple frames simultaneously.
 
 ---
 

@@ -17,8 +17,8 @@ rules:
       or personal communications must be encrypted with AES-256-GCM before
       committing to jthorvaldur.github.io.
     check: >
-      grep for name patterns (cook, thorarinson, hensgen, allison, conniff,
-      tarara) in unencrypted HTML. Pages with >0 matches that lack
+      grep for name patterns (case_ref, party_a, party_b, atty_c,
+      atty_t) in unencrypted HTML. Pages with >0 matches that lack
       "const SALT" are violations.
     exceptions:
       - r/index.html (password gate, name in credential hint only)

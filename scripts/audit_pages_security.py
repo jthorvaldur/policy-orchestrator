@@ -20,8 +20,8 @@ R_DIR = HUB / "r"
 
 # Names that indicate sensitive content
 SENSITIVE_PATTERNS = [
-    "cook6724", "thorarinson v", "hensgen", "conniff", "tarara",
-    "atagan", "plaid_", "ssn", "social security",
+    "case_ref", "party_a", "party_b", "atty_c", "atty_t",
+    "atagan", "ssn", "social security",
     "bank account", "routing number",
 ]
 

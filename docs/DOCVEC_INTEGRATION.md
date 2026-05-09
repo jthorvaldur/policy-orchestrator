@@ -46,7 +46,7 @@ devctl embed --repo contacts --collection whatsapp_chats  # specific collection
 
 ```bash
 devctl search "Reserve 1153 balance $77,185"
-devctl search "custody schedule Allison" --rerank
+devctl search "custody schedule Party A" --rerank
 devctl search "settlement damages" --collection legal_docs_v2
 devctl search "discussed mortgage" --collections legal_docs_v2,whatsapp_chats
 ```
@@ -233,8 +233,8 @@ All variables from `~/.oh-my-zsh/custom/keys.zsh` that are relevant:
 ### Financial APIs
 | Variable | Used By | Purpose |
 |----------|---------|---------|
-| `PLAID_CLIENT_ID` | div_legal (future) | Banking API access |
-| `PLAID_SECRET` | div_legal (future) | Banking API secret |
+| `BANKING_API_CLIENT_ID` | div_legal (future) | Banking API access |
+| `BANKING_API_SECRET` | div_legal (future) | Banking API secret |
 
 ## Implementation Steps
 

@@ -52,7 +52,7 @@ def _synthetic_texts(n: int, avg_chars: int = 500) -> list[str]:
     topics = ["custody", "asset disclosure", "contempt", "discovery", "settlement",
               "energy storage", "grid compliance", "bond issuance", "solar partnership"]
     courts = ["Cook County", "Circuit", "Family", "Domestic Relations"]
-    banks = ["JPMorgan", "Chase", "Revolut", "Wells Fargo"]
+    banks = ["Primary Bank", "Chase", "Multi-Currency Exchange", "Wells Fargo"]
     adjs = ["significant", "recurring", "notable", "concerning", "stable"]
 
     texts = []

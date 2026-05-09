@@ -109,20 +109,20 @@ sections:
 # ═══════════════════════════════════════════════════════════════════════════
 # REPO: jthorvaldur.github.io (self-contained filing section)
 # Status: DEPLOYED
-# How to update: cd ~/GitHub/jthorvaldur.github.io && node r/cook6724-QgixOl/filing/_encrypt.js
+# How to update: cd ~/GitHub/jthorvaldur.github.io && node r/CASE_REF-QgixOl/filing/_encrypt.js
 #   Or centrally: devctl deploy-pages --section=filing --push
 # Generates: legal filing documents (encrypted in-place)
 # ═══════════════════════════════════════════════════════════════════════════
 
   filing:
     source_repo: jthorvaldur.github.io
-    source_dir: r/cook6724-QgixOl/filing/_originals/
-    target_dir: r/cook6724-QgixOl/filing/
+    source_dir: r/CASE_REF-QgixOl/filing/_originals/
+    target_dir: r/CASE_REF-QgixOl/filing/
     encryption: aes-256-gcm
     password_env: JTHORVALDUR_LEGAL_PAGE_PASSWORD
     session_key: filing_key
-    deploy_script: node r/cook6724-QgixOl/filing/_encrypt.js
-    encrypt_tool: r/cook6724-QgixOl/filing/_encrypt.js
+    deploy_script: node r/CASE_REF-QgixOl/filing/_encrypt.js
+    encrypt_tool: r/CASE_REF-QgixOl/filing/_encrypt.js
 
 # ═══════════════════════════════════════════════════════════════════════════
 # REPO: bulldogs
@@ -318,8 +318,8 @@ pending:
     password_env: CONTACTS_PAGE_PASSWORD
     session_key: _cp
     pages:
-      - allison_3d.html
-      - allison_hensgen_space.html
+      - party_a_3d.html
+      - party_a_space.html
       - joel_roadmap.html
       - joel_thorarinson_dashboard.html
       - joel_thorarinson_deep_view.html
@@ -344,7 +344,7 @@ pending:
 #     r/influence/   (pending)   session_key: _cp
 #
 #   JTHORVALDUR_LEGAL_PAGE_PASSWORD:
-#     r/cook6724-QgixOl/filing/  (7 pages)   session_key: filing_key
+#     r/CASE_REF-QgixOl/filing/  (7 pages)   session_key: filing_key
 #     r/reports/                  (45+ pages) session_key: filing_key
 #     r/case/                     (6 pages)   session_key: filing_key
 #
