@@ -22,8 +22,7 @@ rules:
       "const SALT" are violations.
     exceptions:
       - r/index.html (password gate, name in credential hint only)
-      - r/qwl/index.html (password gate)
-      - r/qwl/data/basis_map.html (password gate)
+      - r/qwl/** (intentionally public — source repo is public on GitHub)
       - cv/index.html (intentionally public profile)
       - index.html (homepage, public portfolio)
 
@@ -105,8 +104,8 @@ crypto_spec:
 
 password_zones:
   CONTACTS_PAGE_PASSWORD:
-    session_keys: [_cp, qwl_key]
-    sections: [contacts, concepts, d72, food-trust, qwl, dimensions]
+    session_keys: [_cp]
+    sections: [contacts, concepts, d72, food-trust, dimensions]
 
   JTHORVALDUR_LEGAL_PAGE_PASSWORD:
     session_keys: [filing_key]

@@ -100,11 +100,8 @@ sections:
     source_repo: words_quantum_legal
     source_dir: viz/
     target_dir: r/qwl/
-    encryption: aes-256-gcm
-    password_env: CONTACTS_PAGE_PASSWORD
-    session_key: qwl_key
-    deploy_script: node tools/encrypt_pages.mjs $PASSWORD ~/GitHub/jthorvaldur.github.io/r/qwl/
-    encrypt_tool: tools/encrypt_pages.mjs
+    encryption: none  # public — source repo is open
+    deploy_script: cp ~/GitHub/words_quantum_legal/viz/*.html ~/GitHub/jthorvaldur.github.io/r/qwl/
 
 # ═══════════════════════════════════════════════════════════════════════════
 # REPO: jthorvaldur.github.io (self-contained filing section)
