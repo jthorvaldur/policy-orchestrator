@@ -320,12 +320,12 @@ pending:
     pages:
       - party_a_3d.html
       - party_a_space.html
-      - joel_roadmap.html
-      - joel_thorarinson_dashboard.html
-      - joel_thorarinson_deep_view.html
-      - joel_thorarinson_report.html
-      - joel_thorarinson_roadmap.html
-      - jthorvaldur.github.io_dimensions.html
+      - owner_roadmap_v2.html
+      - owner_dashboard.html
+      - owner_deep_view.html
+      - owner_report.html
+      - owner_roadmap.html
+      - site_dimensions.html
       - legal-tax-ops_dimensions.html
     # example_report.html excluded — template, not content
 

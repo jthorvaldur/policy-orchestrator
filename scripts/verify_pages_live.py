@@ -132,6 +132,21 @@ def test_section(name, section, password, quick=False):
     details = []
 
     if not pages:
+        # If section has a direct URL (e.g., GitHub Actions deployed), just check that
+        section_url = section.get("url")
+        if section_url:
+            try:
+                r = httpx.get(section_url, timeout=15.0, follow_redirects=True)
+                if r.status_code == 200:
+                    details.append(("pass", f"{C['green']}✓{C['reset']} {section_url}  {C['dim']}live{C['reset']}"))
+                    return 1, 0, 0, 0, details
+                else:
+                    details.append(("fail", f"{C['red']}✗{C['reset']} {section_url}  {C['dim']}HTTP {r.status_code}{C['reset']}"))
+                    return 0, 0, 1, 0, details
+            except Exception as e:
+                details.append(("fail", f"{C['red']}✗{C['reset']} {section_url}  {C['red']}{e}{C['reset']}"))
+                return 0, 0, 1, 0, details
+
         # Auto-discover from local source dir
         source_repo = section.get("source_repo", "")
         source_dir = section.get("source_dir", "")
