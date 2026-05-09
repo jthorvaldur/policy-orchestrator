@@ -161,3 +161,7 @@ gai env             # keys.zsh propagation check
 See [`docs/DEVCTL.md`](docs/DEVCTL.md) for all 27 commands with options, examples, and cross-references.
 
 Machine-readable: [`docs/devctl-commands.yaml`](docs/devctl-commands.yaml).
+
+<!-- AUTO:footer -->
+Managed by [policy-orchestrator](https://github.com/jthorvaldur/policy-orchestrator). Category: infrastructure. 53 commits, last updated 10 minutes ago.
+<!-- /AUTO:footer -->
