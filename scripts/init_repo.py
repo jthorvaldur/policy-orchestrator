@@ -323,6 +323,14 @@ def main():
         else:
             print(f"  WOULD .gitignore (create)")
 
+    # Create scripts/ directory
+    scripts_dir = repo_path / "scripts"
+    if not scripts_dir.exists() and not args.dry_run:
+        scripts_dir.mkdir()
+        print(f"  DONE  scripts/ (created)")
+    elif not scripts_dir.exists():
+        print(f"  WOULD scripts/ (create)")
+
     # 2. Register in repos.yaml
     print("\n  Registry:")
     register_in_repos_yaml(name, category, language, args.visibility, args.dry_run)
