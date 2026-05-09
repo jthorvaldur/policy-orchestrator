@@ -107,6 +107,45 @@ jthorvaldur has a 61-repo ecosystem with real depth (2M+ vectors, CME gateway, p
 
 12. **Differentiate forks** — puffin (299 commits over upstream) should have a "What's different" section in its README explaining the value-add.
 
+## CI, Releases, and Gists as policy-orchestrator concerns
+
+The ruvnet comparison surfaced that CI badges, tagged releases, and published gists are not cosmetic — they're process enforcement. This is exactly what policy-orchestrator exists to do. The gap isn't "we should add badges for looks," it's "our governance system should enforce the same standards externally that it enforces internally."
+
+### Concrete policy-orchestrator extensions
+
+1. **`devctl audit-ci`** — Check that every public repo has at least one GitHub Actions workflow. Flag repos with no CI as policy violations (WARN, not ERROR).
+
+2. **`devctl audit-readmes`** — Check that every public repo has:
+   - Description > 10 words
+   - At least one badge (CI, license, Python version)
+   - Install/usage section
+   - Flag missing items as WARN
+
+3. **`devctl audit-releases`** — Check that active public repos have at least one tagged release. Repos with 10+ commits and no release get a WARN.
+
+4. **Release automation** — Add `release-please` or `semantic-release` to policy-orchestrator and key public repos. Auto-tag on merge to main. The control plane should dogfood this first.
+
+5. **Gist publishing pipeline** — Non-sensitive scripts from `~/bin` and standalone `devctl` subcommands could be published as gists. Gists appear in GitHub search, on the profile, and demonstrate breadth without requiring full repos. A `devctl publish-gist` command could handle this.
+
+6. **Public repo readiness gate** — Before any repo goes from private to public, require:
+   - CI workflow present
+   - README meets minimum quality bar
+   - No secrets in git history (`devctl secrets` clean)
+   - `.gitignore` covers `.env`, credentials
+   - License file present
+   - Description and topics set on GitHub
+
+### Making repos public — the work ahead
+
+Candidates for public visibility (each needs the readiness gate above):
+- `cortex` — AI agent coordination (strongest AI signal)
+- `vector-lab` — vector DB work (demonstrates data infrastructure)
+- `alpha_research` or `ts_embed` — quant signal (shifts profile from legal-heavy to finance/AI)
+- `llm-router` — LLM routing (practical, reusable tool)
+- `positions` — already deployed publicly, repo could match
+
+Each requires: secrets audit, README rewrite, CI workflow, license, and topic tagging. This is non-trivial per-repo work, but the readiness gate policy means it only needs to be defined once in policy-orchestrator.
+
 ## What NOT to do
 
 - **Don't inflate volume.** ruvnet's strategy is explicitly "publish first, patent-block later." That's a specific legal strategy, not a universal best practice. Quality and depth are the differentiator here.
