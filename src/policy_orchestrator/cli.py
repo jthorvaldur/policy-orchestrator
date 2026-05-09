@@ -78,6 +78,7 @@ def _show_overview():
         "Secrets":  ["secrets", "validate-secrets"],
         "Facts":    ["log-fact", "query-facts", "log-feedback", "query-feedback"],
         "Build":    ["provenance", "benchmark", "health"],
+        "Traffic":  ["traffic"],
         "Tools":    ["sync", "dashboard", "readme", "policy", "ingest-sessions", "search-sessions"],
     }
     for group, cmds in groups.items():
@@ -574,6 +575,23 @@ def benchmark_cmd(category, compare, project):
         args.append("--compare")
     if project:
         args.append(f"--project={project}")
+    subprocess.run(args)
+
+
+@main.command("traffic")
+@click.option("--repo", default=None, help="Show detailed traffic for a specific repo")
+@click.option("--sort", default="clones", type=click.Choice(["clones", "views", "name"]),
+              help="Sort order (default: clones)")
+@click.option("--json", "as_json", is_flag=True, help="JSON output")
+def traffic_cmd(repo, sort, as_json):
+    """GitHub traffic stats — clones, views, referrers across all repos."""
+    args = [sys.executable, str(SCRIPTS_DIR / "traffic.py")]
+    if repo:
+        args.append(f"--repo={repo}")
+    if sort != "clones":
+        args.append(f"--sort={sort}")
+    if as_json:
+        args.append("--json")
     subprocess.run(args)
 
 
