@@ -718,3 +718,14 @@ repos:
   update_policy: manual-review
   status: active
   pages: r/influence/
+- name: jthorvaldur
+  path: ~/GitHub/jthorvaldur
+  github: git@github.com:jthorvaldur/jthorvaldur.git
+  category: infrastructure
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
