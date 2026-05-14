@@ -12,7 +12,7 @@ from pathlib import Path
 
 import httpx
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.models import Distance, PointStruct, SparseVector, VectorParams
 
 # ---------------------------------------------------------------------------
 # Config
@@ -36,10 +36,10 @@ BATCH_SIZE = 100
 # ---------------------------------------------------------------------------
 
 
-def embed_text(text: str, max_chars: int = 8000, max_retries: int = 3) -> list[float]:
-    """Get embedding vector via BGE (sentence-transformers) or Ollama fallback."""
-    from lib.embedder import embed_text as _embed
-    return _embed(text, max_chars=max_chars)
+def embed_hybrid(text: str, max_chars: int = 8000):
+    """Get dense + sparse vectors via docvec (BGE + SPLADE)."""
+    from docvec.embedder import embed_hybrid as _embed_hybrid
+    return _embed_hybrid(text[:max_chars])
 
 
 # ---------------------------------------------------------------------------
@@ -188,8 +188,11 @@ def discover_sessions(repo_filter: str | None = None) -> list[dict]:
         if repo_filter and repo_name != repo_filter:
             continue
 
-        for jsonl_file in project_dir.glob("*.jsonl"):
+        for jsonl_file in project_dir.rglob("*.jsonl"):
             session_id = jsonl_file.stem
+            # Determine if this is a subagent session
+            rel = jsonl_file.relative_to(project_dir)
+            is_subagent = "subagent" in str(rel)
             mtime = datetime.fromtimestamp(jsonl_file.stat().st_mtime)
 
             sessions.append({
@@ -199,6 +202,7 @@ def discover_sessions(repo_filter: str | None = None) -> list[dict]:
                 "path": jsonl_file,
                 "date": mtime.strftime("%Y-%m-%d"),
                 "size": jsonl_file.stat().st_size,
+                "is_subagent": is_subagent,
             })
 
     return sessions
@@ -311,10 +315,16 @@ def ingest_sessions(
                     total_points += 1
                     continue
 
-                vector = embed_text(chunk)
+                hybrid = embed_hybrid(chunk)
                 point = PointStruct(
                     id=str(uuid.uuid4()),
-                    vector={"dense": vector},
+                    vector={
+                        "dense": hybrid.dense,
+                        "sparse": SparseVector(
+                            indices=hybrid.sparse.indices,
+                            values=hybrid.sparse.values,
+                        ),
+                    },
                     payload={
                         "session_id": session_id,
                         "project": project,
