@@ -86,20 +86,57 @@ def get_description(repo_path):
     return ""
 
 
+def _get_py_docstring(path):
+    """Extract the module docstring from a Python file (first triple-quoted string)."""
+    try:
+        content = path.read_text()
+        # Match triple-quoted docstring at top of file (after optional from __future__)
+        m = re.search(r'^(?:from __future__.*?\n)?(?:#[^\n]*\n)*\s*"""(.*?)"""', content, re.DOTALL)
+        if m:
+            # Return first paragraph only
+            doc = m.group(1).strip()
+            first_para = doc.split("\n\n")[0].replace("\n", " ").strip()
+            return first_para[:200]
+    except Exception:
+        pass
+    return ""
+
+
+def _has_argparse(path):
+    """Check if a Python file uses argparse (likely a CLI script)."""
+    try:
+        content = path.read_text()
+        return "argparse" in content or "click" in content or "typer" in content
+    except Exception:
+        return False
+
+
 def detect_cli(repo_path):
     """Try to detect CLI tools and get their --help output."""
     cli_help = {}
 
-    # Check for executable scripts
-    for candidate in ["gpu", "devctl", "main.py"]:
+    # Check for named executables first
+    for candidate in ["gpu", "devctl"]:
         path = repo_path / candidate
-        if path.exists() and (path.stat().st_mode & 0o111 or candidate.endswith(".py")):
-            if candidate.endswith(".py"):
-                help_text = run(["python3", str(path), "--help"], cwd=str(repo_path), timeout=5)
-            else:
-                help_text = run([str(path), "--help"], cwd=str(repo_path), timeout=5)
+        if path.exists() and (path.stat().st_mode & 0o111):
+            help_text = run([str(path), "--help"], cwd=str(repo_path), timeout=5)
             if help_text and len(help_text) > 20:
                 cli_help[candidate] = help_text
+
+    # Discover all top-level Python scripts with argparse/click/typer
+    skip_py = {"setup.py", "conftest.py", "__init__.py"}
+    for py in sorted(repo_path.glob("*.py")):
+        if py.name in skip_py or py.name in cli_help:
+            continue
+        if _has_argparse(py):
+            help_text = run(["python3", str(py), "--help"], cwd=str(repo_path), timeout=8)
+            if help_text and len(help_text) > 20:
+                cli_help[py.name] = help_text
+            elif not help_text:
+                # Fallback: use docstring as description
+                doc = _get_py_docstring(py)
+                if doc:
+                    cli_help[py.name] = doc
 
     # Check pyproject.toml [project.scripts]
     pyproject = repo_path / "pyproject.toml"
