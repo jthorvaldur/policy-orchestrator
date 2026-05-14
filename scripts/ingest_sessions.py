@@ -314,7 +314,7 @@ def ingest_sessions(
                 vector = embed_text(chunk)
                 point = PointStruct(
                     id=str(uuid.uuid4()),
-                    vector=vector,
+                    vector={"dense": vector},
                     payload={
                         "session_id": session_id,
                         "project": project,
