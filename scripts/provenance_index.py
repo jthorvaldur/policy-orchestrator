@@ -32,6 +32,8 @@ def get_db():
     DB_DIR.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
+
+    # Original builds table (build artifact provenance)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS builds (
             id TEXT PRIMARY KEY,
@@ -50,6 +52,36 @@ def get_db():
     """)
     conn.execute("CREATE INDEX IF NOT EXISTS idx_builds_repo ON builds(repo)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_builds_ts ON builds(timestamp)")
+
+    # File-level provenance (all tracked files)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS files (
+            content_hash TEXT PRIMARY KEY,
+            file_path TEXT NOT NULL,
+            repo TEXT,
+            first_seen TEXT DEFAULT (datetime('now')),
+            last_modified TEXT,
+            file_size INTEGER,
+            mime_type TEXT,
+            created_by TEXT,
+            session_id TEXT,
+            git_commit TEXT
+        )
+    """)
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_files_repo ON files(repo)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_files_path ON files(file_path)")
+
+    # File lineage (input → output relationships)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS file_lineage (
+            output_hash TEXT NOT NULL REFERENCES files(content_hash),
+            input_hash TEXT NOT NULL REFERENCES files(content_hash),
+            transform TEXT,
+            timestamp TEXT DEFAULT (datetime('now')),
+            PRIMARY KEY (output_hash, input_hash)
+        )
+    """)
+
     conn.commit()
     return conn
 
@@ -211,6 +243,163 @@ def list_builds(repo_filter=None):
     print(f"\n  {len(rows)} records\n")
 
 
+def _hash_file_sha256(path: Path) -> str:
+    """SHA-256 hash of file contents."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return f"sha256:{h.hexdigest()}"
+
+
+def _guess_mime(path: Path) -> str:
+    """Basic MIME type guess from extension."""
+    ext_map = {
+        ".py": "text/x-python", ".js": "text/javascript", ".ts": "text/typescript",
+        ".html": "text/html", ".css": "text/css", ".md": "text/markdown",
+        ".json": "application/json", ".yaml": "text/yaml", ".yml": "text/yaml",
+        ".csv": "text/csv", ".sql": "text/sql", ".sh": "text/x-shellscript",
+        ".pdf": "application/pdf", ".png": "image/png", ".jpg": "image/jpeg",
+        ".lz4": "application/x-lz4", ".gz": "application/gzip",
+        ".zip": "application/zip", ".toml": "text/toml",
+    }
+    return ext_map.get(path.suffix.lower(), "application/octet-stream")
+
+
+def scan_repo(repo_name: str):
+    """Hash all tracked files in a repo and register in provenance DB."""
+    with open(REGISTRIES / "repos.yaml") as f:
+        repos = {r["name"]: r for r in yaml.safe_load(f).get("repos", [])}
+
+    if repo_name not in repos:
+        print(f"  {C['red']}Repo '{repo_name}' not in registry{C['reset']}")
+        return
+
+    repo_path = Path(repos[repo_name]["path"]).expanduser()
+    if not repo_path.exists():
+        print(f"  {C['red']}Path not found: {repo_path}{C['reset']}")
+        return
+
+    # Get git-tracked files (respects .gitignore)
+    import subprocess
+    result = subprocess.run(
+        ["git", "ls-files"], capture_output=True, text=True, cwd=str(repo_path)
+    )
+    if result.returncode != 0:
+        print(f"  {C['red']}Not a git repo: {repo_path}{C['reset']}")
+        return
+
+    tracked_files = [repo_path / f for f in result.stdout.strip().split("\n") if f]
+
+    # Get latest git commit
+    commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=str(repo_path)
+    ).stdout.strip()[:40]
+
+    conn = get_db()
+    new_count = 0
+    updated_count = 0
+    skipped_count = 0
+
+    for fp in tracked_files:
+        if not fp.exists() or fp.is_dir():
+            continue
+
+        content_hash = _hash_file_sha256(fp)
+        file_size = fp.stat().st_size
+        last_modified = str(fp.stat().st_mtime)
+        rel_path = str(fp.relative_to(repo_path))
+
+        # Check if already tracked with same hash
+        existing = conn.execute(
+            "SELECT content_hash, file_path FROM files WHERE file_path = ? AND repo = ?",
+            (rel_path, repo_name),
+        ).fetchone()
+
+        if existing and existing["content_hash"] == content_hash:
+            skipped_count += 1
+            continue
+
+        if existing:
+            # File changed — update
+            conn.execute(
+                """UPDATE files SET content_hash=?, last_modified=?, file_size=?,
+                   git_commit=? WHERE file_path=? AND repo=?""",
+                (content_hash, last_modified, file_size, commit, rel_path, repo_name),
+            )
+            updated_count += 1
+        else:
+            # New file
+            conn.execute(
+                """INSERT OR REPLACE INTO files
+                   (content_hash, file_path, repo, last_modified, file_size,
+                    mime_type, created_by, git_commit)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (content_hash, rel_path, repo_name, last_modified, file_size,
+                 _guess_mime(fp), "git", commit),
+            )
+            new_count += 1
+
+    conn.commit()
+    conn.close()
+
+    total = new_count + updated_count + skipped_count
+    print(f"  {C['bold']}{repo_name}{C['reset']}: "
+          f"{total} files scanned, "
+          f"{C['green']}{new_count} new{C['reset']}, "
+          f"{C['yellow']}{updated_count} updated{C['reset']}, "
+          f"{C['dim']}{skipped_count} unchanged{C['reset']}")
+
+
+def trace_file(file_path: str):
+    """Show full provenance chain for a file."""
+    conn = get_db()
+    # Search by path (partial match)
+    rows = conn.execute(
+        "SELECT * FROM files WHERE file_path LIKE ?",
+        (f"%{file_path}%",),
+    ).fetchall()
+
+    if not rows:
+        print(f"  {C['yellow']}No file found matching: {file_path}{C['reset']}")
+        return
+
+    for row in rows:
+        row = dict(row)
+        print(f"\n  {C['bold']}{row['repo']}/{row['file_path']}{C['reset']}")
+        print(f"  {'Hash:':<16} {row['content_hash']}")
+        print(f"  {'Size:':<16} {row['file_size']} bytes")
+        print(f"  {'Type:':<16} {row['mime_type']}")
+        print(f"  {'Created by:':<16} {row['created_by']}")
+        print(f"  {'Git commit:':<16} {row['git_commit']}")
+        print(f"  {'First seen:':<16} {row['first_seen']}")
+
+        # Check lineage
+        inputs = conn.execute(
+            "SELECT f.repo, f.file_path, l.transform FROM file_lineage l "
+            "JOIN files f ON f.content_hash = l.input_hash "
+            "WHERE l.output_hash = ?",
+            (row["content_hash"],),
+        ).fetchall()
+        if inputs:
+            print(f"  {'Derived from:':<16}")
+            for inp in inputs:
+                print(f"    {inp['repo']}/{inp['file_path']} (via {inp['transform']})")
+
+        outputs = conn.execute(
+            "SELECT f.repo, f.file_path, l.transform FROM file_lineage l "
+            "JOIN files f ON f.content_hash = l.output_hash "
+            "WHERE l.input_hash = ?",
+            (row["content_hash"],),
+        ).fetchall()
+        if outputs:
+            print(f"  {'Used to create:':<16}")
+            for out in outputs:
+                print(f"    {out['repo']}/{out['file_path']} (via {out['transform']})")
+
+    print()
+
+
 def main():
     args = sys.argv[1:]
     cmd = args[0] if args else "list"
@@ -221,6 +410,11 @@ def main():
         show_provenance(args[1])
     elif cmd == "stale":
         find_stale()
+    elif cmd == "scan" and len(args) > 1:
+        repo_name = args[1].replace("--repo=", "")
+        scan_repo(repo_name)
+    elif cmd == "trace" and len(args) > 1:
+        trace_file(args[1])
     elif cmd == "list":
         repo = None
         for a in args:
