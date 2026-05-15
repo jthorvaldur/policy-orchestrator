@@ -1,0 +1,25 @@
+# Policy Orchestrator — TimescaleDB for unified timeseries
+# Usage: docker compose -f infra/docker-compose.yml up -d
+#
+# Port 5434 — coexists with:
+#   5432 = host postgres (if any)
+#   5433 = caseledger postgres
+#
+# Data: trades (Binance + Hyperliquid), bars, events, facts timeline, file registry
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    ports:
+      - "5434:5432"
+    volumes:
+      - tsdb_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_DB: orchestrator
+      POSTGRES_USER: orchestrator
+      POSTGRES_PASSWORD: orchestrator_dev
+    restart: unless-stopped
+
+volumes:
+  tsdb_data:

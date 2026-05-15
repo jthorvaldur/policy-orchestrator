@@ -12,6 +12,8 @@ dependencies = [
     "cryptography>=47.0.0",
     "docvec",
     "sentence-transformers>=3.3",
+    "psycopg2-binary>=2.9.12",
+    "lz4>=4.4.5",
 ]
 
 [tool.uv.sources]
