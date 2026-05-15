@@ -213,21 +213,28 @@ def discover_sessions(repo_filter: str | None = None) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 
-def load_state() -> set[str]:
-    """Load set of already-ingested session IDs."""
+def load_state() -> dict:
+    """Load ingested session state: {session_id: {"size": file_size}}."""
     if STATE_FILE.exists():
         with open(STATE_FILE) as f:
             data = json.load(f)
-        return set(data.get("ingested_sessions", []))
-    return set()
+        # Migrate from old format (list of IDs) to new format (dict with sizes)
+        old_list = data.get("ingested_sessions", [])
+        state = data.get("ingested_state", {})
+        if old_list and not state:
+            state = {sid: {"size": 0} for sid in old_list}
+        return state
+    return {}
 
 
-def save_state(session_ids: set[str]):
-    """Save ingested session IDs."""
+def save_state(state: dict):
+    """Save ingested session state with file sizes."""
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    # Keep backward-compatible list for old code
     with open(STATE_FILE, "w") as f:
         json.dump({
-            "ingested_sessions": sorted(session_ids),
+            "ingested_sessions": sorted(state.keys()),
+            "ingested_state": state,
             "last_run": datetime.now().isoformat(),
         }, f, indent=2)
 
@@ -276,10 +283,17 @@ def ingest_sessions(
     sessions = discover_sessions(repo_filter=repo_filter)
     print(f"Found {len(sessions)} sessions", file=sys.stderr)
 
-    # Filter already ingested
-    ingested = load_state() if incremental else set()
-    new_sessions = [s for s in sessions if s["session_id"] not in ingested]
-    print(f"New sessions to ingest: {len(new_sessions)}", file=sys.stderr)
+    # Filter: skip sessions that haven't changed since last ingest
+    state = load_state() if incremental else {}
+    new_sessions = []
+    for s in sessions:
+        sid = s["session_id"]
+        file_size = s["path"].stat().st_size if s["path"].exists() else 0
+        prev = state.get(sid, {})
+        prev_size = prev.get("size", 0) if isinstance(prev, dict) else 0
+        if sid not in state or file_size > prev_size * 1.1:  # re-ingest if grown >10%
+            new_sessions.append(s)
+    print(f"New/updated sessions to ingest: {len(new_sessions)}", file=sys.stderr)
 
     if not new_sessions:
         print("Nothing to ingest.", file=sys.stderr)
@@ -288,7 +302,7 @@ def ingest_sessions(
     total_points = 0
     total_turns = 0
     batch: list[PointStruct] = []
-    newly_ingested: set[str] = set()
+    newly_ingested: dict[str, dict] = {}
 
     for i, session in enumerate(new_sessions):
         session_id = session["session_id"]
@@ -301,10 +315,11 @@ def ingest_sessions(
             end="", flush=True, file=sys.stderr,
         )
 
+        file_size = session["path"].stat().st_size if session["path"].exists() else 0
         turns = parse_session(session["path"])
         if not turns:
             print("(empty)", file=sys.stderr)
-            newly_ingested.add(session_id)
+            newly_ingested[session_id] = {"size": file_size}
             continue
 
         turn_count = 0
@@ -347,17 +362,17 @@ def ingest_sessions(
             turn_count += 1
             total_turns += 1
 
-        newly_ingested.add(session_id)
+        newly_ingested[session_id] = {"size": file_size}
         print(f"{turn_count} turns, {total_points} points so far", file=sys.stderr)
 
     # Flush remaining batch
     if batch and not dry_run:
         upsert_batch(client, batch)
 
-    # Save state
+    # Save state — merge new into existing
     if not dry_run:
-        all_ingested = ingested | newly_ingested
-        save_state(all_ingested)
+        all_state = {**state, **newly_ingested}
+        save_state(all_state)
 
     print(f"\nDone. {total_points} points from {total_turns} turns across {len(new_sessions)} sessions.", file=sys.stderr)
     if not dry_run:
