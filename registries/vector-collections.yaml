@@ -19,7 +19,7 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 361095
+    points_expected: 379784
     data_sources:
     - name: Email IMAP (2 accounts)
       type: email
@@ -65,7 +65,7 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 1711012
+    points_expected: 1711019
     data_sources:
     - name: Shared corpus from div_legal
       type: legal
@@ -165,7 +165,7 @@ collections:
     quantization: none
     chunk_max_chars: 512
     chunk_overlap_chars: 64
-    points_expected: 68454
+    points_expected: 96146
     data_sources:
     - name: Claude Code sessions (all repos)
       type: conversation
