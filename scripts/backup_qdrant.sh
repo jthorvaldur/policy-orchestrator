@@ -43,6 +43,18 @@ print(data.get('result', {}).get('name', ''))
     done
 done
 
-# Clean old backups (keep 7 days)
+# Upload to Backblaze B2 if rclone is configured
+if command -v rclone &>/dev/null && rclone listremotes 2>/dev/null | grep -q "b2:"; then
+    echo "Uploading snapshots to B2..."
+    rclone copy "$BACKUP_DIR" b2:jthor-qdrant-backups/ \
+        --transfers 4 --fast-list \
+        --max-age 1d \
+        2>&1 | tail -5
+    echo "B2 upload complete"
+else
+    echo "rclone/B2 not configured — local backup only"
+fi
+
+# Clean old local backups (keep 7 days)
 find "$BACKUP_DIR" -name "*.snapshot" -mtime +7 -delete 2>/dev/null
 echo "Backup complete: $BACKUP_DIR"
