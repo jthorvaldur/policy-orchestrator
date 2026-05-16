@@ -124,7 +124,7 @@ def main():
     parser.add_argument("query", help="Search query")
     parser.add_argument("--repo", default=None, help="Filter to a specific repo")
     parser.add_argument("--role", default=None, choices=["user", "assistant"], help="Filter by role")
-    parser.add_argument("--limit", type=int, default=10, help="Number of results")
+    parser.add_argument("--limit", type=int, default=20, help="Number of results")
     parser.add_argument("--full", action="store_true", help="Show full chunk text instead of preview")
 
     args = parser.parse_args()

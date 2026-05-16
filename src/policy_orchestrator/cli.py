@@ -427,14 +427,14 @@ def verify_pages_cmd(section, quick):
 
 @main.command("search")
 @click.argument("query")
-@click.option("--limit", "-n", default=10, help="Number of results")
+@click.option("--limit", "-n", default=20, help="Number of results")
 @click.option("--collection", "-c", default=None, help="Search specific collection")
 @click.option("--collections", default=None, help="Comma-separated collection names")
 @click.option("--rerank/--no-rerank", default=True, help="Cross-encoder reranking (default: on)")
 def search_cmd(query, limit, collection, collections, rerank):
     """Unified search across all vector collections."""
     args = [sys.executable, str(SCRIPTS_DIR / "search_unified.py"), query]
-    if limit != 10:
+    if limit != 20:
         args.extend(["--limit", str(limit)])
     if collection:
         args.extend(["--collection", collection])

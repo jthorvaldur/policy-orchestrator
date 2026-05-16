@@ -335,6 +335,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "fastapi", marker = "extra == 'service'", specifier = ">=0.115" },
     { name = "fastembed", specifier = ">=0.5" },
     { name = "fastembed", marker = "extra == 'all'", specifier = ">=0.5" },
     { name = "fastembed", marker = "extra == 'sparse'", specifier = ">=0.5" },
@@ -348,8 +349,9 @@ requires-dist = [
     { name = "sentence-transformers", marker = "extra == 'st'", specifier = ">=3.3" },
     { name = "torch", marker = "extra == 'gpu'", specifier = ">=2.0" },
     { name = "tqdm", specifier = ">=4.66" },
+    { name = "uvicorn", marker = "extra == 'service'", specifier = ">=0.32" },
 ]
-provides-extras = ["st", "sparse", "rerank", "gpu", "all"]
+provides-extras = ["st", "sparse", "rerank", "gpu", "service", "all"]
 
 [[package]]
 name = "fastembed"

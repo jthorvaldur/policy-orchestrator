@@ -34,7 +34,7 @@ def _text_for_result(payload: dict) -> str:
     return str(payload)
 
 
-def search(query, limit=10, collection=None, collections=None, rerank=True):
+def search(query, limit=20, collection=None, collections=None, rerank=True):
     """Search across collections using docvec federated search."""
     from docvec.config import EmbedConfig
     from docvec.embedder import embed_hybrid, embed_text
@@ -234,7 +234,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Unified cross-repo vector search")
     parser.add_argument("query", help="Search query")
-    parser.add_argument("--limit", "-n", type=int, default=10)
+    parser.add_argument("--limit", "-n", type=int, default=20)
     parser.add_argument("--collection", "-c", default=None, help="Search specific collection")
     parser.add_argument("--collections", default=None, help="Comma-separated collection names")
     parser.add_argument("--rerank", action="store_true", default=True, help="Apply cross-encoder reranking (default)")
