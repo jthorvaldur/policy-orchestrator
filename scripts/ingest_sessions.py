@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """Ingest Claude Code sessions into Qdrant for semantic search."""
 
-import hashlib
 import json
 import re
 import sys
 import time
-import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -40,6 +38,12 @@ def embed_hybrid(text: str, max_chars: int = 8000):
     """Get dense + sparse vectors via docvec (BGE + SPLADE)."""
     from docvec.embedder import embed_hybrid as _embed_hybrid
     return _embed_hybrid(text[:max_chars])
+
+
+def _point_id(session_id: str, turn_index: int, chunk_index: int) -> str:
+    """Deterministic point ID — re-ingestion upserts instead of duplicating."""
+    from docvec.ids import chunk_point_id
+    return chunk_point_id(f"{session_id}::{turn_index}", chunk_index)
 
 
 # ---------------------------------------------------------------------------
@@ -332,7 +336,7 @@ def ingest_sessions(
 
                 hybrid = embed_hybrid(chunk)
                 point = PointStruct(
-                    id=str(uuid.uuid4()),
+                    id=_point_id(session_id, turn["turn_index"], chunk_idx),
                     vector={
                         "dense": hybrid.dense,
                         "sparse": SparseVector(

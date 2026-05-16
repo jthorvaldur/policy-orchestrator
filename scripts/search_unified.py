@@ -166,17 +166,36 @@ def search(query, limit=20, collection=None, collections=None, rerank=True):
         print("No results found.", file=sys.stderr)
         return
 
-    # Deduplicate by doc_id — keep highest scoring chunk per document
-    if any(r["doc_id"] for r in all_results):
-        seen_docs: dict[str, dict] = {}
-        deduped = []
-        for r in sorted(all_results, key=lambda x: x["score"], reverse=True):
-            did = r["doc_id"]
-            if not did or did not in seen_docs:
-                deduped.append(r)
-                if did:
-                    seen_docs[did] = r
-        all_results = deduped
+    # --- Two-tier dedup (runs before reranker to maximize diversity) ---
+    from docvec.ids import content_fingerprint
+
+    # Tier 1: Content fingerprint — catches cross-source and re-ingestion dupes
+    seen_fp: dict[str, dict] = {}
+    deduped = []
+    for r in sorted(all_results, key=lambda x: x["score"], reverse=True):
+        fp = content_fingerprint(r["content_preview"])
+        if fp in seen_fp:
+            seen_fp[fp].setdefault("similar_count", 0)
+            seen_fp[fp]["similar_count"] += 1
+            continue
+        seen_fp[fp] = r
+        r["similar_count"] = 0
+        deduped.append(r)
+
+    # Tier 2: doc_id dedup — keep highest-scoring chunk per document
+    seen_docs: dict[str, dict] = {}
+    final = []
+    for r in deduped:
+        did = r["doc_id"]
+        if not did or did not in seen_docs:
+            final.append(r)
+            if did:
+                seen_docs[did] = r
+        else:
+            seen_docs[did].setdefault("similar_count", 0)
+            seen_docs[did]["similar_count"] += 1
+
+    all_results = final
 
     # Sort by retrieval score
     all_results.sort(key=lambda r: r["score"], reverse=True)
@@ -223,7 +242,9 @@ def search(query, limit=20, collection=None, collections=None, rerank=True):
         if title and len(title) > 60:
             title = title[:57] + "..."
 
-        print(f"  [{i+1}] {r['score']:.3f}  {r['collection']}  {source}  {date}")
+        similar = r.get("similar_count", 0)
+        similar_tag = f"  [+{similar} similar]" if similar else ""
+        print(f"  [{i+1}] {r['score']:.3f}  {r['collection']}  {source}  {date}{similar_tag}")
         if title:
             print(f"      {title}")
         print(f"      {text}")
