@@ -55,6 +55,6 @@ else
     echo "rclone/B2 not configured — local backup only"
 fi
 
-# Clean old local backups (keep 7 days)
-find "$BACKUP_DIR" -name "*.snapshot" -mtime +7 -delete 2>/dev/null
+# Clean old local backups (keep 2 days — B2 has full history)
+find "$BACKUP_DIR" -name "*.snapshot" -mtime +2 -delete 2>/dev/null
 echo "Backup complete: $BACKUP_DIR"
