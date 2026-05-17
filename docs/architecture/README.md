@@ -36,6 +36,7 @@ The concept DB (`concepts`, `directives`, `fact_registry`) is the institutional 
 | [09-deployment.md](09-deployment.md) | Local stack, Docker, LaunchAgents, AWS Lambda scaling path |
 | [10-outputs.md](10-outputs.md) | HTML timelines, court filings, encrypted pages, binder generation |
 | [11-knowledge-loop.md](11-knowledge-loop.md) | Feedback re-injection, concept growth, learning loop |
+| [12-fact-treatment.md](12-fact-treatment.md) | 6-layer context model, eval loop, confidence-weighted retrieval (from OpenAI) |
 
 ## Quick Start (Local)
 
