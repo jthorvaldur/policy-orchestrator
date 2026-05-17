@@ -1,11 +1,16 @@
-# Policy Orchestrator — TimescaleDB for unified timeseries
+# Policy Orchestrator — Infrastructure Services
 # Usage: docker compose -f infra/docker-compose.yml up -d
 #
-# Port 5434 — coexists with:
+# Services:
+#   timescaledb  — Unified timeseries on port 5434
+#   neo4j        — Knowledge graph on ports 7474 (browser) / 7687 (bolt)
+#
+# Port map (coexistence):
 #   5432 = host postgres (if any)
 #   5433 = caseledger postgres
-#
-# Data: trades (Binance + Hyperliquid), bars, events, facts timeline, file registry
+#   5434 = timescaledb (this stack)
+#   7474 = neo4j browser
+#   7687 = neo4j bolt
 
 services:
   timescaledb:
@@ -21,5 +26,20 @@ services:
       POSTGRES_PASSWORD: orchestrator_dev
     restart: unless-stopped
 
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    environment:
+      NEO4J_AUTH: neo4j/devctl-graph
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+    restart: unless-stopped
+
 volumes:
   tsdb_data:
+  neo4j_data:

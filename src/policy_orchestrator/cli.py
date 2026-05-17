@@ -617,6 +617,161 @@ def traffic_cmd(repo, sort, as_json):
     subprocess.run(args)
 
 
+@main.command("graph")
+@click.argument("action", type=click.Choice(["status", "populate", "query", "demo"]))
+@click.argument("query_text", required=False)
+def graph_cmd(action, query_text):
+    """Knowledge graph — status, populate, query, demo."""
+    if action == "populate":
+        args = [sys.executable, str(SCRIPTS_DIR / "populate_graph.py")]
+        subprocess.run(args)
+    elif action == "status":
+        args = [sys.executable, str(SCRIPTS_DIR / "populate_graph.py"), "--stats"]
+        subprocess.run(args)
+    elif action == "demo":
+        args = [sys.executable, str(SCRIPTS_DIR / "populate_graph.py"), "--demo"]
+        subprocess.run(args)
+    elif action == "query":
+        if not query_text:
+            print(f"  {C['red']}Usage: devctl graph query \"concept name or topic\"{C['reset']}")
+            return
+        import base64
+        import json
+        import urllib.request
+        creds = base64.b64encode(b"neo4j:devctl-graph").decode()
+        # Find concept and its neighbors
+        cypher = (
+            f"MATCH (c:Concept) WHERE toLower(c.name) CONTAINS toLower('{query_text}') "
+            "OR ANY(t IN c.tags WHERE toLower(t) CONTAINS toLower('" + query_text + "')) "
+            "OPTIONAL MATCH (c)-[r]-(other:Concept) "
+            "RETURN c.name AS concept, c.domain AS domain, "
+            "collect(DISTINCT {type: type(r), target: other.name, desc: r.description}) AS connections"
+        )
+        payload = json.dumps({"statements": [{"statement": cypher}]}).encode()
+        req = urllib.request.Request(
+            "http://localhost:7474/db/neo4j/tx/commit", data=payload,
+            headers={"Content-Type": "application/json", "Authorization": f"Basic {creds}"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read())
+            results = data["results"][0]["data"]
+            if not results:
+                print(f"  No concepts matching '{query_text}'")
+                return
+            for row in results:
+                name, domain, conns = row["row"]
+                print(f"\n  {C['bold']}{name}{C['reset']}  {C['dim']}({domain}){C['reset']}")
+                for conn in conns:
+                    if conn["target"]:
+                        print(f"    {conn['type']:>20}  {conn['target']}")
+                        if conn.get("desc"):
+                            print(f"    {' ' * 20}  {C['dim']}{conn['desc']}{C['reset']}")
+            print()
+        except Exception as e:
+            print(f"  {C['red']}Neo4j unreachable: {e}{C['reset']}")
+
+
+FASTAPI_SERVICES = {
+    "daylight": {
+        "port": 8000,
+        "repo": "daylight",
+        "cmd": ["uv", "run", "uvicorn", "src.api.main:app", "--host", "127.0.0.1", "--port", "8000"],
+        "desc": "Document intelligence API",
+    },
+    "docvec": {
+        "port": 8100,
+        "repo": "docvec",
+        "cmd": ["uv", "run", "--extra", "service", "uvicorn", "docvec.service:app", "--host", "127.0.0.1", "--port", "8100"],
+        "desc": "Embedding & reranking service",
+    },
+}
+
+
+@main.command("services")
+@click.argument("action", type=click.Choice(["status", "start", "stop"]))
+@click.argument("name", required=False)
+def services_cmd(action, name):
+    """Manage FastAPI services — status, start, stop."""
+    import json
+    import signal
+    import urllib.request
+
+    github_dir = Path.home() / "GitHub"
+
+    def _check(svc_name, svc):
+        try:
+            req = urllib.request.Request(f"http://localhost:{svc['port']}/health")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                data = json.loads(resp.read())
+                return True, data
+        except Exception:
+            return False, {}
+
+    def _find_pid(port):
+        try:
+            result = subprocess.run(
+                ["lsof", "-ti", f":{port}"],
+                capture_output=True, text=True, timeout=5,
+            )
+            pids = result.stdout.strip().split("\n")
+            return [int(p) for p in pids if p.strip()]
+        except Exception:
+            return []
+
+    if action == "status":
+        targets = {name: FASTAPI_SERVICES[name]} if name and name in FASTAPI_SERVICES else FASTAPI_SERVICES
+        print(f"\n{C['bold']}  FastAPI Services{C['reset']}\n")
+        for svc_name, svc in targets.items():
+            alive, data = _check(svc_name, svc)
+            if alive:
+                version = data.get("version", "")
+                models = data.get("models", {})
+                detail = f"v{version}" if version else ", ".join(models.keys()) if models else "ok"
+                pids = _find_pid(svc["port"])
+                pid_str = f"  pid {pids[0]}" if pids else ""
+                print(f"  {C['green']}●{C['reset']} {svc_name:<12} :{svc['port']}  {detail}{pid_str}  {C['dim']}{svc['desc']}{C['reset']}")
+            else:
+                print(f"  {C['red']}●{C['reset']} {svc_name:<12} :{svc['port']}  stopped  {C['dim']}{svc['desc']}{C['reset']}")
+        print()
+
+    elif action == "start":
+        targets = {name: FASTAPI_SERVICES[name]} if name and name in FASTAPI_SERVICES else FASTAPI_SERVICES
+        for svc_name, svc in targets.items():
+            alive, _ = _check(svc_name, svc)
+            if alive:
+                print(f"  {C['green']}●{C['reset']} {svc_name} already running on :{svc['port']}")
+                continue
+            repo_dir = github_dir / svc["repo"]
+            if not repo_dir.exists():
+                print(f"  {C['red']}●{C['reset']} {svc_name}: repo not found at {repo_dir}")
+                continue
+            log_dir = Path.home() / ".local" / "share" / "devctl" / "logs"
+            log_dir.mkdir(parents=True, exist_ok=True)
+            log_file = log_dir / f"{svc_name}.log"
+            with open(log_file, "a") as lf:
+                proc = subprocess.Popen(
+                    svc["cmd"], cwd=repo_dir,
+                    stdout=lf, stderr=lf,
+                    start_new_session=True,
+                )
+            print(f"  {C['green']}●{C['reset']} {svc_name} started on :{svc['port']}  pid {proc.pid}  {C['dim']}log: {log_file}{C['reset']}")
+
+    elif action == "stop":
+        targets = {name: FASTAPI_SERVICES[name]} if name and name in FASTAPI_SERVICES else FASTAPI_SERVICES
+        for svc_name, svc in targets.items():
+            pids = _find_pid(svc["port"])
+            if not pids:
+                print(f"  {C['dim']}●{C['reset']} {svc_name} not running")
+                continue
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+            print(f"  {C['yellow']}●{C['reset']} {svc_name} stopped  {C['dim']}pid {', '.join(str(p) for p in pids)}{C['reset']}")
+
+
 @main.command("health")
 def health_cmd():
     """System health check — services, data, repos, pages, disk."""
@@ -653,6 +808,23 @@ def health_cmd():
             print(f"  {C['green']}●{C['reset']} Ollama       {len(model_names)} models  {C['dim']}{', '.join(model_names)}{C['reset']}")
     except Exception:
         print(f"  {C['red']}●{C['reset']} Ollama       unreachable  {C['dim']}fix: ollama serve{C['reset']}")
+
+    # FastAPI services
+    fastapi_services = [
+        ("Daylight", 8000, "daylight", "uv run uvicorn src.api.main:app --host 127.0.0.1 --port 8000"),
+        ("Docvec", 8100, "docvec", "uv run --extra service uvicorn docvec.service:app --host 127.0.0.1 --port 8100"),
+    ]
+    for name, port, repo, start_cmd in fastapi_services:
+        try:
+            req = urllib.request.Request(f"http://localhost:{port}/health")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                data = json.loads(resp.read())
+                version = data.get("version", "")
+                models = data.get("models", {})
+                detail = f"v{version}" if version else ", ".join(f"{k}" for k in models)
+                print(f"  {C['green']}●{C['reset']} {name:<12} :{port}  {C['dim']}{detail}{C['reset']}")
+        except Exception:
+            print(f"  {C['red']}●{C['reset']} {name:<12} :{port} unreachable  {C['dim']}fix: devctl services start {repo}{C['reset']}")
 
     # ── Data ──
     print(f"\n  {C['bold']}Data{C['reset']}")
@@ -725,6 +897,26 @@ def health_cmd():
             print(f"  {C['green']}●{C['reset']} Postgres     :5433  {tables} tables  {C['dim']}caseledger{C['reset']}")
     except Exception:
         pass
+
+    # Neo4j
+    try:
+        import base64
+        creds = base64.b64encode(b"neo4j:devctl-graph").decode()
+        req = urllib.request.Request(
+            "http://localhost:7474/db/neo4j/tx/commit",
+            data=json.dumps({"statements": [
+                {"statement": "MATCH (n) RETURN count(n) AS nodes"},
+                {"statement": "MATCH ()-[r]->() RETURN count(r) AS edges"},
+            ]}).encode(),
+            headers={"Content-Type": "application/json", "Authorization": f"Basic {creds}"},
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+            nodes = data["results"][0]["data"][0]["row"][0]
+            edges = data["results"][1]["data"][0]["row"][0]
+            print(f"  {C['green']}●{C['reset']} Neo4j        :7687  {nodes} nodes  {edges} edges  {C['dim']}knowledge graph{C['reset']}")
+    except Exception:
+        print(f"  {C['red']}●{C['reset']} Neo4j        :7687  unreachable  {C['dim']}fix: docker compose -f infra/docker-compose.yml up -d neo4j{C['reset']}")
 
     # ── Repos ──
     print(f"\n  {C['bold']}Repos{C['reset']}")

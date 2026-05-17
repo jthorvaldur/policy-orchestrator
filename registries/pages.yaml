@@ -63,6 +63,7 @@ sections:
       - concept_browser.html -> browser.html
       - concept_network.html -> network.html
       - system_overview.html -> system.html
+      - concept-web.html -> concept-web.html
 
   d72:
     source_repo: contacts
