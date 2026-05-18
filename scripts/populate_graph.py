@@ -232,6 +232,284 @@ def populate_edges():
     print(f"  {len(EDGES)} edges loaded.")
 
 
+def fetch_facts_from_qdrant():
+    """Pull all facts from fact_registry collection."""
+    all_points = []
+    offset = None
+    while True:
+        body = {"limit": 100, "with_payload": True, "with_vector": False}
+        if offset:
+            body["offset"] = offset
+        req = urllib.request.Request(
+            "http://localhost:6333/collections/fact_registry/points/scroll",
+            data=json.dumps(body).encode(),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+        points = data["result"]["points"]
+        all_points.extend(points)
+        offset = data["result"].get("next_page_offset")
+        if not offset or not points:
+            break
+    return all_points
+
+
+def escape_cypher(s):
+    """Escape a string for inline Cypher (single-quoted)."""
+    if not s:
+        return ""
+    return s.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"').replace("\n", " ").replace("\r", "")
+
+
+def populate_facts():
+    """Phase 2: Pull facts from Qdrant and create graph nodes + edges."""
+    print("  Fetching facts from Qdrant fact_registry...")
+    points = fetch_facts_from_qdrant()
+    print(f"  Found {len(points)} facts.")
+
+    # Create constraints for new node types
+    neo4j_query([
+        "CREATE CONSTRAINT fact_id IF NOT EXISTS FOR (f:Fact) REQUIRE f.id IS UNIQUE",
+        "CREATE CONSTRAINT category_id IF NOT EXISTS FOR (c:Category) REQUIRE c.id IS UNIQUE",
+        "CREATE CONSTRAINT repo_id IF NOT EXISTS FOR (r:Repo) REQUIRE r.id IS UNIQUE",
+        "CREATE INDEX fact_domain IF NOT EXISTS FOR (f:Fact) ON (f.domain)",
+        "CREATE INDEX fact_confidence IF NOT EXISTS FOR (f:Fact) ON (f.confidence)",
+        "CREATE INDEX fact_category IF NOT EXISTS FOR (f:Fact) ON (f.category)",
+    ])
+
+    # Collect unique categories and repos
+    categories = {}
+    repos = {}
+    for p in points:
+        pay = p["payload"]
+        cat = pay.get("category", "uncategorized")
+        if cat and cat != "?":
+            categories[cat] = categories.get(cat, 0) + 1
+        repo = pay.get("repo", "unknown")
+        if repo:
+            repos[repo] = repos.get(repo, 0) + 1
+
+    # Create Category nodes
+    print(f"  Creating {len(categories)} category nodes...")
+    cat_stmts = []
+    for cat, count in categories.items():
+        cat_escaped = escape_cypher(cat)
+        # Readable name: iron_air -> Iron Air
+        name = cat.replace("_", " ").title()
+        cat_stmts.append(
+            f"MERGE (c:Category {{id: '{cat_escaped}'}}) "
+            f"SET c.name = '{escape_cypher(name)}', c.fact_count = {count}"
+        )
+    neo4j_query(cat_stmts)
+
+    # Create Repo nodes
+    print(f"  Creating {len(repos)} repo nodes...")
+    repo_stmts = []
+    for repo, count in repos.items():
+        repo_stmts.append(
+            f"MERGE (r:Repo {{id: '{escape_cypher(repo)}'}}) "
+            f"SET r.fact_count = {count}"
+        )
+    neo4j_query(repo_stmts)
+
+    # Create Fact nodes in batches (Neo4j HTTP API handles multiple statements)
+    BATCH = 50
+    fact_count = 0
+    for i in range(0, len(points), BATCH):
+        batch = points[i:i + BATCH]
+        stmts = []
+        for p in batch:
+            pay = p["payload"]
+            fact_id = str(p["id"])
+            fact_name = escape_cypher(pay.get("fact", "")[:200])
+            text = escape_cypher(pay.get("text", "")[:500])
+            domain = escape_cypher(pay.get("domain", ""))
+            confidence = escape_cypher(pay.get("confidence", ""))
+            confidence_rank = pay.get("confidence_rank", 0)
+            source_type = escape_cypher(pay.get("source_type", ""))
+            source_ref = escape_cypher(pay.get("source_ref", ""))
+            category = escape_cypher(pay.get("category", ""))
+            repo = escape_cypher(pay.get("repo", ""))
+            logged_at = escape_cypher(pay.get("logged_at", ""))
+
+            # Create fact node
+            stmts.append(
+                f"MERGE (f:Fact {{id: '{fact_id}'}}) "
+                f"SET f.name = '{fact_name}', "
+                f"f.text = '{text}', "
+                f"f.domain = '{domain}', "
+                f"f.confidence = '{confidence}', "
+                f"f.confidence_rank = {confidence_rank}, "
+                f"f.source_type = '{source_type}', "
+                f"f.source_ref = '{source_ref}', "
+                f"f.category = '{category}', "
+                f"f.repo = '{repo}', "
+                f"f.logged_at = '{logged_at}'"
+            )
+
+            # Edge: Fact -> Category
+            if category and category != "?":
+                stmts.append(
+                    f"MATCH (f:Fact {{id: '{fact_id}'}}), (c:Category {{id: '{category}'}}) "
+                    f"MERGE (f)-[:IN_CATEGORY]->(c)"
+                )
+
+            # Edge: Fact -> Repo
+            if repo:
+                stmts.append(
+                    f"MATCH (f:Fact {{id: '{fact_id}'}}), (r:Repo {{id: '{repo}'}}) "
+                    f"MERGE (f)-[:FROM_REPO]->(r)"
+                )
+
+        neo4j_query(stmts)
+        fact_count += len(batch)
+        print(f"    {fact_count}/{len(points)} facts loaded")
+
+    # Domain-to-concept edges: map fact domains to relevant concepts
+    # These are broad mappings — semantic similarity would be more precise
+    domain_concept_map = {
+        "legal": ["game_theory_enforcement", "natural_rights_dna", "lending_fraud_proof"],
+        "financial": ["microstructure_research"],
+        "market": ["microstructure_research"],
+        "technical": ["eval_regen_loop", "knowledge_graph_neo4j"],
+        "regulatory": ["game_theory_enforcement"],
+        "property": ["natural_rights_dna", "lending_fraud_proof"],
+        "personal": ["natural_rights_dna"],
+    }
+    print("  Creating domain-to-concept edges...")
+    domain_stmts = []
+    for domain, concept_ids in domain_concept_map.items():
+        for concept_id in concept_ids:
+            domain_stmts.append(
+                f"MATCH (f:Fact {{domain: '{domain}'}}), (c:Concept {{id: '{concept_id}'}}) "
+                f"MERGE (f)-[:RELATES_TO]->(c)"
+            )
+    neo4j_query(domain_stmts)
+
+    # Category-to-concept edges for known mappings
+    category_concept_map = {
+        "pay_twice": "game_theory_enforcement",
+        "bonds": "microstructure_research",
+        "bond_financing": "microstructure_research",
+        "financial_model": "microstructure_research",
+        "market_risk": "microstructure_research",
+    }
+    cat_concept_stmts = []
+    for cat, concept_id in category_concept_map.items():
+        cat_concept_stmts.append(
+            f"MATCH (cat:Category {{id: '{cat}'}}), (c:Concept {{id: '{concept_id}'}}) "
+            f"MERGE (cat)-[:RELATES_TO]->(c)"
+        )
+    if cat_concept_stmts:
+        neo4j_query(cat_concept_stmts)
+
+    print(f"  Phase 2 complete: {len(points)} facts, {len(categories)} categories, {len(repos)} repos.")
+
+
+def extract_entities():
+    """Phase 3: Extract Person, Statute, Organization entities from fact text."""
+    import re
+
+    print("  Extracting entities from facts...")
+    points = fetch_facts_from_qdrant()
+
+    # Create constraints
+    neo4j_query([
+        "CREATE CONSTRAINT statute_id IF NOT EXISTS FOR (s:Statute) REQUIRE s.id IS UNIQUE",
+    ])
+    # Separate transaction for remaining constraints
+    neo4j_query([
+        "CREATE CONSTRAINT org_id IF NOT EXISTS FOR (o:Organization) REQUIRE o.id IS UNIQUE",
+    ])
+
+    statutes = {}
+    orgs = {}
+    statute_fact_links = []  # (statute_id, fact_id)
+    org_fact_links = []      # (org_id, fact_id)
+
+    statute_patterns = [
+        (r'(\d+\s+(?:ILCS|USC|U\.S\.C\.|CFR)\s+[§\d]+[\w()]*)', 'federal/state'),
+        (r'((?:IRC|IRS)\s+(?:Section|§)\s+\d+\w*)', 'IRC'),
+        (r'(Reg\s+[A-Z]\s+\d+\([a-z]\))', 'SEC'),
+        (r'(UL\d+[A-Z]*)', 'safety'),
+    ]
+    org_names = [
+        'Form Energy', 'ERCOT', 'Crusoe', 'Ore Energy', 'IRS', 'SEC',
+        'FERC', 'PUC', 'TDSP', 'UNA', 'Binance', 'Hyperliquid',
+    ]
+
+    for p in points:
+        fact_id = str(p["id"])
+        text = (p["payload"].get("text", "") + " " + p["payload"].get("notes", ""))
+
+        # Extract statutes
+        for pattern, category in statute_patterns:
+            for match in re.findall(pattern, text):
+                s_id = match.strip().replace(" ", "_").lower()
+                statutes[s_id] = {"name": match.strip(), "category": category}
+                statute_fact_links.append((s_id, fact_id))
+
+        # Extract organizations
+        for org in org_names:
+            if org in text:
+                o_id = org.lower().replace(" ", "_")
+                orgs[o_id] = {"name": org}
+                org_fact_links.append((o_id, fact_id))
+
+    # Create Statute nodes
+    if statutes:
+        print(f"  Creating {len(statutes)} statute nodes...")
+        stmts = []
+        for s_id, info in statutes.items():
+            stmts.append(
+                f"MERGE (s:Statute {{id: '{escape_cypher(s_id)}'}}) "
+                f"SET s.name = '{escape_cypher(info['name'])}', "
+                f"s.category = '{info['category']}'"
+            )
+        neo4j_query(stmts)
+
+    # Create Organization nodes
+    if orgs:
+        print(f"  Creating {len(orgs)} organization nodes...")
+        stmts = []
+        for o_id, info in orgs.items():
+            stmts.append(
+                f"MERGE (o:Organization {{id: '{escape_cypher(o_id)}'}}) "
+                f"SET o.name = '{escape_cypher(info['name'])}'"
+            )
+        neo4j_query(stmts)
+
+    # Create CITES edges (Fact -> Statute)
+    if statute_fact_links:
+        print(f"  Creating {len(statute_fact_links)} fact-statute edges...")
+        BATCH = 50
+        for i in range(0, len(statute_fact_links), BATCH):
+            batch = statute_fact_links[i:i + BATCH]
+            stmts = [
+                f"MATCH (f:Fact {{id: '{fid}'}}), (s:Statute {{id: '{escape_cypher(sid)}'}}) "
+                f"MERGE (f)-[:CITES]->(s)"
+                for sid, fid in batch
+            ]
+            neo4j_query(stmts)
+
+    # Create MENTIONS edges (Fact -> Organization)
+    if org_fact_links:
+        print(f"  Creating {len(org_fact_links)} fact-org edges...")
+        BATCH = 50
+        for i in range(0, len(org_fact_links), BATCH):
+            batch = org_fact_links[i:i + BATCH]
+            stmts = [
+                f"MATCH (f:Fact {{id: '{fid}'}}), (o:Organization {{id: '{oid}'}}) "
+                f"MERGE (f)-[:MENTIONS]->(o)"
+                for oid, fid in batch
+            ]
+            neo4j_query(stmts)
+
+    print(f"  Phase 3: {len(statutes)} statutes, {len(orgs)} organizations, "
+          f"{len(statute_fact_links)} citations, {len(org_fact_links)} mentions.")
+
+
 def show_stats():
     """Show graph statistics."""
     result = neo4j_query([
@@ -306,6 +584,8 @@ def main():
     parser.add_argument("--clear", action="store_true", help="Clear graph before populating")
     parser.add_argument("--stats", action="store_true", help="Show graph stats only")
     parser.add_argument("--demo", action="store_true", help="Run sample queries")
+    parser.add_argument("--facts", action="store_true", help="Load facts from Qdrant fact_registry (Phase 2)")
+    parser.add_argument("--entities", action="store_true", help="Extract entities from facts (Phase 3)")
     args = parser.parse_args()
 
     print(f"\n  Neo4j Knowledge Graph — populate")
@@ -327,6 +607,13 @@ def main():
     create_constraints()
     populate_concepts()
     populate_edges()
+
+    if args.facts:
+        populate_facts()
+
+    if args.entities:
+        extract_entities()
+
     show_stats()
 
     print("\n  Open http://localhost:7474 to explore the graph visually.")

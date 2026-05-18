@@ -47,7 +47,7 @@ def log_feedback(
 
     point = PointStruct(
         id=str(uuid.uuid4()),
-        vector=vector,
+        vector={"dense": vector},
         payload={
             "event_type": event_type,
             "user_signal": user_signal,
@@ -65,6 +65,69 @@ def log_feedback(
 
     info = client.get_collection(COLLECTION)
     print(f"Logged {event_type} event. Collection has {info.points_count} total events.", file=sys.stderr)
+
+    # Also create a node in Neo4j (if available)
+    _log_to_neo4j(str(point.id), event_type, user_signal, learned_rule, repo, scope)
+
+
+def _log_to_neo4j(event_id, event_type, user_signal, learned_rule, repo, scope):
+    """Create a FeedbackEvent node in Neo4j and link to relevant concepts."""
+    import base64
+    import json
+    import urllib.request
+
+    def _escape(s):
+        if not s:
+            return ""
+        return s.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"').replace("\n", " ")
+
+    try:
+        url = "http://localhost:7474/db/neo4j/tx/commit"
+        creds = base64.b64encode(b"neo4j:devctl-graph").decode()
+
+        # Schema changes must be in a separate transaction
+        schema_payload = json.dumps({"statements": [
+            {"statement": "CREATE CONSTRAINT feedback_id IF NOT EXISTS FOR (fe:FeedbackEvent) REQUIRE fe.id IS UNIQUE"},
+        ]}).encode()
+        schema_req = urllib.request.Request(
+            url, data=schema_payload,
+            headers={"Content-Type": "application/json", "Authorization": f"Basic {creds}"},
+        )
+        urllib.request.urlopen(schema_req, timeout=5)
+
+        # Now create the node + edges
+        stmts = [
+            f"MERGE (fe:FeedbackEvent {{id: '{event_id}'}}) "
+            f"SET fe.event_type = '{event_type}', "
+            f"fe.signal = '{_escape(user_signal)}', "
+            f"fe.rule = '{_escape(learned_rule)}', "
+            f"fe.repo = '{_escape(repo)}', "
+            f"fe.scope = '{scope}', "
+            f"fe.created = datetime()",
+        ]
+
+        # Link to repo if specified
+        if repo:
+            stmts.append(
+                f"MATCH (fe:FeedbackEvent {{id: '{event_id}'}}), (r:Repo {{id: '{_escape(repo)}'}}) "
+                f"MERGE (fe)-[:FROM_REPO]->(r)"
+            )
+
+        payload = json.dumps({"statements": [{"statement": s} for s in stmts]}).encode()
+        req = urllib.request.Request(
+            url, data=payload,
+            headers={"Content-Type": "application/json", "Authorization": f"Basic {creds}"},
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+        errors = data.get("errors", [])
+        if errors:
+            print(f"Neo4j: Cypher errors: {errors}", file=sys.stderr)
+        else:
+            print(f"Neo4j: created FeedbackEvent node {event_id[:8]}...", file=sys.stderr)
+    except Exception as e:
+        # Neo4j is optional — don't fail the Qdrant write
+        print(f"Neo4j: skipped ({type(e).__name__}: {e})", file=sys.stderr)
 
 
 def query_feedback(

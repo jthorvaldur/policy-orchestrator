@@ -623,8 +623,11 @@ def traffic_cmd(repo, sort, as_json):
 def graph_cmd(action, query_text):
     """Knowledge graph — status, populate, query, demo."""
     if action == "populate":
-        args = [sys.executable, str(SCRIPTS_DIR / "populate_graph.py")]
+        args = [sys.executable, str(SCRIPTS_DIR / "populate_graph.py"), "--facts", "--entities"]
         subprocess.run(args)
+        # Also load CaseLedger data
+        args2 = [sys.executable, str(SCRIPTS_DIR / "populate_graph_caseledger.py")]
+        subprocess.run(args2)
     elif action == "status":
         args = [sys.executable, str(SCRIPTS_DIR / "populate_graph.py"), "--stats"]
         subprocess.run(args)
@@ -639,15 +642,56 @@ def graph_cmd(action, query_text):
         import json
         import urllib.request
         creds = base64.b64encode(b"neo4j:devctl-graph").decode()
-        # Find concept and its neighbors
-        cypher = (
-            f"MATCH (c:Concept) WHERE toLower(c.name) CONTAINS toLower('{query_text}') "
-            "OR ANY(t IN c.tags WHERE toLower(t) CONTAINS toLower('" + query_text + "')) "
-            "OPTIONAL MATCH (c)-[r]-(other:Concept) "
-            "RETURN c.name AS concept, c.domain AS domain, "
-            "collect(DISTINCT {type: type(r), target: other.name, desc: r.description}) AS connections"
+        # Search across Concepts, Facts, and Categories
+        qt = query_text.replace("'", "")
+        cypher_concept = (
+            f"MATCH (c:Concept) WHERE toLower(c.name) CONTAINS toLower('{qt}') "
+            f"OR ANY(t IN c.tags WHERE toLower(t) CONTAINS toLower('{qt}')) "
+            "OPTIONAL MATCH (c)-[r]-(other) WHERE other:Concept OR other:Category "
+            "RETURN 'Concept' AS type, c.name AS name, c.domain AS domain, "
+            "collect(DISTINCT {rel: type(r), target: other.name, desc: r.description}) AS connections "
+            "LIMIT 5"
         )
-        payload = json.dumps({"statements": [{"statement": cypher}]}).encode()
+        cypher_fact = (
+            f"MATCH (f:Fact) WHERE toLower(f.name) CONTAINS toLower('{qt}') "
+            f"OR toLower(f.text) CONTAINS toLower('{qt}') "
+            "OPTIONAL MATCH (f)-[:IN_CATEGORY]->(cat:Category) "
+            "OPTIONAL MATCH (f)-[:RELATES_TO]->(c:Concept) "
+            "RETURN 'Fact' AS type, f.name AS name, f.confidence AS domain, "
+            "collect(DISTINCT {rel: 'IN_CATEGORY', target: cat.name, desc: ''}) + "
+            "collect(DISTINCT {rel: 'RELATES_TO', target: c.name, desc: ''}) AS connections "
+            "LIMIT 10"
+        )
+        cypher_cat = (
+            f"MATCH (cat:Category) WHERE toLower(cat.name) CONTAINS toLower('{qt}') "
+            "OPTIONAL MATCH (f:Fact)-[:IN_CATEGORY]->(cat) "
+            "RETURN 'Category' AS type, cat.name AS name, cat.fact_count + ' facts' AS domain, "
+            "collect(DISTINCT {rel: 'contains', target: f.name, desc: ''}) AS connections "
+            "LIMIT 5"
+        )
+        # CaseFacts from CaseLedger
+        cypher_casefact = (
+            f"MATCH (f:CaseFact) WHERE toLower(f.statement) CONTAINS toLower('{qt}') "
+            "RETURN 'CaseFact' AS type, f.statement AS name, f.confidence + ' / ' + f.category AS domain, "
+            "[] AS connections "
+            f"LIMIT 20"
+        )
+        # Parties — show the party with full mention count + sample facts
+        cypher_party = (
+            f"MATCH (p:Party) WHERE toLower(p.name) CONTAINS toLower('{qt}') "
+            "OPTIONAL MATCH (f:CaseFact)-[:MENTIONS_PARTY]->(p) "
+            "WITH p, count(f) AS total, collect(f.statement)[0..8] AS samples "
+            "RETURN 'Party' AS type, p.name AS name, p.party_type + ' (' + toString(total) + ' facts)' AS domain, "
+            "[s IN samples | {rel: 'mentioned in', target: left(s, 80), desc: ''}] AS connections "
+            "LIMIT 5"
+        )
+        payload = json.dumps({"statements": [
+            {"statement": cypher_concept},
+            {"statement": cypher_fact},
+            {"statement": cypher_cat},
+            {"statement": cypher_casefact},
+            {"statement": cypher_party},
+        ]}).encode()
         req = urllib.request.Request(
             "http://localhost:7474/db/neo4j/tx/commit", data=payload,
             headers={"Content-Type": "application/json", "Authorization": f"Basic {creds}"},
@@ -655,18 +699,25 @@ def graph_cmd(action, query_text):
         try:
             with urllib.request.urlopen(req, timeout=10) as resp:
                 data = json.loads(resp.read())
-            results = data["results"][0]["data"]
-            if not results:
-                print(f"  No concepts matching '{query_text}'")
+            all_results = []
+            for result_set in data["results"]:
+                all_results.extend(result_set["data"])
+            if not all_results:
+                print(f"  No results matching '{query_text}'")
                 return
-            for row in results:
-                name, domain, conns = row["row"]
-                print(f"\n  {C['bold']}{name}{C['reset']}  {C['dim']}({domain}){C['reset']}")
+            for row in all_results:
+                node_type, name, domain, conns = row["row"]
+                label = f"{C['cyan']}{node_type}{C['reset']}" if node_type != "Concept" else f"{C['mag']}{node_type}{C['reset']}"
+                print(f"\n  {label}  {C['bold']}{name}{C['reset']}  {C['dim']}({domain}){C['reset']}")
+                shown = 0
                 for conn in conns:
-                    if conn["target"]:
-                        print(f"    {conn['type']:>20}  {conn['target']}")
+                    if conn.get("target") and shown < 8:
+                        print(f"    {conn['rel']:>20}  {conn['target']}")
                         if conn.get("desc"):
                             print(f"    {' ' * 20}  {C['dim']}{conn['desc']}{C['reset']}")
+                        shown += 1
+                if len(conns) > 8:
+                    print(f"    {C['dim']}... +{len(conns) - 8} more{C['reset']}")
             print()
         except Exception as e:
             print(f"  {C['red']}Neo4j unreachable: {e}{C['reset']}")
