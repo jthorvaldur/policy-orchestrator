@@ -108,14 +108,15 @@ def audit_port(host, port, registry, repos):
         migration = config.get("migration_note", "")
         expected_sparse = config.get("sparse_model")
 
-        # Vector config analysis
+        # Vector config analysis — dense lives in .vectors, sparse in .sparse_vectors
         vec_config = info.config.params.vectors
-        has_sparse = False
+        sparse_config = info.config.params.sparse_vectors or {}
+        has_sparse = bool(sparse_config)
         if isinstance(vec_config, dict):
-            actual_type = "hybrid" if len(vec_config) > 1 else "named"
             dims = [v.size for v in vec_config.values()]
             dim = dims[0] if dims else "?"
-            has_sparse = "sparse" in vec_config
+            has_sparse = has_sparse or "sparse" in vec_config
+            actual_type = "hybrid" if (len(vec_config) > 1 or has_sparse) else "named"
         else:
             actual_type = "flat"
             dim = vec_config.size

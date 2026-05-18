@@ -9,6 +9,7 @@ CLAUDE.local.md
 AGENTS.local.md
 CODEX.local.md
 *.local.md
+.claude/settings.local.json
 
 # secrets
 secrets.*
