@@ -784,3 +784,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: corpus-pipeline
+  path: ~/GitHub/corpus-pipeline
+  github: git@github.com:jthorvaldur/corpus-pipeline.git
+  category: legal
+  priority: active
+  language: python+rust
+  visibility: private
+  vector_namespace: test_corpus
+  secret_profile: null
+  update_policy: auto-agent
+  status: active

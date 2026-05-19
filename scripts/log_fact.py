@@ -78,7 +78,7 @@ def log_fact(
 
     point = PointStruct(
         id=str(uuid.uuid4()),
-        vector=vector,
+        vector={"dense": vector},
         payload={
             "fact": fact,
             "source_type": source_type,
@@ -142,6 +142,7 @@ def query_facts(
         results = client.query_points(
             collection_name=COLLECTION,
             query=query_vector,
+            using="dense",
             query_filter=query_filter,
             limit=limit,
             with_payload=True,
