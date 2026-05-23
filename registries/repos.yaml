@@ -795,3 +795,14 @@ repos:
   secret_profile: null
   update_policy: auto-agent
   status: active
+- name: f1_stats
+  path: ~/GitHub/f1_stats
+  github: git@github.com:jthorvaldur/f1_stats.git
+  category: fun
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
