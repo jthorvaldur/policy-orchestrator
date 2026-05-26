@@ -3,6 +3,8 @@
 # Run via launchd or cron: creates timestamped snapshots.
 set -euo pipefail
 
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 BACKUP_DIR="$HOME/.qdrant_backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 PORTS=(6333 7333)

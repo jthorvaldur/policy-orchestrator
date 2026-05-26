@@ -1,0 +1,365 @@
+# subscriptions.yaml — Comprehensive service and subscription registry
+# Updated: 2026-05-23
+# Usage: devctl subscriptions list | check | costs
+
+metadata:
+  last_updated: "2026-05-25"
+  currency: USD
+  estimated_monthly_total: 290.19  # active recurring only, excludes unknown/usage-based
+
+subscriptions:
+
+  # ── Active Recurring ──────────────────────────────────────────────
+
+  att_wireless:
+    name: "AT&T Wireless"
+    cost: 74.00
+    currency: USD
+    frequency: monthly
+    status: active
+    category: telecom
+    notes: "Account ending 5104. Considering switch to Mint/Visible ($25/mo)"
+
+  youtube_premium:
+    name: "YouTube Premium"
+    cost: 22.00
+    cost_local: "£16.99"
+    currency: USD
+    frequency: monthly
+    status: active
+    category: entertainment
+    notes: "Apple UK billing, family plan Tetranamoral"
+
+  applecare_ipad:
+    name: "AppleCare+ iPad"
+    cost: 3.49
+    currency: USD
+    frequency: monthly
+    status: active
+    category: insurance
+
+  railway_hobby:
+    name: "Railway Hobby"
+    cost: 5.00
+    currency: USD
+    frequency: monthly
+    status: active
+    category: infrastructure
+    notes: "Daylight API deployment"
+    health_check: "curl -s https://daylight-production-f4d1.up.railway.app/health"
+
+  onepassword_family:
+    name: "1Password Family"
+    cost: 72.00
+    cost_monthly: 6.00
+    currency: USD
+    frequency: annual
+    status: active
+    category: security
+    notes: "Increasing to $71.88/yr at next renewal"
+
+  github_developer:
+    name: "GitHub Developer"
+    cost: 48.00
+    cost_monthly: 4.00
+    currency: USD
+    frequency: annual
+    status: active
+    category: development
+    notes: "55+ private repos, paid thru Jan 2027"
+
+  lockup_storage:
+    name: "Lock Up Self Storage"
+    cost: 93.00
+    currency: USD
+    frequency: monthly
+    status: active
+    category: storage
+    notes: "Unit 4206, Skokie, AmEx ...2000"
+
+  delaware_agent:
+    name: "Delaware Registered Agent (Nonabeln LLC)"
+    cost: 90.00
+    cost_monthly: 7.50
+    currency: USD
+    frequency: annual
+    status: overdue
+    category: legal
+    notes: "120+ days past due since Dec 2025. Risk of agent resignation."
+
+  delaware_tax:
+    name: "Delaware Annual Tax (Nonabeln LLC)"
+    cost: 400.00
+    cost_monthly: 33.00
+    currency: USD
+    frequency: annual
+    status: overdue
+    category: legal
+    notes: "Due June 1 2026, autopay failed"
+
+  porkbun_morpheme:
+    name: "Porkbun (morpheme.page)"
+    cost: 10.81
+    cost_monthly: 0.90
+    currency: USD
+    frequency: annual
+    status: active
+    category: domain
+
+  backblaze_b2:
+    name: "Backblaze B2"
+    cost: 10.00
+    currency: USD
+    frequency: monthly
+    status: active
+    category: storage
+    notes: "1.49TB jthor-personal (Andrew Zachary), 37GB trade data. Backup upload fixed 2026-05-25 (PATH issue). B2 had gap May 17-25."
+
+  squarespace:
+    name: "Squarespace Business (conformalmaps.com)"
+    cost: 276.00
+    cost_monthly: 23.00
+    currency: USD
+    frequency: annual
+    status: active
+    category: hosting
+    notes: "Business plan $276/yr, renews Oct 17. Domain conformalmaps.com included. Visa ...1498. Consider downgrade to Personal ($144/yr) or migrate to Cloudflare Pages (free)."
+    renewal_date: "2026-10-17"
+    payment_method: "Visa ...1498 exp 12/2027"
+
+  google_workspace:
+    name: "Google Workspace (@conformalmaps.com)"
+    cost: 168.00
+    cost_monthly: 14.00
+    currency: USD
+    frequency: annual
+    status: active
+    category: email
+    notes: "2 users x $84/yr = $168/yr, billed through Squarespace. Renews Oct 2. Who is the second user? Consider Fastmail ($50/yr) or Zoho ($12/yr) for custom domain email."
+    renewal_date: "2026-10-02"
+    payment_method: "Visa ...1498 exp 12/2027"
+
+  cloudflare:
+    name: "Cloudflare"
+    cost: 0.00
+    currency: USD
+    frequency: monthly
+    status: active
+    category: infrastructure
+    notes: "morpheme.page DNS, free tier"
+
+  world_vision:
+    name: "World Vision"
+    cost: null
+    currency: USD
+    frequency: recurring
+    status: active
+    category: charitable
+
+  # ── Usage-Based / Prepaid ─────────────────────────────────────────
+
+  openrouter:
+    name: "OpenRouter"
+    cost: null
+    currency: USD
+    frequency: prepaid
+    status: active
+    category: llm
+    notes: "$52.75 topped up Mar 2026"
+    balance: 0.22
+    balance_check:
+      url: "https://openrouter.ai/api/v1/auth/key"
+      method: GET
+      auth: "Bearer $OPENROUTER_API_KEY"
+      parse: "data.usage"
+
+  twocaptcha:
+    name: "2Captcha"
+    cost: null
+    currency: USD
+    frequency: prepaid
+    status: active
+    category: automation
+    notes: "Court filing CAPTCHA solving"
+    balance: 23.00
+    balance_check:
+      url: "https://2captcha.com/res.php?key=$CAPTCHA_API_KEY&action=getbalance"
+      method: GET
+      parse: "raw_float"
+
+  anthropic_api:
+    name: "Anthropic API"
+    cost: null
+    currency: USD
+    frequency: usage
+    status: active
+    category: llm
+    notes: "Key active, separate from Claude Code subscription"
+
+  openai_api:
+    name: "OpenAI API"
+    cost: null
+    currency: USD
+    frequency: usage
+    status: review
+    category: llm
+    notes: "Key active but rarely used — check if anything depends on it"
+
+  vast_ai:
+    name: "Vast.ai"
+    cost: null
+    currency: USD
+    frequency: on_demand
+    status: active
+    category: compute
+    notes: "GPU rental, pay per hour, 0 active instances"
+
+  twilio:
+    name: "Twilio"
+    cost: 3.30
+    currency: USD
+    frequency: monthly
+    status: review
+    category: telecom
+    notes: "Balance $40. 2 phone numbers: +447723145724 (UK, ~$1.15/mo), +18339784123 (US toll-free, ~$2.15/mo). Zero SMS sent ever. 4 inbound calls (all spam, last Oct 2025). Release numbers or close account."
+    recommendation: "release both numbers to stop monthly bleed, or close account"
+
+  # ── Expired / Cancelled ──────────────────────────────────────────
+
+  overleaf:
+    name: "Overleaf"
+    cost: 34.00
+    cost_local: "£34/mo"
+    currency: GBP
+    frequency: monthly
+    status: expired
+    category: writing
+    expired_date: "2026-01"
+
+  wolframalpha_pro:
+    name: "WolframAlpha Pro"
+    cost: 59.99
+    cost_local: "£59.99/yr"
+    currency: GBP
+    frequency: annual
+    status: expiring
+    category: research
+    expired_date: "2026-06-05"
+    recommendation: "let expire"
+
+  apple_tv:
+    name: "Apple TV"
+    cost: 9.99
+    cost_local: "£9.99/mo"
+    currency: GBP
+    frequency: monthly
+    status: expired
+    category: entertainment
+    expired_date: "2025-12"
+
+  starlink:
+    name: "Starlink"
+    cost: 7.35
+    currency: CAD
+    frequency: monthly
+    status: expired
+    category: telecom
+    notes: "Payment failing since Feb 2026"
+    recommendation: "cancel"
+
+  nordvpn:
+    name: "NordVPN"
+    cost: null
+    currency: USD
+    frequency: unknown
+    status: expired
+    category: security
+    notes: "Card expired Jan 2026"
+    recommendation: "cancel"
+
+  # ── Free Tier / No Cost ──────────────────────────────────────────
+
+  neon_tech:
+    name: "Neon.tech"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: database
+    notes: "21MB used"
+
+  qdrant_cloud:
+    name: "Qdrant Cloud"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: database
+    notes: "0 collections (everything runs local). Verify not being charged."
+
+  docker_hub:
+    name: "Docker Hub"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: development
+
+  huggingface:
+    name: "HuggingFace"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: llm
+
+  gemini_api:
+    name: "Gemini API"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: llm
+
+  goatcounter:
+    name: "GoatCounter"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: analytics
+    notes: "jthorvaldur.goatcounter.com — site traffic"
+
+  ollama:
+    name: "Ollama"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: llm
+
+  slack:
+    name: "Slack"
+    cost: 0.00
+    currency: USD
+    frequency: free
+    status: active
+    category: communication
+
+  docket_alarm:
+    name: "Docket Alarm"
+    cost: 0.00
+    currency: USD
+    frequency: per_search
+    status: active
+    category: legal
+    notes: "joel.thorarinson@gmail.com account"
+
+  plaid:
+    name: "Plaid"
+    cost: null
+    currency: USD
+    frequency: unknown
+    status: review
+    category: financial
+    notes: "Has production key. Check if production access has fees."

@@ -79,6 +79,7 @@ def _show_overview():
         "Facts":    ["log-fact", "query-facts", "log-feedback", "query-feedback"],
         "Build":    ["provenance", "benchmark", "health"],
         "Traffic":  ["traffic"],
+        "Finance":  ["subscriptions"],
         "Tools":    ["sync", "dashboard", "readme", "policy", "ingest-sessions", "search-sessions"],
     }
     for group, cmds in groups.items():
@@ -100,6 +101,7 @@ def _show_overview():
         ("What generated a file?",  "devctl provenance show path/file.html"),
         ("Stale outputs?",          "devctl provenance stale"),
         ("Log a verified fact",     'devctl log-fact --fact "X" --source-type email --confidence verified --domain legal'),
+        ("Subscription burn rate",   "devctl subscriptions costs"),
         ("Init a new repo",         "devctl init --name=my_repo --category=research"),
     ]
     for desc, cmd in cheat:
@@ -1063,6 +1065,42 @@ def health_cmd():
     print(f"  {color}●{C['reset']} Storage      {free // (1024**3)}GB free ({100 - pct:.0f}%)  ~/GitHub = {github_size}")
 
     print()
+
+
+@main.group("subscriptions", invoke_without_command=True)
+@click.pass_context
+def subscriptions_group(ctx):
+    """Subscription registry — list, check health, show costs."""
+    if ctx.invoked_subcommand is None:
+        # Default: show list
+        subprocess.run([sys.executable, str(SCRIPTS_DIR / "subscriptions.py"), "list"])
+
+
+@subscriptions_group.command("list")
+@click.option("--status", default=None,
+              type=click.Choice(["active", "overdue", "review", "expiring", "expired"]),
+              help="Filter by status")
+@click.option("--category", default=None, help="Filter by category")
+def subscriptions_list(status, category):
+    """List all subscriptions grouped by status."""
+    args = [sys.executable, str(SCRIPTS_DIR / "subscriptions.py"), "list"]
+    if status:
+        args.append(f"--status={status}")
+    if category:
+        args.append(f"--category={category}")
+    subprocess.run(args)
+
+
+@subscriptions_group.command("check")
+def subscriptions_check():
+    """Run health checks and balance checks for services."""
+    subprocess.run([sys.executable, str(SCRIPTS_DIR / "subscriptions.py"), "check"])
+
+
+@subscriptions_group.command("costs")
+def subscriptions_costs():
+    """Show cost breakdown with annual projections and savings opportunities."""
+    subprocess.run([sys.executable, str(SCRIPTS_DIR / "subscriptions.py"), "costs"])
 
 
 if __name__ == "__main__":
