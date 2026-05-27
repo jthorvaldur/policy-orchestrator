@@ -16,32 +16,24 @@ QDRANT_HOST = "localhost"
 QDRANT_PORT = 6333
 COLLECTION_NAME = "claude_code_sessions"
 
-OLLAMA_BASE_URL = "http://localhost:11434"
-EMBEDDING_MODEL = "nomic-embed-text"
+DOCVEC_URL = "http://localhost:8100"
 
 # ---------------------------------------------------------------------------
-# Embedding (same as ingest)
+# Embedding — must match ingest (BGE via docvec, NOT Ollama nomic)
 # ---------------------------------------------------------------------------
 
 
-def embed_text(text: str, max_chars: int = 8000, max_retries: int = 3) -> list[float]:
-    """Get embedding vector via Ollama."""
+def embed_text(text: str, max_chars: int = 8000) -> list[float]:
+    """Get embedding vector via docvec (BGE-base-en-v1.5) — same model as ingest."""
     if len(text) > max_chars:
         text = text[:max_chars]
-    for attempt in range(max_retries):
-        try:
-            resp = httpx.post(
-                f"{OLLAMA_BASE_URL}/api/embeddings",
-                json={"model": EMBEDDING_MODEL, "prompt": text},
-                timeout=120.0,
-            )
-            resp.raise_for_status()
-            return resp.json()["embedding"]
-        except (httpx.HTTPStatusError, httpx.ConnectError, httpx.ReadTimeout):
-            if attempt < max_retries - 1:
-                time.sleep(1.0 * (attempt + 1))
-                continue
-            raise
+    resp = httpx.post(
+        f"{DOCVEC_URL}/embed",
+        json={"texts": [text]},
+        timeout=30.0,
+    )
+    resp.raise_for_status()
+    return resp.json()["vectors"][0]
 
 
 # ---------------------------------------------------------------------------
@@ -78,10 +70,11 @@ def search_sessions(
 
     query_filter = Filter(must=conditions) if conditions else None
 
-    # Search
+    # Search — use named vector "dense" to match collection schema
     results = client.query_points(
         collection_name=COLLECTION_NAME,
         query=query_vector,
+        using="dense",
         query_filter=query_filter,
         limit=limit,
         with_payload=True,
