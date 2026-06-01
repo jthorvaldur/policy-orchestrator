@@ -43,7 +43,7 @@ def load_collections():
 def get_live_state():
     """Query actual state from all Qdrant ports — points, vector config, quantization."""
     state = {}
-    for port in [6333, 7333]:
+    for port in [6333, 7333, 8333]:
         try:
             client = QdrantClient(host="localhost", port=port, timeout=5)
             for col in client.get_collections().collections:

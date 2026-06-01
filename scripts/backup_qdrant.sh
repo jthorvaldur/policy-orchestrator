@@ -7,7 +7,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 BACKUP_DIR="$HOME/.qdrant_backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-PORTS=(6333 7333)
+PORTS=(6333 7333 8333)
 
 mkdir -p "$BACKUP_DIR"
 
@@ -39,6 +39,7 @@ print(data.get('result', {}).get('name', ''))
             curl -s "http://localhost:$PORT/collections/$COLL/snapshots/$SNAP" -o "$DEST" 2>/dev/null
             SIZE=$(du -h "$DEST" 2>/dev/null | cut -f1)
             echo "  -> $DEST ($SIZE)"
+            curl -s -X DELETE "http://localhost:$PORT/collections/$COLL/snapshots/$SNAP" >/dev/null 2>&1
         else
             echo "  FAILED to create snapshot for $COLL"
         fi

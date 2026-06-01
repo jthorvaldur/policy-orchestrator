@@ -43,7 +43,7 @@ def _show_overview():
         from qdrant_client import QdrantClient
         total = 0
         cols = 0
-        for port in [6333, 7333]:
+        for port in [6333, 7333, 8333]:
             try:
                 client = QdrantClient(host="localhost", port=port, timeout=3)
                 for col in client.get_collections().collections:
@@ -893,7 +893,7 @@ def health_cmd():
         except Exception:
             vcols_reg = {}
 
-        for port in [6333, 7333]:
+        for port in [6333, 7333, 8333]:
             try:
                 client = QdrantClient(host="localhost", port=port, timeout=5)
                 cols = client.get_collections().collections
@@ -903,7 +903,8 @@ def health_cmd():
                     info = client.get_collection(c.name)
                     count = info.points_count or 0
                     total += count
-                    expected = vcols_reg.get(c.name, {}).get("points_expected", 0)
+                    reg_entry = vcols_reg.get(c.name, {})
+                    expected = reg_entry.get("points_expected", 0) if reg_entry.get("port", 6333) == port else 0
                     if expected and abs(count - expected) / max(expected, 1) > 0.05:
                         drifted.append(f"{c.name}:{count:,}(exp {expected:,})")
                 status = C["green"]
@@ -1049,8 +1050,25 @@ def health_cmd():
 
     # ── Disk ──
     print(f"\n  {C['bold']}Disk{C['reset']}")
-    total, used, free = shutil.disk_usage("/")
-    pct = (used / total) * 100
+    import platform
+    total, used, free = shutil.disk_usage(str(Path.home()))
+    if platform.system() == "Darwin":
+        try:
+            result = subprocess.run(
+                ["df", "-k", str(Path.home())],
+                capture_output=True, text=True, timeout=5,
+            )
+            if result.returncode == 0:
+                parts = result.stdout.strip().split("\n")[-1].split()
+                if len(parts) >= 4:
+                    df_free = int(parts[3]) * 1024
+                    df_total = int(parts[1]) * 1024
+                    if df_free > free:
+                        free = df_free
+                        total = df_total
+        except Exception:
+            pass
+    pct = ((total - free) / total) * 100
     color = C["green"] if pct < 80 else C["yellow"] if pct < 90 else C["red"]
     try:
         result = subprocess.run(

@@ -19,7 +19,7 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 796116
+    points_expected: 842443
     data_sources:
     - name: Email IMAP (2 accounts)
       type: email
@@ -65,7 +65,7 @@ collections:
     hnsw_ef_construct: 200
     chunk_max_chars: 512
     chunk_overlap_chars: 128
-    points_expected: 1711019
+    points_expected: 1991968
     data_sources:
     - name: Shared corpus from div_legal
       type: legal
@@ -165,7 +165,7 @@ collections:
     quantization: none
     chunk_max_chars: 512
     chunk_overlap_chars: 64
-    points_expected: 154177
+    points_expected: 225896
     data_sources:
     - name: Claude Code sessions (all repos)
       type: conversation
@@ -269,7 +269,7 @@ collections:
     dimension: 768
     vector_type: hybrid
     quantization: int8
-    points_expected: 16770
+    points_expected: 106814
   fact_registry:
     port: 6333
     description: Classified facts with source provenance and confidence levels
@@ -283,3 +283,125 @@ collections:
     dimension: 768
     vector_type: hybrid
     quantization: none
+  algorithms:
+    port: 6333
+    description: "Algorithm and data structure embeddings for code analysis"
+    sensitivity: low
+    owner_repo: policy-orchestrator
+    allowed_readers:
+    - all
+    allowed_writers:
+    - policy-orchestrator
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 2945
+  case_facts_semantic:
+    port: 6333
+    description: "Semantic fact embeddings extracted from case documents"
+    sensitivity: high
+    owner_repo: div_legal
+    allowed_readers:
+    - div_legal
+    - caseledger
+    - policy-orchestrator
+    allowed_writers:
+    - div_legal
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 106814
+  hertz_cases:
+    port: 6333
+    description: "Hertz v. Uhlig case documents — Travis County TX rental car suit"
+    sensitivity: medium
+    owner_repo: div_legal
+    allowed_readers:
+    - div_legal
+    - policy-orchestrator
+    allowed_writers:
+    - div_legal
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 912
+  statute_raw:
+    port: 6333
+    description: "Raw statute text embeddings for legal research"
+    sensitivity: low
+    owner_repo: div_legal
+    allowed_readers:
+    - div_legal
+    - caseledger
+    - policy-orchestrator
+    allowed_writers:
+    - div_legal
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 1325
+  statutory_concepts:
+    port: 6333
+    description: "Statutory concept embeddings — legal principles and definitions"
+    sensitivity: low
+    owner_repo: div_legal
+    allowed_readers:
+    - div_legal
+    - caseledger
+    - policy-orchestrator
+    allowed_writers:
+    - div_legal
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 843
+  statutory_words:
+    port: 6333
+    description: "Statutory keyword and term embeddings for legal search"
+    sensitivity: low
+    owner_repo: div_legal
+    allowed_readers:
+    - div_legal
+    - caseledger
+    - policy-orchestrator
+    allowed_writers:
+    - div_legal
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 1154
+  word_leverage:
+    port: 6333
+    description: "Word leverage analysis — term importance and frequency across corpus"
+    sensitivity: low
+    owner_repo: policy-orchestrator
+    allowed_readers:
+    - all
+    allowed_writers:
+    - policy-orchestrator
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 282703
+  knowledge_v2:
+    port: 8333
+    description: "Knowledge graph embeddings — concepts, facts, and reasoning chains"
+    sensitivity: medium
+    owner_repo: policy-orchestrator
+    allowed_readers:
+    - all
+    allowed_writers:
+    - policy-orchestrator
+    embedding_model: BAAI/bge-base-en-v1.5
+    dimension: 768
+    vector_type: hybrid
+    quantization: none
+    points_expected: 211343
+    note: "Hosted on qdrant-research container (standalone, host mount ~/qdrant_research/)"

@@ -218,15 +218,14 @@ def discover_sessions(repo_filter: str | None = None) -> list[dict]:
 
 
 def load_state() -> dict:
-    """Load ingested session state: {session_id: {"size": file_size}}."""
+    """Load ingested session state: {session_id: {"size": file_size, "mtime": mtime}}."""
     if STATE_FILE.exists():
         with open(STATE_FILE) as f:
             data = json.load(f)
-        # Migrate from old format (list of IDs) to new format (dict with sizes)
         old_list = data.get("ingested_sessions", [])
         state = data.get("ingested_state", {})
         if old_list and not state:
-            state = {sid: {"size": 0} for sid in old_list}
+            state = {sid: {"size": 0, "mtime": 0} for sid in old_list}
         return state
     return {}
 
@@ -292,10 +291,13 @@ def ingest_sessions(
     new_sessions = []
     for s in sessions:
         sid = s["session_id"]
-        file_size = s["path"].stat().st_size if s["path"].exists() else 0
+        path = s["path"]
+        if not path.exists():
+            continue
+        file_mtime = path.stat().st_mtime
         prev = state.get(sid, {})
-        prev_size = prev.get("size", 0) if isinstance(prev, dict) else 0
-        if sid not in state or file_size > prev_size * 1.1:  # re-ingest if grown >10%
+        prev_mtime = prev.get("mtime", 0) if isinstance(prev, dict) else 0
+        if sid not in state or file_mtime > prev_mtime:
             new_sessions.append(s)
     print(f"New/updated sessions to ingest: {len(new_sessions)}", file=sys.stderr)
 
@@ -323,7 +325,7 @@ def ingest_sessions(
         turns = parse_session(session["path"])
         if not turns:
             print("(empty)", file=sys.stderr)
-            newly_ingested[session_id] = {"size": file_size}
+            newly_ingested[session_id] = {"size": file_size, "mtime": session["path"].stat().st_mtime}
             continue
 
         turn_count = 0
@@ -366,7 +368,7 @@ def ingest_sessions(
             turn_count += 1
             total_turns += 1
 
-        newly_ingested[session_id] = {"size": file_size}
+        newly_ingested[session_id] = {"size": file_size, "mtime": session["path"].stat().st_mtime}
         print(f"{turn_count} turns, {total_points} points so far", file=sys.stderr)
 
     # Flush remaining batch
