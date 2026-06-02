@@ -839,3 +839,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: photonic
+  path: ~/GitHub/photonic
+  github: git@github.com:jthorvaldur/photonic.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
