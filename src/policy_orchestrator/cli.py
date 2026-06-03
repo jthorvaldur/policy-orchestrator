@@ -433,7 +433,12 @@ def verify_pages_cmd(section, quick):
 @click.option("--collection", "-c", default=None, help="Search specific collection")
 @click.option("--collections", default=None, help="Comma-separated collection names")
 @click.option("--rerank/--no-rerank", default=True, help="Cross-encoder reranking (default: on)")
-def search_cmd(query, limit, collection, collections, rerank):
+@click.option("--tau", type=float, default=None, help="Recency decay τ in days (default: 180)")
+@click.option("--recency", type=float, default=None, help="Recency weight λ in [0,1] (default: 0.25)")
+@click.option("--recent", is_flag=True, help="Aggressive recency preset (τ=14d, λ=0.6)")
+@click.option("--no-recency", is_flag=True, help="Disable recency kernel")
+@click.option("--today", default=None, help="Override today as YYYY-MM-DD (for testing)")
+def search_cmd(query, limit, collection, collections, rerank, tau, recency, recent, no_recency, today):
     """Unified search across all vector collections."""
     args = [sys.executable, str(SCRIPTS_DIR / "search_unified.py"), query]
     if limit != 20:
@@ -444,6 +449,16 @@ def search_cmd(query, limit, collection, collections, rerank):
         args.extend(["--collections", collections])
     if not rerank:
         args.append("--no-rerank")
+    if recent:
+        args.append("--recent")
+    if no_recency:
+        args.append("--no-recency")
+    if tau is not None:
+        args.extend(["--tau", str(tau)])
+    if recency is not None:
+        args.extend(["--recency", str(recency)])
+    if today:
+        args.extend(["--today", today])
     subprocess.run(args)
 
 

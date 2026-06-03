@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 """Unified search across all vector collections via docvec.
 
-Two-stage retrieval: hybrid prefetch (dense + sparse RRF) → cross-encoder rerank.
+Three-stage retrieval:
+  1. Hybrid prefetch (dense + sparse RRF) per collection.
+  2. Cross-encoder semantic rerank.
+  3. Optional recency kernel that interpolates semantic and recency scores.
+
 Reranking is on by default — use --no-rerank to skip.
+Recency boost defaults to a mild bias; use --recent for "what's the latest" queries
+or --no-recency to disable.
 """
 
+import math
 import sys
+from datetime import date, datetime
 from pathlib import Path
 
 import yaml
@@ -17,6 +25,75 @@ REGISTRIES = Path(__file__).parent.parent / "registries"
 # Deeper = better recall at the cost of speed.  50 per space is enough
 # for the reranker to see ~100 candidates per collection.
 PREFETCH_DEPTH = 50
+
+# Recency defaults — mild boost that doesn't displace strong semantic matches
+# but breaks ties toward recent docs and pulls today's content into the top-K.
+DEFAULT_RECENCY_TAU = 180.0    # half-life ~125 days; 1y old ≈ 0.13 weight
+DEFAULT_RECENCY_WEIGHT = 0.25  # 25% recency, 75% semantic in final score
+RECENT_FLAG_TAU = 14.0         # --recent: aggressive, 14-day decay
+RECENT_FLAG_WEIGHT = 0.6       # --recent: 60% recency
+
+
+def _parse_payload_date(payload: dict) -> date | None:
+    """Extract an ISO date from common payload fields. Returns None on miss."""
+    for key in ("date", "source_date", "timestamp", "extracted_at"):
+        raw = payload.get(key)
+        if not raw:
+            continue
+        s = str(raw).strip()
+        if not s or s.lower() == "unknown":
+            continue
+        # Accept YYYY-MM-DD, full ISO datetime, or YYYY-MM
+        try:
+            if len(s) >= 10 and s[4] == "-" and s[7] == "-":
+                return date.fromisoformat(s[:10])
+            if len(s) == 7 and s[4] == "-":  # YYYY-MM
+                return date.fromisoformat(s + "-01")
+        except ValueError:
+            continue
+    return None
+
+
+def _recency_weight(d: date | None, today: date, tau_days: float) -> float:
+    """Exp-decay weight in [0,1]. Future dates clamp to 1.0; missing → 0.0."""
+    if d is None:
+        return 0.0
+    age = (today - d).days
+    if age <= 0:
+        return 1.0
+    return math.exp(-age / tau_days)
+
+
+def _apply_recency_kernel(
+    results: list[dict],
+    today: date,
+    tau_days: float,
+    recency_weight: float,
+) -> list[dict]:
+    """Interpolate semantic and recency scores. Mutates and re-sorts results.
+
+    final = (1 - λ) * normalized_semantic + λ * recency_weight
+
+    Semantic scores are min-max normalized to [0,1] across the current result
+    set so the interpolation lives on a comparable scale. The original score
+    is preserved as `score_semantic_raw` for display/debugging.
+    """
+    if not results or recency_weight <= 0.0:
+        return results
+
+    raw_scores = [r["score"] for r in results]
+    s_min = min(raw_scores)
+    s_max = max(raw_scores)
+    s_range = max(s_max - s_min, 1e-9)
+
+    for r in results:
+        r["score_semantic_raw"] = r["score"]
+        r["score_semantic"] = (r["score"] - s_min) / s_range
+        d = _parse_payload_date(r.get("payload", {}))
+        r["score_recency"] = _recency_weight(d, today, tau_days)
+        r["score"] = (1.0 - recency_weight) * r["score_semantic"] + recency_weight * r["score_recency"]
+
+    return sorted(results, key=lambda r: r["score"], reverse=True)
 
 
 def load_registry():
@@ -34,8 +111,23 @@ def _text_for_result(payload: dict) -> str:
     return str(payload)
 
 
-def search(query, limit=20, collection=None, collections=None, rerank=True):
-    """Search across collections using docvec federated search."""
+def search(
+    query,
+    limit=20,
+    collection=None,
+    collections=None,
+    rerank=True,
+    tau_days: float = DEFAULT_RECENCY_TAU,
+    recency_weight: float = DEFAULT_RECENCY_WEIGHT,
+    today: date | None = None,
+):
+    """Search across collections using docvec federated search.
+
+    Args:
+        tau_days: Exponential decay constant for recency in days. Smaller = steeper.
+        recency_weight: λ in [0,1]. 0 disables recency boost; 1 sorts purely by date.
+        today: Override for "now" — useful for testing.
+    """
     from docvec.config import EmbedConfig
     from docvec.embedder import embed_hybrid, embed_text
     from qdrant_client import QdrantClient
@@ -205,13 +297,16 @@ def search(query, limit=20, collection=None, collections=None, rerank=True):
         try:
             from docvec.embedder import rerank as docvec_rerank
 
-            # Rerank the top candidates — give the reranker a generous pool
-            rerank_pool = all_results[:limit * 10]
+            # Rerank a generous pool. When recency boost is active we need a
+            # wider pool so recent-but-semantically-decent docs survive into
+            # the final cut.
+            pool_multiplier = 20 if recency_weight > 0.0 else 10
+            rerank_pool = all_results[:limit * pool_multiplier]
             reranked = docvec_rerank(
                 query=query,
                 results=rerank_pool,
                 text_key="content_preview",
-                limit=limit,
+                limit=len(rerank_pool),  # keep all so kernel can re-sort
             )
             # Use rerank_score as the display score
             for r in reranked:
@@ -220,11 +315,22 @@ def search(query, limit=20, collection=None, collections=None, rerank=True):
             score_label = "rerank"
         except Exception as e:
             print(f"  Rerank failed, using retrieval scores: {e}", file=sys.stderr)
-            all_results = all_results[:limit]
             score_label = "rrf"
     else:
-        all_results = all_results[:limit]
         score_label = "rrf"
+
+    # Apply recency kernel (no-op if recency_weight == 0)
+    if recency_weight > 0.0:
+        today = today or datetime.utcnow().date()
+        all_results = _apply_recency_kernel(
+            all_results,
+            today=today,
+            tau_days=tau_days,
+            recency_weight=recency_weight,
+        )
+        score_label = f"{score_label}+recency(τ={tau_days:.0f}d,λ={recency_weight:.2f})"
+
+    all_results = all_results[:limit]
 
     # Display
     total_candidates = sum(1 for _ in all_results)
@@ -244,7 +350,10 @@ def search(query, limit=20, collection=None, collections=None, rerank=True):
 
         similar = r.get("similar_count", 0)
         similar_tag = f"  [+{similar} similar]" if similar else ""
-        print(f"  [{i+1}] {r['score']:.3f}  {r['collection']}  {source}  {date}{similar_tag}")
+        recency_tag = ""
+        if "score_recency" in r:
+            recency_tag = f"  ⟨sem={r['score_semantic']:.2f} rec={r['score_recency']:.2f}⟩"
+        print(f"  [{i+1}] {r['score']:.3f}  {r['collection']}  {source}  {date}{similar_tag}{recency_tag}")
         if title:
             print(f"      {title}")
         print(f"      {text}")
@@ -261,13 +370,49 @@ def main():
     parser.add_argument("--rerank", action="store_true", default=True, help="Apply cross-encoder reranking (default)")
     parser.add_argument("--no-rerank", dest="rerank", action="store_false", help="Skip reranking, use retrieval scores only")
 
+    # Recency kernel
+    parser.add_argument(
+        "--tau", type=float, default=DEFAULT_RECENCY_TAU,
+        help=f"Recency exp-decay constant in days (default: {DEFAULT_RECENCY_TAU:g})",
+    )
+    parser.add_argument(
+        "--recency", type=float, default=DEFAULT_RECENCY_WEIGHT,
+        help=f"Recency weight λ in [0,1] (default: {DEFAULT_RECENCY_WEIGHT:g}; 0 disables)",
+    )
+    parser.add_argument(
+        "--recent", action="store_true",
+        help=f"Aggressive recency preset: τ={RECENT_FLAG_TAU:g}d, λ={RECENT_FLAG_WEIGHT:g}",
+    )
+    parser.add_argument(
+        "--no-recency", dest="recency", action="store_const", const=0.0,
+        help="Disable recency kernel entirely",
+    )
+    parser.add_argument(
+        "--today", default=None,
+        help="Override 'today' as YYYY-MM-DD (for testing/reproducibility)",
+    )
+
     args = parser.parse_args()
+
+    tau = args.tau
+    recency = args.recency
+    if args.recent:
+        tau = RECENT_FLAG_TAU
+        recency = RECENT_FLAG_WEIGHT
+
+    today_override = None
+    if args.today:
+        today_override = date.fromisoformat(args.today)
+
     search(
         query=args.query,
         limit=args.limit,
         collection=args.collection,
         collections=args.collections,
         rerank=args.rerank,
+        tau_days=tau,
+        recency_weight=recency,
+        today=today_override,
     )
 
 
