@@ -861,3 +861,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: cholesterol_meth_blue_if
+  path: ~/GitHub/cholesterol_meth_blue_if
+  github: git@github.com:jthorvaldur/cholesterol_meth_blue_if.git
+  category: tools
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
