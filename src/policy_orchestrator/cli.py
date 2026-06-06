@@ -45,7 +45,10 @@ def _show_overview():
         cols = 0
         for port in [6333, 7333, 8333]:
             try:
-                client = QdrantClient(host="localhost", port=port, timeout=3)
+                # :8333 runs an older server (1.14); skip the compat check to
+                # avoid a cosmetic version-mismatch UserWarning on connect.
+                kw = {"check_compatibility": False} if port == 8333 else {}
+                client = QdrantClient(host="localhost", port=port, timeout=3, **kw)
                 for col in client.get_collections().collections:
                     info = client.get_collection(col.name)
                     total += info.points_count
@@ -80,7 +83,7 @@ def _show_overview():
         "Build":    ["provenance", "benchmark", "health"],
         "Traffic":  ["traffic"],
         "Finance":  ["subscriptions"],
-        "Tools":    ["sync", "dashboard", "readme", "policy", "ingest-sessions", "search-sessions"],
+        "Tools":    ["sync", "dashboard", "readme", "diagram", "policy", "ingest-sessions", "search-sessions"],
     }
     for group, cmds in groups.items():
         cmd_str = f"{C['dim']}, {C['reset']}".join(cmds)
@@ -208,6 +211,23 @@ def dashboard():
     sys.path.insert(0, str(SCRIPTS_DIR))
     from generate_dashboard import main as gen
     gen()
+
+
+@main.command("diagram")
+@click.option("--repo", default=None, help="Path to a specific repo to diagram (default: cwd)")
+@click.option("--all", "diagram_all", is_flag=True, help="Diagram all repos in the registry")
+@click.option("--model", default="claude-haiku-4-5", show_default=True,
+              help="Claude model to use")
+@click.option("--commit", is_flag=True, help="Commit docs/architecture.md to the repo after writing")
+def diagram_cmd(repo, diagram_all, model, commit):
+    """Generate Mermaid architecture diagrams for a managed repo.
+
+    Reads .control/repo.yaml, scans the repo, calls Claude API, and writes
+    docs/architecture.md with flowchart/data-flow/CLI-tree/module diagrams.
+    """
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from diagram import run
+    run(repo=repo, all_repos=diagram_all, model=model, commit=commit)
 
 
 @main.command("readme")
@@ -910,7 +930,10 @@ def health_cmd():
 
         for port in [6333, 7333, 8333]:
             try:
-                client = QdrantClient(host="localhost", port=port, timeout=5)
+                # :8333 runs an older server (1.14); skip the compat check to
+                # avoid a cosmetic version-mismatch UserWarning on connect.
+                kw = {"check_compatibility": False} if port == 8333 else {}
+                client = QdrantClient(host="localhost", port=port, timeout=5, **kw)
                 cols = client.get_collections().collections
                 total = 0
                 drifted = []

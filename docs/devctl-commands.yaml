@@ -600,6 +600,37 @@ commands:
       - deploy-pages
       - health
 
+  - name: diagram
+    category: Tools
+    description: Generate Mermaid architecture diagrams for a managed repo and write to docs/architecture.md
+    options:
+      - name: --repo
+        type: string
+        default: null
+        description: Path to a specific repo to diagram (default: cwd)
+      - name: --all
+        type: flag
+        default: false
+        description: Diagram all repos in the registry
+      - name: --model
+        type: string
+        default: claude-haiku-4-5
+        description: Claude model to use for generation
+      - name: --commit
+        type: flag
+        default: false
+        description: Git-commit docs/architecture.md to the repo after writing
+    examples:
+      - devctl diagram
+      - devctl diagram --repo ~/GitHub/orwell
+      - devctl diagram --repo ~/GitHub/orwell --commit
+      - devctl diagram --all --model claude-sonnet-4-5
+      - devctl diagram --repo . --dry-run
+    related_commands:
+      - readme
+      - sync
+      - audit
+
   - name: readme
     category: Tools
     description: Generate or augment README.md for a managed repo
