@@ -399,9 +399,9 @@ collections:
     - all
     allowed_writers:
     - policy-orchestrator
-    embedding_model: BAAI/bge-base-en-v1.5
-    dimension: 768
+    embedding_model: BAAI/bge-large-en-v1.5
+    dimension: 1024
     vector_type: hybrid
     quantization: none
     points_expected: 211343
-    note: "Hosted on qdrant-research container (standalone, host mount ~/qdrant_research/)"
+    note: "Hosted on qdrant-research container (standalone, host mount ~/qdrant_research/). Dense vectors are 1024-dim (bge-large); the federated search (768-dim BGE-base) skips this collection on dimension mismatch — searching it needs a 1024-dim query embedding."

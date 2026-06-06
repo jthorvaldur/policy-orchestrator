@@ -193,12 +193,38 @@ def search(
     for name, col_config in targets.items():
         port = col_config.get("port", 6333)
         try:
-            client = QdrantClient(host="localhost", port=port, timeout=10)
+            # Skip the version-compat check for known version-skewed servers
+            # (e.g. :8333 runs server 1.14 vs a 1.17+ client) so we don't emit
+            # a cosmetic UserWarning on every connection.
+            client_kwargs = {}
+            if port in (8333,):
+                client_kwargs["check_compatibility"] = False
+            client = QdrantClient(host="localhost", port=port, timeout=10, **client_kwargs)
 
             # Check if collection uses named vectors (hybrid)
             info = client.get_collection(name)
             vec_config = info.config.params.vectors
             is_hybrid = isinstance(vec_config, dict) and "dense" in vec_config
+
+            # Guard against dimension mismatch. The query is embedded once with a
+            # single model (768-dim BGE-base by default); collections built with a
+            # different model (e.g. knowledge_v2 @ 1024-dim, koplik_library @ 4096)
+            # would otherwise return HTTP 400 "Vector dimension error". Skip those
+            # rather than fail the whole search.
+            if is_hybrid:
+                col_dim = vec_config["dense"].size
+            elif hasattr(vec_config, "size"):
+                col_dim = vec_config.size
+            else:
+                col_dim = None
+            q_dim = len(query_dense)
+            if col_dim is not None and col_dim != q_dim:
+                print(
+                    f"  {name} (:{port}): skipped — collection dense dim {col_dim} "
+                    f"!= query dim {q_dim} (built with a different embedding model)",
+                    file=sys.stderr,
+                )
+                continue
 
             if is_hybrid and query_sparse is not None:
                 # Hybrid search with RRF fusion via Qdrant Query API

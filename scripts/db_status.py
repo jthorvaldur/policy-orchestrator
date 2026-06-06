@@ -45,7 +45,10 @@ def get_live_state():
     state = {}
     for port in [6333, 7333, 8333]:
         try:
-            client = QdrantClient(host="localhost", port=port, timeout=5)
+            # :8333 runs an older server (1.14); skip the compat check to
+            # avoid a cosmetic version-mismatch UserWarning on connect.
+            kw = {"check_compatibility": False} if port == 8333 else {}
+            client = QdrantClient(host="localhost", port=port, timeout=5, **kw)
             for col in client.get_collections().collections:
                 info = client.get_collection(col.name)
                 cfg = info.config.params
