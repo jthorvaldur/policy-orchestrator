@@ -894,3 +894,25 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: global_families
+  path: ~/GitHub/global_families
+  github: git@github.com:jthorvaldur/global_families.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
+- name: pre1912_docs
+  path: ~/GitHub/pre1912_docs
+  github: git@github.com:jthorvaldur/pre1912_docs.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
