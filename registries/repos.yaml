@@ -916,3 +916,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: chase_algos
+  path: ~/GitHub/chase_algos
+  github: git@github.com:jthorvaldur/chase_algos.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
