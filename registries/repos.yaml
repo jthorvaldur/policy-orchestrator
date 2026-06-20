@@ -927,3 +927,25 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: kg_emergence
+  path: ~/GitHub/kg_emergence
+  github: git@github.com:jthorvaldur/kg_emergence.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
+- name: compadres
+  path: ~/GitHub/compadres
+  github: git@github.com:jthorvaldur/compadres.git
+  category: currency_dev
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
