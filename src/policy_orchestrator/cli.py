@@ -113,7 +113,61 @@ def _show_overview():
     print(f"\n  {C['dim']}Full reference: docs/DEVCTL.md  |  devctl <command> --help{C['reset']}\n")
 
 
-@click.group(invoke_without_command=True)
+_PO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _repo_local_devctl_root() -> Path | None:
+    """If cwd is inside a managed repo whose pyproject declares its own
+    `devctl` console script, return that repo's root. That repo's devctl is
+    a *plugin*: the global binary forwards unknown subcommands to it."""
+    d = Path.cwd()
+    while d != d.parent:
+        pyproject = d / "pyproject.toml"
+        if pyproject.exists():
+            if d == _PO_ROOT:
+                return None  # never forward to ourselves
+            try:
+                import tomllib
+
+                scripts = (tomllib.loads(pyproject.read_text())
+                           .get("project", {}).get("scripts", {}))
+            except Exception:
+                return None
+            return d if "devctl" in scripts else None
+        d = d.parent
+    return None
+
+
+class RepoPluginGroup(click.Group):
+    """Unknown subcommands fall through to the current repo's own devctl
+    (`uv run --project <repo> devctl <cmd> …`). Repo-local commands stay
+    repo-local; the control plane needs no knowledge of them."""
+
+    def get_command(self, ctx, cmd_name):
+        cmd = super().get_command(ctx, cmd_name)
+        if cmd is not None:
+            return cmd
+        repo = _repo_local_devctl_root()
+        if repo is None:
+            return None
+
+        @click.command(name=cmd_name, context_settings={
+            "ignore_unknown_options": True, "allow_extra_args": True,
+            "help_option_names": [],
+        })
+        @click.argument("args", nargs=-1, type=click.UNPROCESSED)
+        def _forward(args):
+            print(f"{C['dim']}→ {repo.name} plugin: devctl {cmd_name}{C['reset']}",
+                  file=sys.stderr)
+            raise SystemExit(subprocess.call(
+                ["uv", "run", "--project", str(repo), "devctl", cmd_name, *args],
+                cwd=repo,
+            ))
+
+        return _forward
+
+
+@click.group(cls=RepoPluginGroup, invoke_without_command=True)
 @click.pass_context
 def main(ctx):
     """devctl — multi-repo development control plane."""
@@ -193,7 +247,10 @@ def policy_lint(repo):
 @click.option("--force", is_flag=True, help="Overwrite existing files")
 @click.option("--dry-run", is_flag=True, help="Show what would be synced")
 @click.option("--all-templates", is_flag=True, help="Sync INTENT.md, .env.example, .gitignore")
-def sync_cmd(files, repo, force, dry_run, all_templates):
+@click.option("--claude-hooks", is_flag=True,
+              help="Sync .claude session hooks that inject INTENT/CLAUDE md files "
+                   "into every agent session (anti-drift)")
+def sync_cmd(files, repo, force, dry_run, all_templates, claude_hooks):
     """Sync control plane templates to managed repos."""
     sys.path.insert(0, str(SCRIPTS_DIR))
     from repo_sync import sync_all
@@ -202,6 +259,12 @@ def sync_cmd(files, repo, force, dry_run, all_templates):
         file_list = [f.strip() for f in files.split(",")]
     elif all_templates:
         file_list = ["INTENT.md", ".env.example", ".gitignore"]
+    if claude_hooks:
+        file_list = (file_list or []) + [
+            "claude/settings.json",
+            "claude/hooks/session-start-intent.sh",
+            "claude/hooks/post-compact-reinject.sh",
+        ]
     sync_all(files=file_list, repo_filter=repo, force=force, dry_run=dry_run)
 
 

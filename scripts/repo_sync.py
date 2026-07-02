@@ -30,6 +30,8 @@ def sync_file(template_name: str, dest_path: Path, force: bool = False) -> str:
         return "exists"
     dest_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, dest_path)
+    if dest_path.suffix == ".sh":
+        dest_path.chmod(0o755)
     return "synced"
 
 
@@ -48,6 +50,10 @@ def sync_repo(repo: dict, files: list[str], force: bool = False, dry_run: bool =
         # Map template names to repo destinations
         if template_file == "repo.yaml":
             dest = repo_path / ".control" / "repo.yaml"
+        elif template_file.startswith("claude/"):
+            # claude/* templates land under .claude/ (hooks that inject the
+            # repo's md files into every agent session — anti-drift)
+            dest = repo_path / ".claude" / template_file.removeprefix("claude/")
         else:
             dest = repo_path / template_file
 
