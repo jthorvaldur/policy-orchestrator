@@ -960,3 +960,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: lorium_backup
+  path: ~/GitHub/lorium_backup
+  github: git@github.com:jthorvaldur/lorium_backup.git
+  category: tools
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
