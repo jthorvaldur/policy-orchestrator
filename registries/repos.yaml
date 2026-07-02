@@ -949,3 +949,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: legal_dev
+  path: ~/GitHub/legal_dev
+  github: git@github.com:jthorvaldur/legal_dev.git
+  category: legal
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
