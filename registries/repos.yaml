@@ -971,3 +971,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: kg_farmadrop
+  path: ~/GitHub/kg_farmadrop
+  github: git@github.com:jthorvaldur/kg_farmadrop.git
+  category: knowledge
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
