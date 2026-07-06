@@ -94,7 +94,8 @@ def _show_overview():
     cheat = [
         ("Check everything",        "devctl health"),
         ("What's dirty?",           "devctl status --dirty"),
-        ("Search all data",         'devctl search "query"'),
+        ("Search docs/facts/algos", 'devctl search "query"'),
+        ("Search Claude/AI chats",  'devctl search "query" --claude'),
         ("Deploy pages from cwd",   "devctl deploy-pages --auto --verify --push"),
         ("Run benchmarks",          "devctl benchmark"),
         ("Scale projection",        "devctl benchmark --project=100000"),
@@ -515,14 +516,24 @@ def verify_pages_cmd(section, quick):
 @click.option("--limit", "-n", default=20, help="Number of results")
 @click.option("--collection", "-c", default=None, help="Search specific collection")
 @click.option("--collections", default=None, help="Comma-separated collection names")
+@click.option("--claude", is_flag=True, help="Search AI-assistant chats (Claude Code sessions, Claude.ai, ChatGPT)")
+@click.option("--algos", is_flag=True, help="Search the algorithms collection")
+@click.option("--facts", is_flag=True, help="Search fact collections (fact_registry, case facts)")
+@click.option("--all", "everything", is_flag=True, help="Include AI chats alongside the default scope")
 @click.option("--rerank/--no-rerank", default=True, help="Cross-encoder reranking (default: on)")
 @click.option("--tau", type=float, default=None, help="Recency decay τ in days (default: 180)")
 @click.option("--recency", type=float, default=None, help="Recency weight λ in [0,1] (default: 0.25)")
 @click.option("--recent", is_flag=True, help="Aggressive recency preset (τ=14d, λ=0.6)")
 @click.option("--no-recency", is_flag=True, help="Disable recency kernel")
 @click.option("--today", default=None, help="Override today as YYYY-MM-DD (for testing)")
-def search_cmd(query, limit, collection, collections, rerank, tau, recency, recent, no_recency, today):
-    """Unified search across all vector collections."""
+def search_cmd(query, limit, collection, collections, claude, algos, facts, everything,
+               rerank, tau, recency, recent, no_recency, today):
+    """Unified search across vector collections.
+
+    Default scope: ingested docs, court files, facts, and algorithms —
+    AI-assistant chats are excluded so they don't crowd out source documents.
+    Use --claude to search chats, --all to include everything.
+    """
     args = [sys.executable, str(SCRIPTS_DIR / "search_unified.py"), query]
     if limit != 20:
         args.extend(["--limit", str(limit)])
@@ -530,6 +541,14 @@ def search_cmd(query, limit, collection, collections, rerank, tau, recency, rece
         args.extend(["--collection", collection])
     if collections:
         args.extend(["--collections", collections])
+    if claude:
+        args.append("--claude")
+    if algos:
+        args.append("--algos")
+    if facts:
+        args.append("--facts")
+    if everything:
+        args.append("--all")
     if not rerank:
         args.append("--no-rerank")
     if recent:

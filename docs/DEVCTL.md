@@ -138,23 +138,35 @@ $ devctl db-status --repo=div_legal
 
 ### search
 
-Unified semantic search across all vector collections.
+Unified semantic search across vector collections.
+
+**Default scope excludes AI-assistant chats** (`claude_code_sessions`,
+`claude_chats_ai`, `openai_chats`) — those carry the user's questions and
+assertions, not ground truth, and they crowd out source documents. The
+default search covers ingested docs, court files, facts, and algorithms.
 
 ```
-devctl search QUERY [-n LIMIT] [-c COLLECTION] [--collections COLS] [--rerank]
+devctl search QUERY [-n LIMIT] [-c COLLECTION] [--collections COLS]
+                    [--claude] [--algos] [--facts] [--all] [--rerank]
 ```
 
 | Option | Description |
 |--------|-------------|
-| `-n`, `--limit` | Number of results (default: 10) |
+| `-n`, `--limit` | Number of results (default: 20) |
 | `-c`, `--collection` | Search a specific collection |
 | `--collections` | Comma-separated collection names |
-| `--rerank` | Apply cross-encoder reranking |
+| `--claude` | AI-assistant chats only (Claude Code, Claude.ai, ChatGPT) |
+| `--algos` | Algorithms collection only |
+| `--facts` | Fact collections only (fact_registry, case_facts, case_facts_semantic) |
+| `--all` | Include AI chats alongside the default scope |
+| `--rerank/--no-rerank` | Cross-encoder reranking (default: on) |
+
+Scope flags combine: `--facts --algos` searches both groups.
 
 ```
-$ devctl search "custody modification timeline" -n 5 --rerank
-  0.94  div_legal_chunks   "Motion filed 2024-03-15..."
-  0.91  div_legal_chunks   "Response deadline 2024-04-01..."
+$ devctl search "custody modification timeline" -n 5        # docs/court files/facts
+$ devctl search "deemed admissions" --facts                 # litigation playbook
+$ devctl search "vector ingest pipeline" --claude           # past AI sessions
 ```
 
 ### embed

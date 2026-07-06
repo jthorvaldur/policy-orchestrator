@@ -41,8 +41,13 @@ def load_collections():
 
 
 def get_live_state():
-    """Query actual state from all Qdrant ports — points, vector config, quantization."""
+    """Query actual state from all Qdrant ports — points, vector config, quantization.
+
+    Returns (state, offline_ports) so callers can distinguish "collection
+    missing" from "server not running".
+    """
     state = {}
+    offline = set()
     for port in [6333, 7333, 8333]:
         try:
             # :8333 runs an older server (1.14); skip the compat check to
@@ -81,8 +86,8 @@ def get_live_state():
                     "dimension": dim,
                 }
         except Exception:
-            pass
-    return state
+            offline.add(port)
+    return state, offline
 
 
 def size_color(points):
@@ -99,7 +104,10 @@ def size_color(points):
 
 
 def status_icon(status_str):
-    if status_str == "green":
+    # Qdrant statuses: green = fully optimized, grey = healthy but optimizer
+    # idle (normal after a restart), yellow = optimizing, red = error.
+    # Grey collections serve queries fine — show them as healthy.
+    if status_str in ("green", "grey"):
         return f"{C['green']}●{C['reset']}"
     if status_str == "yellow":
         return f"{C['yellow']}●{C['reset']}"
@@ -115,7 +123,7 @@ def main():
 
     repos = load_repos()
     collections = load_collections()
-    live = get_live_state()
+    live, offline_ports = get_live_state()
 
     # Group collections by owner repo
     by_repo = defaultdict(list)
@@ -169,7 +177,10 @@ def main():
 
             live_info = live.get((port, col_name), {})
             actual = live_info.get("points", None)
-            status = live_info.get("status", "unknown")
+            if actual is None and port in offline_ports:
+                status = "offline"
+            else:
+                status = live_info.get("status", "unknown")
             model = col_config.get("embedding_model", "?")
             # Use LIVE state for vector type and quantization, not registry
             vtype = live_info.get("vector_type", col_config.get("vector_type", "?"))
@@ -184,6 +195,10 @@ def main():
                 total_collections += 1
                 pts_color = size_color(actual)
                 pts_str = f"{pts_color}{fmt(actual):>12}{C['reset']}"
+            elif status == "offline":
+                icon = f"{C['dim']}●{C['reset']}"
+                pts_str = f"{C['dim']}{'offline':>12}{C['reset']}"
+                total_collections += 1
             else:
                 pts_str = f"{C['red']}{'NOT FOUND':>12}{C['reset']}"
                 total_collections += 1
@@ -259,10 +274,13 @@ def main():
 
     # Summary
     ports = len(set(p for p, _ in live))
+    offline_str = ""
+    if offline_ports:
+        offline_str = f"  {C['dim']}(offline: {', '.join(f':{p}' for p in sorted(offline_ports))}){C['reset']}"
     print(f"  {'─'*65}")
     print(f"  {C['bold']}{fmt(total_points)}{C['reset']} vectors  "
           f"{C['dim']}across{C['reset']} {total_collections} collections  "
-          f"{C['dim']}on{C['reset']} {ports} ports\n")
+          f"{C['dim']}on{C['reset']} {ports} ports{offline_str}\n")
 
 
 if __name__ == "__main__":

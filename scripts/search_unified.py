@@ -13,13 +13,22 @@ or --no-recency to disable.
 
 import math
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import yaml
 
 
 REGISTRIES = Path(__file__).parent.parent / "registries"
+
+# ── Search scopes ──────────────────────────────────────────────────────────
+# AI-assistant conversations carry the user's *questions and assertions*, not
+# ground truth. They dominate rankings on topical queries, so the default
+# scope excludes them — legal/doc searches from div_legal etc. get ingested
+# docs, court files, facts, and algorithms. Opt back in with --claude / --all.
+AI_CHAT_COLLECTIONS = {"claude_code_sessions", "claude_chats_ai", "openai_chats"}
+ALGO_COLLECTIONS = {"algorithms"}
+FACT_COLLECTIONS = {"fact_registry", "case_facts", "case_facts_semantic"}
 
 # How deep to prefetch from each vector space before fusion/rerank.
 # Deeper = better recall at the cost of speed.  50 per space is enough
@@ -120,6 +129,10 @@ def search(
     tau_days: float = DEFAULT_RECENCY_TAU,
     recency_weight: float = DEFAULT_RECENCY_WEIGHT,
     today: date | None = None,
+    claude: bool = False,
+    algos: bool = False,
+    facts: bool = False,
+    everything: bool = False,
 ):
     """Search across collections using docvec federated search.
 
@@ -127,6 +140,10 @@ def search(
         tau_days: Exponential decay constant for recency in days. Smaller = steeper.
         recency_weight: λ in [0,1]. 0 disables recency boost; 1 sorts purely by date.
         today: Override for "now" — useful for testing.
+        claude: Scope to AI-assistant chats (Claude Code, Claude.ai, ChatGPT).
+        algos: Scope to the algorithms collection.
+        facts: Scope to fact collections (fact_registry, case facts).
+        everything: Include AI chats alongside the default scope.
     """
     from docvec.config import EmbedConfig
     from docvec.embedder import embed_hybrid, embed_text
@@ -136,20 +153,42 @@ def search(
     registry = load_registry()
 
     # Determine which collections to search
+    scope_label = "default (docs+facts+algos, AI chats excluded)"
     if collection:
         if collection not in registry:
             print(f"Collection '{collection}' not in registry", file=sys.stderr)
             return
         targets = {collection: registry[collection]}
+        scope_label = f"collection:{collection}"
     elif collections:
         names = [c.strip() for c in collections.split(",")]
         targets = {n: registry[n] for n in names if n in registry}
+        scope_label = f"collections:{','.join(targets)}"
+    elif claude or algos or facts:
+        # Named scopes bypass the size floor — fact_registry etc. are small.
+        wanted: set[str] = set()
+        parts = []
+        if claude:
+            wanted |= AI_CHAT_COLLECTIONS
+            parts.append("claude")
+        if algos:
+            wanted |= ALGO_COLLECTIONS
+            parts.append("algos")
+        if facts:
+            wanted |= FACT_COLLECTIONS
+            parts.append("facts")
+        targets = {n: registry[n] for n in sorted(wanted) if n in registry}
+        scope_label = "+".join(parts)
     else:
         # Search all readable collections (skip tiny ones like feedback/facts)
         targets = {
             n: c for n, c in registry.items()
             if c.get("points_expected", 0) > 50
         }
+        if everything:
+            scope_label = "all (AI chats included)"
+        else:
+            targets = {n: c for n, c in targets.items() if n not in AI_CHAT_COLLECTIONS}
 
     if not targets:
         print("No collections to search.", file=sys.stderr)
@@ -183,7 +222,7 @@ def search(
     fetch_per_collection = limit * 5 if rerank else limit
 
     print(
-        f"Searching {len(targets)} collection(s) with {model_used}"
+        f"Searching {len(targets)} collection(s) [{scope_label}] with {model_used}"
         f"{' + rerank' if rerank else ''}...",
         file=sys.stderr,
     )
@@ -347,7 +386,7 @@ def search(
 
     # Apply recency kernel (no-op if recency_weight == 0)
     if recency_weight > 0.0:
-        today = today or datetime.utcnow().date()
+        today = today or datetime.now(timezone.utc).date()
         all_results = _apply_recency_kernel(
             all_results,
             today=today,
@@ -359,9 +398,8 @@ def search(
     all_results = all_results[:limit]
 
     # Display
-    total_candidates = sum(1 for _ in all_results)
     print(f"\n{'=' * 70}")
-    print(f"  \"{query}\"  ({score_label} scores)")
+    print(f"  \"{query}\"  ({score_label} scores)  [{scope_label}]")
     print(f"{'=' * 70}\n")
 
     for i, r in enumerate(all_results):
@@ -393,6 +431,17 @@ def main():
     parser.add_argument("--limit", "-n", type=int, default=20)
     parser.add_argument("--collection", "-c", default=None, help="Search specific collection")
     parser.add_argument("--collections", default=None, help="Comma-separated collection names")
+
+    # Scope flags (combinable). Default scope excludes AI-assistant chats.
+    parser.add_argument("--claude", action="store_true",
+                        help="Search AI-assistant chats (claude_code_sessions, claude_chats_ai, openai_chats)")
+    parser.add_argument("--algos", action="store_true",
+                        help="Search the algorithms collection")
+    parser.add_argument("--facts", action="store_true",
+                        help="Search fact collections (fact_registry, case_facts, case_facts_semantic)")
+    parser.add_argument("--all", dest="everything", action="store_true",
+                        help="Include AI chats alongside the default scope")
+
     parser.add_argument("--rerank", action="store_true", default=True, help="Apply cross-encoder reranking (default)")
     parser.add_argument("--no-rerank", dest="rerank", action="store_false", help="Skip reranking, use retrieval scores only")
 
@@ -439,6 +488,10 @@ def main():
         tau_days=tau,
         recency_weight=recency,
         today=today_override,
+        claude=args.claude,
+        algos=args.algos,
+        facts=args.facts,
+        everything=args.everything,
     )
 
 
