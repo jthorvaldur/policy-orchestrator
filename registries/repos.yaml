@@ -982,3 +982,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: claude_fable
+  path: ~/GitHub/claude_fable
+  github: git@github.com:jthorvaldur/claude_fable.git
+  category: system
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
