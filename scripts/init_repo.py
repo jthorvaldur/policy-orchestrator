@@ -331,6 +331,22 @@ def main():
     elif not scripts_dir.exists():
         print(f"  WOULD scripts/ (create)")
 
+    # Agent operating process pack: hooks, contracts, routing, evals
+    # (templates/processes/README.md). Never overwrites existing files.
+    print("\n  Agent process pack:")
+    from repo_sync import AGENT_PROCESS_PACK, sync_file
+    for template_file in AGENT_PROCESS_PACK:
+        if template_file.startswith("claude/"):
+            dest = repo_path / ".claude" / template_file.removeprefix("claude/")
+        else:
+            dest = repo_path / template_file
+        if args.dry_run:
+            print(f"  {'SKIP ' if dest.exists() else 'WOULD'} {template_file}")
+        else:
+            status = sync_file(template_file, dest)
+            icon = {"synced": "DONE ", "exists": "SKIP ", "template_missing": "MISS "}.get(status, "?    ")
+            print(f"  {icon} {template_file}")
+
     # 2. Register in repos.yaml
     print("\n  Registry:")
     register_in_repos_yaml(name, category, language, args.visibility, args.dry_run)

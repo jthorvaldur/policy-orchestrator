@@ -85,6 +85,26 @@ def audit_repo(repo: dict) -> list[dict]:
     if not (repo_path / ".control" / "repo.yaml").exists():
         findings.append({"level": "WARN", "message": "no .control/repo.yaml"})
 
+    # Agent operating process pack (skip reference/frozen repos — no active
+    # agent work there, no need for enforcement hooks)
+    if repo.get("priority") != "reference":
+        pack_core = [
+            ".claude/settings.json",
+            "contracts/agents.yaml",
+            "contracts/model-routing.yaml",
+            "evals",
+            "scripts/test.sh",
+        ]
+        missing = [f for f in pack_core if not (repo_path / f).exists()]
+        if missing:
+            findings.append({
+                "level": "WARN",
+                "message": (
+                    f"agent-process pack incomplete ({len(missing)}/{len(pack_core)} missing) "
+                    "— devctl sync --agent-processes"
+                ),
+            })
+
     return findings
 
 

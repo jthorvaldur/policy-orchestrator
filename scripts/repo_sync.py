@@ -13,6 +13,32 @@ import yaml
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 
+# Agent operating process pack (templates/processes/README.md):
+# enforcement hooks, agent contracts, model routing, process docs, evals.
+AGENT_PROCESS_PACK = [
+    "claude/settings.json",
+    "claude/hooks/session-start-intent.sh",
+    "claude/hooks/post-compact-reinject.sh",
+    "claude/hooks/session-routing-audit.sh",
+    "claude/hooks/pre-tool-risk-guard.sh",
+    "claude/hooks/post-tool-evidence-logger.sh",
+    "claude/hooks/delivery-gate.sh",
+    "claude/hooks/pre-compact-handoff.sh",
+    "contracts/agents.yaml",
+    "contracts/model-routing.yaml",
+    "processes/README.md",
+    "processes/01-outside-audit.md",
+    "processes/02-chief-operator.md",
+    "processes/03-agent-team-contracts.md",
+    "processes/04-hooks-over-instructions.md",
+    "processes/05-improvement-loop.md",
+    "processes/06-model-routing.md",
+    "evals/README.md",
+    "evals/e000-template.sh",
+    "evals/e001-enforcement-files-exist.sh",
+    "scripts/test.sh",
+]
+
 
 def load_registry() -> list[dict]:
     registry_path = Path(__file__).parent.parent / "registries" / "repos.yaml"

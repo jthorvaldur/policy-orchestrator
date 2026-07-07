@@ -251,10 +251,13 @@ def policy_lint(repo):
 @click.option("--claude-hooks", is_flag=True,
               help="Sync .claude session hooks that inject INTENT/CLAUDE md files "
                    "into every agent session (anti-drift)")
-def sync_cmd(files, repo, force, dry_run, all_templates, claude_hooks):
+@click.option("--agent-processes", is_flag=True,
+              help="Sync the full agent operating process pack: enforcement hooks, "
+                   "agent contracts, model routing, process docs, evals scaffold")
+def sync_cmd(files, repo, force, dry_run, all_templates, claude_hooks, agent_processes):
     """Sync control plane templates to managed repos."""
     sys.path.insert(0, str(SCRIPTS_DIR))
-    from repo_sync import sync_all
+    from repo_sync import AGENT_PROCESS_PACK, sync_all
     file_list = None
     if files:
         file_list = [f.strip() for f in files.split(",")]
@@ -266,6 +269,8 @@ def sync_cmd(files, repo, force, dry_run, all_templates, claude_hooks):
             "claude/hooks/session-start-intent.sh",
             "claude/hooks/post-compact-reinject.sh",
         ]
+    if agent_processes:
+        file_list = list(dict.fromkeys((file_list or []) + AGENT_PROCESS_PACK))
     sync_all(files=file_list, repo_filter=repo, force=force, dry_run=dry_run)
 
 
