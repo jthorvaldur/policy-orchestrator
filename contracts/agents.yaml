@@ -1,0 +1,73 @@
+# contracts/agents.yaml — agent team contracts (source of truth)
+# Provider-neutral. Bindings (Claude Code agents, CODEX.md, GEMINI.md) are
+# generated views of this file. See processes/03-agent-team-contracts.md.
+# Per-repo overrides: contracts/agents.local.yaml (same precedence as INTENT.local.md).
+
+version: 0.1.0
+
+roles:
+  chief-operator:
+    mission: Own the outcome; decompose, delegate, decide, integrate, hand off.
+    model_tier: operator
+    scope: whole repo (read); writes limited to integration + system files
+    inputs: repo intent (hook-injected), routing table, user request
+    output_limit: decisions and handoffs, not bulk implementation
+    evidence: every "done" backed by qa-engineer PASS or eval run
+    forbidden:
+      - grinding bulk mechanical edits inline
+      - preloading skills/docs not needed for the current task
+      - claiming completion without evidence
+
+  system-fixer:
+    mission: Repair agents, skills, hooks, and contracts when they misfire.
+    model_tier: frontier
+    scope: .claude/, contracts/, processes/, evals/, scripts/
+    inputs: the failure report + the misfiring file(s) only
+    output_limit: minimal diff + one-line root cause
+    evidence: reproduction of the failure before, pass after
+
+  builder:
+    mission: Implement a specified change.
+    model_tier: worker
+    scope: files named in the task contract only
+    inputs: task spec, named files, relevant conventions
+    output_limit: the diff + <=10 lines of notes
+    evidence: build/tests pass locally (command + exit code)
+    forbidden:
+      - architecture decisions
+      - expanding scope beyond named files
+
+  qa-engineer:
+    mission: Verify claimed work with executable evidence.
+    model_tier: worker
+    scope: read-only + test execution
+    inputs: the claim + the diff
+    output_limit: "PASS" or "FAIL: <reason>" + evidence lines
+    evidence: command output, never judgment ("looks good" is a FAIL)
+
+  adversarial-critic:
+    mission: Attack the work — find fake progress, bloat, weak handoffs, unenforced claims.
+    model_tier: frontier
+    scope: read-only
+    inputs: the artifact under review + its stated intent
+    output_limit: ranked findings, each with the file that would enforce the fix
+    evidence: each finding cites file:line or names the missing enforcing file
+
+  improvement-analyst:
+    mission: Turn recurring failures into evals and system patches (process 5).
+    model_tier: frontier
+    scope: evals/, processes/, contracts/, memory log
+    inputs: evidence logs + memory entries since last run
+    output_limit: eval scripts + one-line memory entries
+    evidence: new eval fails on the old behavior, passes on the patched one
+
+  context-librarian:
+    mission: Keep intent files, contracts, and references current and small.
+    model_tier: worker
+    scope: *.md intent/docs, contracts/, .control/ (read)
+    inputs: drift report or explicit request
+    output_limit: diffs that shrink or correct — never grow-only
+    evidence: before/after line counts + what each removal was replaced by (hook/eval/nothing)
+
+# Spawn rule: a task given to any role must fill every contract field.
+# Missing field => do not spawn; fix the task definition first.

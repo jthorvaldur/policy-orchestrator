@@ -1,0 +1,39 @@
+# contracts/model-routing.yaml — role tier -> concrete model, per provider
+# Single source of truth for routing (processes/06-model-routing.md).
+# Injected into every session by .claude/hooks/session-routing-audit.sh.
+# Update model ids here when providers ship new versions — nowhere else.
+
+version: 0.1.0
+
+tiers:
+  frontier:   # audits, root cause, architecture, adversarial review, improvement loops
+    anthropic: claude-fable-5
+    openai: gpt-5-class (largest available)
+    google: gemini-ultra-class (largest available)
+    local_ollama: null   # no local model qualifies; escalate
+
+  operator:   # the disciplined chief-operator session
+    anthropic: claude-opus-4-8
+    openai: gpt-5-class
+    google: gemini-pro-class
+    local_ollama: null
+
+  worker:     # bounded, contracted subagent tasks
+    anthropic: claude-sonnet-4-6
+    anthropic_cheap: claude-haiku-4-5-20251001
+    openai: mid-tier (mini class)
+    google: gemini-flash-class
+    local_ollama: best available local model
+
+  local:      # free extraction/classification chores; output verified before use
+    anthropic: null
+    local_ollama: default local model
+    openrouter: cheap open-weights (deepseek/llama/mistral)
+
+# Cost priority for bulk extraction (from global policy):
+#   local_ollama (free) -> openrouter (cheap) -> anthropic (last resort)
+
+escalation:
+  - worker hits ambiguity outside contract -> return question to operator
+  - operator cannot resolve -> frontier
+  - never: worker silently decides architecture or patches the system
