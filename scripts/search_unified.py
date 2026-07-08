@@ -12,6 +12,7 @@ or --no-recency to disable.
 """
 
 import math
+import os
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -34,6 +35,16 @@ FACT_COLLECTIONS = {"fact_registry", "case_facts", "case_facts_semantic"}
 # Deeper = better recall at the cost of speed.  50 per space is enough
 # for the reranker to see ~100 candidates per collection.
 PREFETCH_DEPTH = 50
+
+# Cross-encoder for the rerank stage, overridable per-run (RERANK_MODEL env
+# or --rerank-model) so candidate models can be A/B'd in one command.
+# ms-marco-MiniLM stays the default on evidence: A/B on prod legal queries
+# (2026-07-07) had it ranking the actual filings first with clean separation,
+# while BAAI/bge-reranker-base pulled unrelated statutes/chats into the
+# top-4 on this corpus's JSON-ish previews. Re-test candidates with:
+#   devctl-search "<query>" --rerank-model <hf-model>
+DEFAULT_RERANK_MODEL = os.environ.get(
+    "RERANK_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2")
 
 # Recency defaults — mild boost that doesn't displace strong semantic matches
 # but breaks ties toward recent docs and pulls today's content into the top-K.
@@ -120,12 +131,46 @@ def _text_for_result(payload: dict) -> str:
     return str(payload)
 
 
+def _rerank_stage(query: str, pool: list[dict], rerank_model: str) -> list[dict]:
+    """Cross-encoder rerank honoring the requested model.
+
+    The docvec service pins its own reranker at startup and docvec.rerank
+    silently prefers the service — so when the requested model differs from
+    what the service advertises, score in-process instead. Keeps all items
+    (caller trims) so the recency kernel can re-sort."""
+    service_model = None
+    try:
+        import httpx
+
+        service_model = httpx.get(
+            "http://localhost:8100/health", timeout=2.0,
+        ).json().get("models", {}).get("reranker")
+    except Exception:
+        pass
+
+    if service_model == rerank_model:
+        from docvec.embedder import rerank as docvec_rerank
+
+        return docvec_rerank(query=query, results=pool,
+                             text_key="content_preview", limit=len(pool))
+
+    from sentence_transformers import CrossEncoder
+
+    encoder = CrossEncoder(rerank_model)
+    pairs = [(query, r.get("content_preview", "")) for r in pool]
+    scores = encoder.predict(pairs)
+    for r, s in zip(pool, scores):
+        r["rerank_score"] = float(s)
+    return sorted(pool, key=lambda r: r["rerank_score"], reverse=True)
+
+
 def search(
     query,
     limit=20,
     collection=None,
     collections=None,
     rerank=True,
+    rerank_model: str = DEFAULT_RERANK_MODEL,
     tau_days: float = DEFAULT_RECENCY_TAU,
     recency_weight: float = DEFAULT_RECENCY_WEIGHT,
     today: date | None = None,
@@ -360,19 +405,12 @@ def search(
     # Apply cross-encoder reranking
     if rerank:
         try:
-            from docvec.embedder import rerank as docvec_rerank
-
             # Rerank a generous pool. When recency boost is active we need a
             # wider pool so recent-but-semantically-decent docs survive into
             # the final cut.
             pool_multiplier = 20 if recency_weight > 0.0 else 10
             rerank_pool = all_results[:limit * pool_multiplier]
-            reranked = docvec_rerank(
-                query=query,
-                results=rerank_pool,
-                text_key="content_preview",
-                limit=len(rerank_pool),  # keep all so kernel can re-sort
-            )
+            reranked = _rerank_stage(query, rerank_pool, rerank_model)
             # Use rerank_score as the display score
             for r in reranked:
                 r["score"] = r["rerank_score"]
@@ -444,6 +482,11 @@ def main():
 
     parser.add_argument("--rerank", action="store_true", default=True, help="Apply cross-encoder reranking (default)")
     parser.add_argument("--no-rerank", dest="rerank", action="store_false", help="Skip reranking, use retrieval scores only")
+    parser.add_argument(
+        "--rerank-model", default=DEFAULT_RERANK_MODEL,
+        help=f"Cross-encoder model (default: {DEFAULT_RERANK_MODEL}; "
+             "env override: RERANK_MODEL)",
+    )
 
     # Recency kernel
     parser.add_argument(
@@ -485,6 +528,7 @@ def main():
         collection=args.collection,
         collections=args.collections,
         rerank=args.rerank,
+        rerank_model=args.rerank_model,
         tau_days=tau,
         recency_weight=recency,
         today=today_override,
