@@ -1004,3 +1004,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: LocalHarvestWebDev
+  path: ~/GitHub/LocalHarvestWebDev
+  github: git@github.com:jthorvaldur/LocalHarvestWebDev.git
+  category: web
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
