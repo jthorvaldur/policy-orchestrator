@@ -24,6 +24,9 @@ DISTANCE = Distance.COSINE
 
 SESSIONS_ROOT = Path.home() / ".claude" / "projects"
 STATE_FILE = Path(__file__).parent.parent / "local" / "ingest_state.json"
+# Session IDs listed here (one per line, # comments allowed) are never ingested,
+# e.g. sessions whose transcripts are known to contain leaked secrets.
+DENYLIST_FILE = Path(__file__).parent.parent / "local" / "ingest_denylist.txt"
 
 CHUNK_TARGET_TOKENS = 512
 CHUNK_OVERLAP_TOKENS = 64
@@ -182,6 +185,7 @@ def discover_sessions(repo_filter: str | None = None) -> list[dict]:
     if not SESSIONS_ROOT.exists():
         return sessions
 
+    denylist = load_denylist()
     for project_dir in SESSIONS_ROOT.iterdir():
         if not project_dir.is_dir():
             continue
@@ -194,6 +198,8 @@ def discover_sessions(repo_filter: str | None = None) -> list[dict]:
 
         for jsonl_file in project_dir.rglob("*.jsonl"):
             session_id = jsonl_file.stem
+            if session_id in denylist:
+                continue
             # Determine if this is a subagent session
             rel = jsonl_file.relative_to(project_dir)
             is_subagent = "subagent" in str(rel)
@@ -215,6 +221,17 @@ def discover_sessions(repo_filter: str | None = None) -> list[dict]:
 # ---------------------------------------------------------------------------
 # State management (incremental)
 # ---------------------------------------------------------------------------
+
+
+def load_denylist() -> set[str]:
+    """Session IDs that must never be ingested (leaked secrets, etc.)."""
+    if not DENYLIST_FILE.exists():
+        return set()
+    with open(DENYLIST_FILE) as f:
+        return {
+            line.strip() for line in f
+            if line.strip() and not line.startswith("#")
+        }
 
 
 def load_state() -> dict:
