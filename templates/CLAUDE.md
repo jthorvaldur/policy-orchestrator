@@ -1,7 +1,5 @@
 # {{PROJECT_NAME}}
 
-> Read `INTENT.md` before acting. It governs all work in this repo.
-
 ## Project Overview
 {{PROJECT_DESCRIPTION}}
 
@@ -25,7 +23,6 @@ This repo is managed by the [policy-orchestrator](https://github.com/jthorvaldur
 
 ## Session Start Protocol
 Before producing output, agents should:
-1. Read `INTENT.md` for this repo's governing rules
 2. Read `.control/repo.yaml` for metadata and constraints
 3. If Qdrant is available (localhost:6333), query these collections for context:
    - `feedback_events` — calibration notes on interaction style and past corrections
@@ -50,7 +47,7 @@ Available collections (Qdrant localhost:6333 and :7333):
 - `fact_registry` — classified facts with confidence levels
 - `feedback_events` — interaction calibration notes
 
-## Agent Protocol (from INTENT.md)
+## Agent Protocol
 - Identify the relevant repo intent before producing output
 - Preserve existing conventions unless explicitly changing them
 - Do not modify files outside scope

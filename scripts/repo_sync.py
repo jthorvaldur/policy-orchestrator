@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Sync control plane templates to managed repos.
 
-Pushes INTENT.md, .control/repo.yaml templates, and .env.example to repos
+Pushes .control/repo.yaml templates and .env.example to repos
 that are missing them. Does NOT overwrite existing files unless --force.
 """
 
@@ -104,7 +104,7 @@ def sync_all(
 ):
     """Sync templates to all managed repos."""
     if files is None:
-        files = ["INTENT.md", ".env.example"]
+        files = [".env.example"]
 
     repos = load_registry()
     if repo_filter:
@@ -140,12 +140,12 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Sync templates to managed repos")
     parser.add_argument("--files", default=None,
-                        help="Comma-separated template files (default: INTENT.md,.env.example)")
+                        help="Comma-separated template files (default: .env.example)")
     parser.add_argument("--repo", default=None, help="Sync to specific repo only")
     parser.add_argument("--force", action="store_true", help="Overwrite existing files")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be synced")
     parser.add_argument("--all-templates", action="store_true",
-                        help="Sync all templates: INTENT.md, .env.example, .gitignore")
+                        help="Sync all templates: .env.example, .gitignore")
 
     args = parser.parse_args()
 
@@ -153,7 +153,7 @@ def main():
     if args.files:
         files = [f.strip() for f in args.files.split(",")]
     elif args.all_templates:
-        files = ["INTENT.md", ".env.example", ".gitignore"]
+        files = [".env.example", ".gitignore"]
 
     sync_all(
         files=files,

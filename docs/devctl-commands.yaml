@@ -602,10 +602,10 @@ commands:
       - name: --all-templates
         type: flag
         default: false
-        description: Sync INTENT.md, .env.example, .gitignore
+        description: Sync .env.example, .gitignore
     examples:
       - devctl sync --all-templates --dry-run
-      - devctl sync --files=INTENT.md --repo=vpin --force
+      - devctl sync --files=.env.example --repo=vpin --force
     related_commands:
       - audit
       - policy

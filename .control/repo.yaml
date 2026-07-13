@@ -18,7 +18,6 @@ allowed_llm_providers:
   - local_ollama
 
 required_files:
-  - INTENT.md
   - README.md
   - CLAUDE.md
   - .env.example

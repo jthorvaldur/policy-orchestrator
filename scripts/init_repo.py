@@ -295,7 +295,6 @@ def main():
 
     # 1. Scaffold standard files
     print("\n  Scaffolding:")
-    scaffold_file(repo_path, "INTENT.md", "INTENT.md", replacements, args.dry_run)
     scaffold_file(repo_path, "CLAUDE.md", "CLAUDE.md", replacements, args.dry_run)
     scaffold_file(repo_path, "repo.yaml", ".control/repo.yaml", replacements, args.dry_run)
     create_env_example(repo_path, args.dry_run)
@@ -380,7 +379,7 @@ def main():
         run(["git", "add", "-A", "."], cwd=repo_path)
         status = run(["git", "status", "--short"], cwd=repo_path)
         if status.stdout.strip():
-            run(["git", "commit", "-m", "init: add control plane contract (INTENT.md, CLAUDE.md, .control/)"], cwd=repo_path, check=True)
+            run(["git", "commit", "-m", "init: add control plane contract (CLAUDE.md, .control/)"], cwd=repo_path, check=True)
             print(f"  DONE  committed scaffold files")
             r = run(["git", "push", "-u", "origin", "main"], cwd=repo_path)
             if r.returncode == 0:

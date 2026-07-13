@@ -108,32 +108,31 @@ devctl health                                  # full system status
 ## Architecture
 
 ```
-INTENT.md                              <- root authority
-  ├── policies/hard/                   <- ERROR on violation
-  │   ├── secrets.md                   <- never commit secrets
-  │   ├── git-main.md                  <- no force push
-  │   ├── legal-data.md               <- legal data boundaries
-  │   ├── pages-encryption.yaml       <- AES-GCM encryption rules
-  │   └── quantization.yaml           <- int8 for >10K point collections
-  ├── policies/soft/                   <- WARN only
-  ├── registries/
-  │   ├── repos.yaml                  <- 26 repos
-  │   ├── vector-collections.yaml     <- 12 collections with chunking/coverage
-  │   ├── pages.yaml                  <- 11 page sections with generators
-  │   ├── providers.yaml              <- 6 LLM providers with task routing
-  │   └── secrets.schema.yaml         <- key profiles + validation patterns
-  ├── lib/
-  │   ├── llm_router.py               <- single-file LLM provider router
-  │   ├── provenance.py               <- build lineage tracking
-  │   └── profiler.py                 <- operation timing + throughput
-  ├── scripts/                        <- 20+ enforcement and utility scripts
-  ├── docs/
-  │   ├── DEVCTL.md                   <- full command reference
-  │   ├── devctl-commands.yaml        <- machine-readable command registry
-  │   ├── DEPLOYMENT.md               <- provider + Vast.ai + pages guide
-  │   └── KEY_ACQUISITION.md          <- API key priority spec
-  ├── templates/                      <- standard files synced to managed repos
-  └── adr/                            <- architectural decision records
+policies/hard/                         <- ERROR on violation
+  ├── secrets.md                       <- never commit secrets
+  ├── git-main.md                      <- no force push
+  ├── legal-data.md                    <- legal data boundaries
+  ├── pages-encryption.yaml            <- AES-GCM encryption rules
+  └── quantization.yaml                <- int8 for >10K point collections
+policies/soft/                         <- WARN only
+registries/
+  ├── repos.yaml                       <- 26 repos
+  ├── vector-collections.yaml          <- 12 collections with chunking/coverage
+  ├── pages.yaml                       <- 11 page sections with generators
+  ├── providers.yaml                   <- 6 LLM providers with task routing
+  └── secrets.schema.yaml              <- key profiles + validation patterns
+lib/
+  ├── llm_router.py                    <- single-file LLM provider router
+  ├── provenance.py                    <- build lineage tracking
+  └── profiler.py                      <- operation timing + throughput
+scripts/                               <- 20+ enforcement and utility scripts
+docs/
+  ├── DEVCTL.md                        <- full command reference
+  ├── devctl-commands.yaml             <- machine-readable command registry
+  ├── DEPLOYMENT.md                    <- provider + Vast.ai + pages guide
+  └── KEY_ACQUISITION.md               <- API key priority spec
+templates/                             <- standard files synced to managed repos
+adr/                                   <- architectural decision records
 ```
 
 Hub-and-spoke: code stays distributed, governance is centralized. See `adr/0001-control-plane-architecture.md`.
@@ -150,11 +149,11 @@ gai secrets         # key validation
 gai env             # keys.zsh propagation check
 ```
 
-## Governing document
-
-[`INTENT.md`](INTENT.md) is the root authority. Core directive:
+## Governing directive
 
 > Maximize alignment with repository intent. Not output volume.
+
+Operating rules for all repos live in the global agent instructions (`~/.claude/CLAUDE.md`).
 
 ## Full command reference
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import yaml
 
 REQUIRED_FILES = ["README.md", ".gitignore"]
-RECOMMENDED_FILES = ["INTENT.md", "CLAUDE.md", ".env.example"]
+RECOMMENDED_FILES = ["CLAUDE.md", ".env.example"]
 FORBIDDEN_PATTERNS = [
     ".env", "secrets.json", "id_rsa", "id_ed25519",
     "service_account.json", "credentials.json", "token.json",
