@@ -1059,3 +1059,14 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: optstrat
+  path: ~/GitHub/optstrat
+  github: git@github.com:jthorvaldur/optstrat.git
+  category: trading
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
