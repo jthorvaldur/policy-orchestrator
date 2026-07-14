@@ -1026,3 +1026,36 @@ repos:
   secret_profile: null
   update_policy: manual-review
   status: active
+- name: biomarkerICT
+  path: ~/GitHub/biomarkerICT
+  github: git@github.com:jthorvaldur/biomarkerICT.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
+- name: energy_charge
+  path: ~/GitHub/energy_charge
+  github: git@github.com:jthorvaldur/energy_charge.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
+- name: batteries_texas
+  path: ~/GitHub/batteries_texas
+  github: git@github.com:jthorvaldur/batteries_texas.git
+  category: research
+  priority: active
+  language: python
+  visibility: private
+  vector_namespace: null
+  secret_profile: null
+  update_policy: manual-review
+  status: active
